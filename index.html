@@ -4,14 +4,39 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sachin Deep Cleaning</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body { font-family: Arial, sans-serif; }
-    .hero { background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center; background-size: cover; color: white; padding: 100px 0; text-align: center; }
+    .hero {
+      background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 100px 0;
+      text-align: center;
+    }
     .services .card { transition: 0.3s ease; }
     .services .card:hover { transform: scale(1.05); }
     footer { background: #222; color: #aaa; padding: 20px 0; text-align: center; }
+
+    /* Floating Buttons */
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      text-decoration: none;
+    }
+    .call-button { left: 20px; background-color: #007bff; }
+    .whatsapp-button { right: 20px; background-color: #25d366; }
   </style>
 </head>
 <body>
@@ -123,6 +148,15 @@
 <footer>
   <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
 </footer>
+
+<!-- Floating Buttons -->
+<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
+  <i class="fas fa-phone-alt"></i>
+</a>
+
+<a href="https://wa.me/919267905943" class="floating-button whatsapp-button" title="Chat on WhatsApp" target="_blank">
+  <i class="fab fa-whatsapp"></i>
+</a>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
