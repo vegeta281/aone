@@ -1,65 +1,51 @@
+<!-- booking.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Book Service - Sachin Deep Cleaning</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    body { padding: 2rem; background: #f7f7f7; }
-    .card { max-width: 600px; margin: auto; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Cleaning Service</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-  <div class="card p-4 shadow">
-    <h2 class="mb-3 text-center">Book a Cleaning Service</h2>
-
-    <form id="bookingForm">
+  <div class="container mt-5">
+    <h2 class="mb-4">Book a Deep Cleaning Service</h2>
+    <form id="bookingForm" onsubmit="handleBooking(event)">
       <div class="mb-3">
-        <label for="service" class="form-label">Select Service</label>
-        <select id="service" class="form-select" required>
-          <option value="" disabled selected>Select</option>
-          <option value="1RK">1RK</option>
-          <option value="1BHK">1BHK</option>
-          <option value="2BHK">2BHK</option>
-          <option value="3BHK">3BHK</option>
-          <option value="4BHK">4BHK</option>
-          <option value="5BHK">5BHK</option>
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="tel" class="form-control" id="phone" name="phone" required>
+      </div>
+      <div class="mb-3">
+        <label for="bhk" class="form-label">Select BHK Type</label>
+        <select class="form-select" id="bhk" name="bhk" required>
+          <option value="">Select</option>
+          <option>1RK</option>
+          <option>1BHK</option>
+          <option>2BHK</option>
+          <option>3BHK</option>
+          <option>4BHK</option>
+          <option>5BHK</option>
         </select>
       </div>
-
       <div class="mb-3">
-        <label class="form-label">Furnishing</label>
-        <select id="furnish" class="form-select" required>
-          <option value="" disabled selected>Select</option>
-          <option value="Furnished">Furnished</option>
-          <option value="Non-Furnished">Non-Furnished</option>
+        <label for="furnished" class="form-label">Furnishing</label>
+        <select class="form-select" id="furnished" name="furnished" required>
+          <option value="">Select</option>
+          <option>Furnished</option>
+          <option>Non-Furnished</option>
         </select>
       </div>
-
-      <div class="mb-3">
-        <label class="form-label">Your Name</label>
-        <input type="text" id="name" class="form-control" placeholder="Enter your name" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Phone Number</label>
-        <input type="tel" id="phone" class="form-control" placeholder="Enter your phone number" required />
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label">Price</label>
-        <input type="text" id="price" class="form-control" disabled />
-      </div>
-
-      <div class="d-grid gap-2">
-        <button type="button" class="btn btn-success" onclick="payNow()">Pay Now via UPI</button>
-        <a href="thankyou.html" class="btn btn-primary">I have Paid</a>
-      </div>
+      <button type="submit" class="btn btn-primary">Submit Booking</button>
     </form>
   </div>
 
   <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec";
+
     const pricing = {
       "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
       "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
@@ -69,36 +55,30 @@
       "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
     };
 
-    const serviceSelect = document.getElementById('service');
-    const furnishSelect = document.getElementById('furnish');
-    const priceField = document.getElementById('price');
+    function handleBooking(event) {
+      event.preventDefault();
 
-    serviceSelect.addEventListener('change', updatePrice);
-    furnishSelect.addEventListener('change', updatePrice);
+      const form = document.getElementById("bookingForm");
 
-    function updatePrice() {
-      const service = serviceSelect.value;
-      const furnish = furnishSelect.value;
-      if (service && furnish) {
-        priceField.value = `₹${pricing[service][furnish]}`;
-      }
-    }
+      const name = form.name.value.trim();
+      const phone = form.phone.value.trim();
+      const bhk = form.bhk.value;
+      const furnished = form.furnished.value;
+      const price = pricing[bhk]?.[furnished] || 0;
+      const payment = "Pay After Work";
 
-    function payNow() {
-      const service = serviceSelect.value;
-      const furnish = furnishSelect.value;
-      const name = document.getElementById("name").value;
-      const phone = document.getElementById("phone").value;
-
-      if (!service || !furnish || !name || !phone) {
-        alert("Please fill all fields.");
-        return;
-      }
-
-      const amount = pricing[service][furnish];
-      const upiLink = `upi://pay?pa=7042721405@ptyes&pn=punam rai&cu=INR&am=${amount}&tn=Cleaning%20Service%20${service}%20${furnish}`;
-
-      window.location.href = upiLink;
+      fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams({
+          name, phone, bhk, furnished, price, payment
+        })
+      }).then(() => {
+        const redirectUrl = `thankyou.html?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&bhk=${bhk}&furnished=${furnished}&price=${price}&payment=${payment}`;
+        window.location.href = redirectUrl;
+      }).catch(err => {
+        alert("Failed to save booking. Please try again.");
+        console.error(err);
+      });
     }
   </script>
 </body>
