@@ -10,7 +10,7 @@
 <body>
   <div class="container mt-5">
     <h2 class="mb-4">Book a Deep Cleaning Service</h2>
-    <form id="bookingForm" onsubmit="handleBooking(event)">
+    <form id="bookingForm">
       <div class="mb-3">
         <label for="name" class="form-label">Name</label>
         <input type="text" class="form-control" id="name" name="name" required>
@@ -44,8 +44,6 @@
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec";
-
     const pricing = {
       "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
       "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
@@ -55,31 +53,34 @@
       "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
     };
 
-    function handleBooking(event) {
-      event.preventDefault();
+    const form = document.getElementById("bookingForm");
 
-      const form = document.getElementById("bookingForm");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
 
-      const name = form.name.value.trim();
-      const phone = form.phone.value.trim();
-      const bhk = form.bhk.value;
-      const furnished = form.furnished.value;
-      const price = pricing[bhk]?.[furnished] || 0;
-      const payment = "Pay After Work";
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
 
-      fetch(scriptURL, {
+      // Calculate price and add to data
+      const price = pricing[data.bhk]?.[data.furnished] || 0;
+      data.price = price;
+      data.payment = "Pay After Work";
+
+      // 1. Send to Google Sheets
+      fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
         method: "POST",
-        body: new URLSearchParams({
-          name, phone, bhk, furnished, price, payment
-        })
-      }).then(() => {
-        const redirectUrl = `thankyou.html?name=${encodeURIComponent(name)}&phone=${encodeURIComponent(phone)}&bhk=${bhk}&furnished=${furnished}&price=${price}&payment=${payment}`;
-        window.location.href = redirectUrl;
-      }).catch(err => {
-        alert("Failed to save booking. Please try again.");
-        console.error(err);
+        body: new URLSearchParams(data),
+      })
+      .then((res) => {
+        // 2. Redirect to thankyou.html with form data as URL params
+        const queryParams = new URLSearchParams(data).toString();
+        window.location.href = `thankyou.html?${queryParams}`;
+      })
+      .catch((err) => {
+        alert("Something went wrong. Please try again.");
+        console.error("Error submitting form", err);
       });
-    }
+    });
   </script>
 </body>
 </html>
