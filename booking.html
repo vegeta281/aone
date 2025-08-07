@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book Service - Sachin Deep Cleaning</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">Book a Cleaning Service</h2>
+    <form id="bookingForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" required />
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="tel" class="form-control" id="phone" required />
+      </div>
+      <div class="mb-3">
+        <label for="service" class="form-label">Select BHK Type</label>
+        <select id="service" class="form-select" required>
+          <option value="">-- Select --</option>
+          <option value="1RK">1RK</option>
+          <option value="1BHK">1BHK</option>
+          <option value="2BHK">2BHK</option>
+          <option value="3BHK">3BHK</option>
+          <option value="4BHK">4BHK</option>
+          <option value="5BHK">5BHK</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Furnishing</label><br />
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="furnish" value="Furnished" required />
+          <label class="form-check-label">Furnished</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="furnish" value="Non-Furnished" required />
+          <label class="form-check-label">Non-Furnished</label>
+        </div>
+      </div>
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Pay & Confirm Booking</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const pricing = {
+      "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+      "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+      "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+      "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+      "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+      "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+    };
+
+    const form = document.getElementById("bookingForm");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const service = document.getElementById("service").value;
+      const furnish = [...document.querySelectorAll("input[name='furnish']")].find(r => r.checked)?.value;
+
+      if (!name || !phone || !service || !furnish) {
+        alert("Please fill in all fields.");
+        return;
+      }
+
+      const amount = pricing[service][furnish];
+      const upiId = "7042721405@ptyes";
+      const upiLink = `upi://pay?pa=${upiId}&pn=punam rai&tn=Deep Cleaning - ${service} (${furnish})&am=${amount}&cu=INR`;
+
+      window.open(upiLink, "_blank");
+
+      const confirmationURL = `thankyou.html?name=${encodeURIComponent(name)}&service=${service}&furnish=${furnish}&amount=${amount}`;
+      window.location.href = confirmationURL;
+    });
+  </script>
+</body>
+</html>
