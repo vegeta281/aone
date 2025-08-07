@@ -119,7 +119,78 @@
       <h2>Book a Cleaning Service</h2>
       <p>Fill out the form below to schedule a cleaning</p>
     </div>
-   <script>
+    <form id="bookingForm" class="row g-3">
+      <div class="col-md-6">
+        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+      </div>
+      <div class="col-md-6">
+        <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
+      </div>
+      <div class="col-md-6">
+        <select name="bhk" class="form-select" required>
+          <option value="" disabled selected>Select BHK Type</option>
+          <option value="1RK">1RK</option>
+          <option value="1BHK">1BHK</option>
+          <option value="2BHK">2BHK</option>
+          <option value="3BHK">3BHK</option>
+          <option value="4BHK">4BHK</option>
+          <option value="5BHK">5BHK</option>
+        </select>
+      </div>
+      <div class="col-md-6">
+        <select name="furnished" class="form-select" required>
+          <option value="" disabled selected>Furnishing</option>
+          <option value="Furnished">Furnished</option>
+          <option value="Non-Furnished">Non-Furnished</option>
+        </select>
+      </div>
+      <div class="col-md-12">
+        <label>Add-on Services:</label><br>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500" id="addon1">
+          <label class="form-check-label" for="addon1">Carpet Cleaning (+₹500)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300" id="addon2">
+          <label class="form-check-label" for="addon2">Fridge Cleaning (+₹300)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400" id="addon3">
+          <label class="form-check-label" for="addon3">Balcony Cleaning (+₹400)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="800" id="addon4">
+          <label class="form-check-label" for="addon4">Pest Control (+₹800)</label>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <p class="fw-bold">Estimated Price: ₹<span id="estimatedPrice">0</span></p>
+      </div>
+      <input type="hidden" name="price">
+      <input type="hidden" name="payment" value="Pay After Work">
+      <input type="hidden" name="addons">
+      <div class="col-12 text-center">
+        <button type="submit" class="btn btn-primary">Submit Booking</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
+ </div>
+</footer>
+
+<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
+  <i class="fas fa-phone-alt"></i>
+</a>
+<a href="https://wa.me/919267905943" class="floating-button whatsapp-button" title="Chat on WhatsApp" target="_blank">
+  <i class="fab fa-whatsapp"></i>
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
 const pricing = {
   "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
   "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
@@ -146,68 +217,18 @@ function calculateTotal() {
   document.querySelector('[name="addons"]').value = addons.join(", ");
 }
 
-// Watch for changes
 document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
 document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
 document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
 
-document.getElementById("bookingForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const form = e.target;
-  const data = new FormData(form);
-
-  fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
-    method: "POST",
-    body: new URLSearchParams(data)
-  })
-  .then(() => {
-    window.location.href = "thankyou.html?" + new URLSearchParams(data).toString();
-  })
-  .catch((err) => {
-    alert("Something went wrong. Please try again.");
-    console.error("Error submitting form", err);
-  });
-});
-</script>
- </div>
-</section>
-
-<footer>
-  <div class="container">
-    <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
- </div>
-</footer>
-
-<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
-  <i class="fas fa-phone-alt"></i>
-</a>
-<a href="https://wa.me/919267905943" class="floating-button whatsapp-button" title="Chat on WhatsApp" target="_blank">
-  <i class="fab fa-whatsapp"></i>
-</a>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const pricing = {
-    "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
-    "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
-    "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
-    "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
-    "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
-    "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
-  };
+// Form submission
 
   document.getElementById("bookingForm").addEventListener("submit", function(e) {
     e.preventDefault();
+    calculateTotal();
 
     const form = e.target;
     const data = new FormData(form);
-    const bhk = data.get("bhk");
-    const furnished = data.get("furnished");
-    const price = pricing[bhk]?.[furnished] || 0;
-
-    data.set("price", price);
-    data.set("payment", "Pay After Work");
 
     fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
       method: "POST",
@@ -231,6 +252,6 @@ document.getElementById("bookingForm").addEventListener("submit", function(e) {
     });
   }
 </script>
-
 </body>
 </html>
+
