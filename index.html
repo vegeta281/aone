@@ -1,3 +1,4 @@
+<!-- Updated HTML: Sachin Deep Cleaning with Add-ons and Dynamic Pricing -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,19 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sachin Deep Cleaning</title>
 
-  <!-- PWA Meta Tags -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#007bff" />
-
-  <!-- Apple Touch Icons -->
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
-  <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-180x180.png">
-  <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-180x180.png">
-
-  <!-- Styles & Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
     body { font-family: Arial, sans-serif; }
     .hero {
@@ -30,7 +23,6 @@
     .services .card { transition: 0.3s ease; }
     .services .card:hover { transform: scale(1.05); }
     footer { background: #222; color: #aaa; padding: 20px 0; text-align: center; }
-
     .floating-button {
       position: fixed;
       bottom: 20px;
@@ -81,35 +73,7 @@
     <div class="text-center mb-4">
       <h2>Our Services</h2>
     </div>
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card h-100">
-          <img src="https://aonedeepcleaning.in/assets/img/kitchen-cleaning.jpg" class="card-img-top" alt="Kitchen Cleaning">
-          <div class="card-body">
-            <h5 class="card-title">Kitchen Cleaning</h5>
-            <p class="card-text">Deep cleaning of kitchen counters, cabinets, and appliances.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <img src="https://aonedeepcleaning.in/assets/img/sofa-cleaning.jpg" class="card-img-top" alt="Sofa Cleaning">
-          <div class="card-body">
-            <h5 class="card-title">Sofa Cleaning</h5>
-            <p class="card-text">Professional cleaning of fabric and leather sofas with safe chemicals.</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card h-100">
-          <img src="https://aonedeepcleaning.in/assets/img/bathroom-cleaning.jpg" class="card-img-top" alt="Bathroom Cleaning">
-          <div class="card-body">
-            <h5 class="card-title">Bathroom Cleaning</h5>
-            <p class="card-text">Sanitization and scrubbing of tiles, fixtures, and glass partitions.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Add service cards here if needed -->
   </div>
 </section>
 
@@ -144,31 +108,37 @@
           <option value="Non-Furnished">Non-Furnished</option>
         </select>
       </div>
-      <div class="col-md-12">
-        <label>Add-on Services:</label><br>
-        <div class="form-check">
-          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500" id="addon1">
-          <label class="form-check-label" for="addon1">Carpet Cleaning (+₹500)</label>
+
+      <!-- Add-ons -->
+      <div class="col-12">
+        <label class="form-label">Add-on Services (optional)</label><br>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500">
+          <label class="form-check-label">Carpet Cleaning (+₹500)</label>
         </div>
-        <div class="form-check">
-          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300" id="addon2">
-          <label class="form-check-label" for="addon2">Fridge Cleaning (+₹300)</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300">
+          <label class="form-check-label">Fridge Cleaning (+₹300)</label>
         </div>
-        <div class="form-check">
-          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400" id="addon3">
-          <label class="form-check-label" for="addon3">Balcony Cleaning (+₹400)</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400">
+          <label class="form-check-label">Balcony Cleaning (+₹400)</label>
         </div>
-        <div class="form-check">
-          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="800" id="addon4">
-          <label class="form-check-label" for="addon4">Pest Control (+₹800)</label>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="600">
+          <label class="form-check-label">Pest Control (+₹600)</label>
         </div>
       </div>
-      <div class="col-md-12">
-        <p class="fw-bold">Estimated Price: ₹<span id="estimatedPrice">0</span></p>
+
+      <!-- Display Price -->
+      <div class="col-12">
+        <h5>Estimated Price: ₹<span id="estimatedPrice">0</span></h5>
       </div>
+
       <input type="hidden" name="price">
-      <input type="hidden" name="payment" value="Pay After Work">
       <input type="hidden" name="addons">
+      <input type="hidden" name="payment" value="Pay After Work">
+
       <div class="col-12 text-center">
         <button type="submit" class="btn btn-primary">Submit Booking</button>
       </div>
@@ -179,7 +149,7 @@
 <footer>
   <div class="container">
     <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
- </div>
+  </div>
 </footer>
 
 <a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
@@ -191,46 +161,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-const pricing = {
-  "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
-  "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
-  "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
-  "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
-  "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
-  "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
-};
+  const pricing = {
+    "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+    "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+    "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+    "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+    "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+    "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+  };
 
-function calculateTotal() {
-  const bhk = document.querySelector('[name="bhk"]').value;
-  const furnished = document.querySelector('[name="furnished"]').value;
+  function calculateTotal() {
+    const bhk = document.querySelector('[name="bhk"]').value;
+    const furnished = document.querySelector('[name="furnished"]').value;
 
-  let total = pricing[bhk]?.[furnished] || 0;
-  const addons = [];
+    let total = pricing[bhk]?.[furnished] || 0;
+    const addons = [];
 
-  document.querySelectorAll('.addon:checked').forEach(addon => {
-    total += parseInt(addon.dataset.price);
-    addons.push(addon.value);
-  });
+    document.querySelectorAll('.addon:checked').forEach(addon => {
+      total += parseInt(addon.dataset.price);
+      addons.push(addon.value);
+    });
 
-  document.getElementById("estimatedPrice").innerText = total;
-  document.querySelector('[name="price"]').value = total;
-  document.querySelector('[name="addons"]').value = addons.join(", ");
-}
+    document.getElementById("estimatedPrice").innerText = total;
+    document.querySelector('[name="price"]').value = total;
+    document.querySelector('[name="addons"]').value = addons.join(", ");
+  }
 
-document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
-document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
-document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
-
-// Form submission
+  document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
+  document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
+  document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
 
   document.getElementById("bookingForm").addEventListener("submit", function(e) {
     e.preventDefault();
-    calculateTotal();
-
     const form = e.target;
     const data = new FormData(form);
 
-    fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
+    fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
       method: "POST",
       body: new URLSearchParams(data)
     })
@@ -254,4 +220,3 @@ document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", 
 </script>
 </body>
 </html>
-
