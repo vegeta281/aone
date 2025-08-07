@@ -1,4 +1,3 @@
-<!-- Updated HTML: Sachin Deep Cleaning with OneSignal Push Notification Integration -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +22,7 @@
         notifyButton: {
           enable: true,
           offset: {
-            bottom: '20px', // Bell 20px from bottom
+            bottom: '20px',
             right: '20px'
           }
         },
@@ -60,7 +59,23 @@
       text-decoration: none;
     }
     .call-button { left: 20px; background-color: #007bff; }
-    .whatsapp-button { right: 20px; bottom: 110px; background-color: #25d366; } /* moved up */
+    .whatsapp-button { right: 20px; bottom: 110px; background-color: #25d366; }
+
+    /* Spinner Styling */
+    #spinner {
+      display: none;
+      margin: 20px auto;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -94,7 +109,6 @@
     <div class="text-center mb-4">
       <h2>Our Services</h2>
     </div>
-    <!-- Add service cards here if needed -->
   </div>
 </section>
 
@@ -164,6 +178,9 @@
         <button type="submit" class="btn btn-primary">Submit Booking</button>
       </div>
     </form>
+
+    <!-- Spinner element -->
+    <div id="spinner"></div>
   </div>
 </section>
 
@@ -209,7 +226,6 @@
     document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
   }
 
-  // Call on load to set correct price if reload or default
   window.addEventListener('DOMContentLoaded', calculateTotal);
 
   document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
@@ -219,6 +235,11 @@
   document.getElementById("bookingForm").addEventListener("submit", function(e) {
     e.preventDefault();
     const form = e.target;
+
+    // Show spinner and hide form
+    document.getElementById("spinner").style.display = "block";
+    form.style.display = "none";
+
     const data = new FormData(form);
 
     fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
@@ -231,9 +252,12 @@
     .catch((err) => {
       alert("Something went wrong. Please try again.");
       console.error("Error submitting form", err);
+      form.style.display = "block";
+      document.getElementById("spinner").style.display = "none";
     });
   });
 </script>
+
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
