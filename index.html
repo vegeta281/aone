@@ -1,4 +1,4 @@
-<!-- Updated HTML: Sachin Deep Cleaning with Add-ons and Dynamic Pricing -->
+<!-- Updated HTML: Sachin Deep Cleaning with Add-ons and Dynamic Pricing (Add-on Details Included) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,17 +175,21 @@
     const furnished = document.querySelector('[name="furnished"]').value;
 
     let total = pricing[bhk]?.[furnished] || 0;
-    const addons = [];
+    const addonsDetails = [];
 
     document.querySelectorAll('.addon:checked').forEach(addon => {
-      total += parseInt(addon.dataset.price);
-      addons.push(addon.value);
+      const price = parseInt(addon.dataset.price);
+      total += price;
+      addonsDetails.push(`${addon.value}: ₹${price}`);
     });
 
     document.getElementById("estimatedPrice").innerText = total;
     document.querySelector('[name="price"]').value = total;
-    document.querySelector('[name="addons"]').value = addons.join(", ");
+    document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
   }
+
+  // Call on load to set correct price if reload or default
+  window.addEventListener('DOMContentLoaded', calculateTotal);
 
   document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
   document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
