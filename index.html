@@ -609,9 +609,16 @@ installBtn.addEventListener('click', async () => {
 });
 </script>
 <script>
-document.getElementById("notifyBtn").addEventListener("click", function() {
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.showSlidedownPrompt();
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  // Wait until OneSignal is ready before binding the click
+  document.getElementById("notifyBtn").addEventListener("click", async () => {
+    console.log("Notification button clicked");
+    try {
+      await OneSignal.showSlidedownPrompt();
+    } catch (err) {
+      console.error("Error showing prompt:", err);
+    }
   });
 });
 </script>
