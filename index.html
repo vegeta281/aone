@@ -270,338 +270,322 @@
 <!-- Bootstrap bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Three.js + extras from CDN -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+<!-- NOTE:
+  We DO NOT include the older three.min.js build or examples/js files.
+  Instead we use ES Modules in the module script below to avoid "OrbitControls is not a constructor".
+-->
 
-<script>
-/* -----------------------
-   Realistic mist particle system + GLB loader
-   - Make sure spray-bottle.glb is in same folder as index.html
-   - If performance is slow on phones, reduce MAX_PARTICLES
-   ------------------------*/
-(function () {
-  const canvas = document.getElementById('sprayModelCanvas');
-  // Renderer
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(window.devicePixelRatio || 1);
+<!-- Modern Three.js + GLTF + OrbitControls as ES module -->
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
 
-  // create scene & camera
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x071018);
+  (function () {
+    const canvas = document.getElementById('sprayModelCanvas');
 
-  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-  camera.position.set(0, 1.2, 2.6);
-
-  // Resize helper
-  function resizeRendererToDisplaySize() {
-    const parent = canvas.parentElement;
-    const width = parent.clientWidth;
-    const height = parent.clientHeight;
-    if (canvas.width !== width || canvas.height !== height) {
-      renderer.setSize(width, height, false);
-      camera.aspect = width / height;
-      camera.updateProjectionMatrix();
+    // If canvas does not exist (older copy paste), create a canvas and append to wrapper
+    if (!canvas) {
+      const wrapper = document.querySelector('.service-3d');
+      const c = document.createElement('canvas');
+      c.id = 'sprayModelCanvas';
+      c.setAttribute('aria-label','3D spray bottle viewer');
+      c.style.width = '100%';
+      c.style.height = '100%';
+      wrapper.insertBefore(c, wrapper.firstChild);
     }
-  }
 
-  // Lights
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x111122, 0.9);
-  scene.add(hemi);
-  const dir = new THREE.DirectionalLight(0xffffff, 0.9);
-  dir.position.set(3, 4, 2);
-  scene.add(dir);
+    const cv = document.getElementById('sprayModelCanvas');
 
-  // Ground plane
-  const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
-    new THREE.MeshStandardMaterial({ color: 0x061018, roughness: 0.95 })
-  );
-  ground.rotation.x = -Math.PI / 2;
-  ground.position.y = -1.2;
-  scene.add(ground);
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
+    renderer.setPixelRatio(window.devicePixelRatio || 1);
 
-  // Controls
-  const controls = new THREE.OrbitControls(camera, renderer.domElement);
-  controls.enableDamping = true;
-  controls.dampingFactor = 0.12;
-  controls.minDistance = 1;
-  controls.maxDistance = 6;
-  controls.target.set(0, 0.8, 0);
+    // Scene & Camera
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x071018);
 
-  // container for model
-  const modelGroup = new THREE.Group();
-  scene.add(modelGroup);
+    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+    camera.position.set(0, 1.2, 2.6);
 
-  // Particle texture (soft round) generated on the fly
-  function makeParticleTexture() {
-    const size = 64;
-    const tx = document.createElement('canvas');
-    tx.width = tx.height = size;
-    const ctx = tx.getContext('2d');
-    const g = ctx.createRadialGradient(size/2, size/2, 2, size/2, size/2, size/2);
-    g.addColorStop(0, 'rgba(255,255,255,1)');
-    g.addColorStop(0.2, 'rgba(255,255,255,0.9)');
-    g.addColorStop(0.55, 'rgba(180,200,255,0.35)');
-    g.addColorStop(1, 'rgba(180,200,255,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0,0,size,size);
-    const t = new THREE.CanvasTexture(tx);
-    t.minFilter = THREE.LinearFilter;
-    t.needsUpdate = true;
-    return t;
-  }
-  const particleTexture = makeParticleTexture();
-
-  // Particle pool + geometry
-  const MAX_PARTICLES = 500; // reduce if slow on mobile
-  const particles = new Float32Array(MAX_PARTICLES * 3);
-  const velocities = new Float32Array(MAX_PARTICLES * 3);
-  const ages = new Float32Array(MAX_PARTICLES);
-  const lifetimes = new Float32Array(MAX_PARTICLES);
-  const opacities = new Float32Array(MAX_PARTICLES);
-  let particleCount = 0;
-
-  const particleGeom = new THREE.BufferGeometry();
-  particleGeom.setAttribute('position', new THREE.BufferAttribute(particles, 3));
-  particleGeom.setAttribute('aOpacity', new THREE.BufferAttribute(opacities, 1));
-  particleGeom.setDrawRange(0, 0);
-
-  const particleMat = new THREE.PointsMaterial({
-    size: 0.06,
-    map: particleTexture,
-    transparent: true,
-    depthWrite: false,
-    blending: THREE.AdditiveBlending,
-    sizeAttenuation: true,
-    opacity: 1
-  });
-
-  const particlePoints = new THREE.Points(particleGeom, particleMat);
-  particlePoints.frustumCulled = false;
-  scene.add(particlePoints);
-
-  // Helper to spawn N particles in a cone
-  function emitMist(origin, direction, amount = 60) {
-    // direction should be normalized
-    for (let i = 0; i < amount; i++) {
-      if (particleCount >= MAX_PARTICLES) {
-        // recycle oldest
-        let oldest = 0;
-        let maxAge = -1;
-        for (let j = 0; j < MAX_PARTICLES; j++) {
-          if (ages[j] > maxAge) { maxAge = ages[j]; oldest = j; }
-        }
-        spawnAt(oldest, origin, direction);
-      } else {
-        spawnAt(particleCount, origin, direction);
-        particleCount++;
+    // Resize helper
+    function resizeRendererToDisplaySize() {
+      const parent = cv.parentElement;
+      const width = parent.clientWidth;
+      const height = parent.clientHeight;
+      if (cv.width !== width || cv.height !== height) {
+        renderer.setSize(width, height, false);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
       }
     }
-    particleGeom.setDrawRange(0, particleCount);
-  }
 
-  function spawnAt(i, origin, direction) {
-    // spread cone
-    const spread = 0.28; // cone spread
-    // random spherical jitter
-    const jitter = new THREE.Vector3(
-      (Math.random() - 0.5) * spread,
-      (Math.random() - 0.1) * spread,
-      (Math.random() - 0.5) * spread
+    // Lights
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x111122, 0.9);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
+    dir.position.set(3, 4, 2);
+    scene.add(dir);
+
+    // Ground plane
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(20, 20),
+      new THREE.MeshStandardMaterial({ color: 0x061018, roughness: 0.95 })
     );
-    const dir = new THREE.Vector3().copy(direction).add(jitter).normalize();
-    const speed = 1.2 + Math.random() * 0.8; // spray speed
-    velocities[i*3+0] = dir.x * speed;
-    velocities[i*3+1] = dir.y * speed + (Math.random()*0.2);
-    velocities[i*3+2] = dir.z * speed;
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -1.2;
+    scene.add(ground);
 
-    // starting position slightly forward of origin
-    const start = origin.clone().add(dir.clone().multiplyScalar(0.08)).add(new THREE.Vector3(
-      (Math.random()-0.5)*0.02, (Math.random()-0.3)*0.02, (Math.random()-0.5)*0.02
-    ));
-    particles[i*3+0] = start.x;
-    particles[i*3+1] = start.y;
-    particles[i*3+2] = start.z;
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.12;
+    controls.minDistance = 1;
+    controls.maxDistance = 6;
+    controls.target.set(0, 0.8, 0);
 
-    ages[i] = 0;
-    lifetimes[i] = 800 + Math.random() * 900; // ms
-    opacities[i] = 1;
-  }
+    // container for model
+    const modelGroup = new THREE.Group();
+    scene.add(modelGroup);
 
-  // Update particles each frame
-  function updateParticles(dt) {
-    const gravity = -0.0012;
-    for (let i = 0; i < particleCount; i++) {
-      ages[i] += dt;
-      const life = lifetimes[i];
-      if (ages[i] >= life) {
-        // swap with last alive to shrink pool visually
-        const last = particleCount - 1;
-        if (i !== last) {
-          particles[i*3+0] = particles[last*3+0];
-          particles[i*3+1] = particles[last*3+1];
-          particles[i*3+2] = particles[last*3+2];
-          velocities[i*3+0] = velocities[last*3+0];
-          velocities[i*3+1] = velocities[last*3+1];
-          velocities[i*3+2] = velocities[last*3+2];
-          ages[i] = ages[last];
-          lifetimes[i] = lifetimes[last];
-          opacities[i] = opacities[last];
-        }
-        particleCount--;
-        particleGeom.setDrawRange(0, particleCount);
-        i--; // re-evaluate swapped index
-        continue;
-      }
-      // integrate
-      velocities[i*3+1] += gravity * (dt); // gravity scaled by dt
-      particles[i*3+0] += velocities[i*3+0] * dt * 0.001;
-      particles[i*3+1] += velocities[i*3+1] * dt * 0.001;
-      particles[i*3+2] += velocities[i*3+2] * dt * 0.001;
-
-      // fade opacity using ease-out
-      const t = ages[i] / lifetimes[i];
-      opacities[i] = Math.max(0, 1 - (t * t * 1.2)); // faster fade near end
+    // Particle texture (soft round) generated on the fly
+    function makeParticleTexture() {
+      const size = 64;
+      const tx = document.createElement('canvas');
+      tx.width = tx.height = size;
+      const ctx = tx.getContext('2d');
+      const g = ctx.createRadialGradient(size/2, size/2, 2, size/2, size/2, size/2);
+      g.addColorStop(0, 'rgba(255,255,255,1)');
+      g.addColorStop(0.2, 'rgba(255,255,255,0.9)');
+      g.addColorStop(0.55, 'rgba(180,200,255,0.35)');
+      g.addColorStop(1, 'rgba(180,200,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0,0,size,size);
+      const t = new THREE.CanvasTexture(tx);
+      t.minFilter = THREE.LinearFilter;
+      t.needsUpdate = true;
+      return t;
     }
-    // update buffers
-    particleGeom.attributes.position.needsUpdate = true;
-    particleGeom.attributes.aOpacity.needsUpdate = true;
-    // update per-point opacity via material alpha (we use single material -> global opacity),
-    // but to get per-point alpha we could use custom shader. For simplicity we set material.opacity to 1
-    // and rely on color/size/fading to create realistic effect.
-    // To simulate per-particle alpha with PointsMaterial we adjust vertex colors; but leaving simple here.
-    // We'll apply slight global fade if many particles
-    particleMat.opacity = 0.95;
-  }
+    const particleTexture = makeParticleTexture();
 
-  // Load model
-  const loader = new THREE.GLTFLoader();
-  let bottle = null;
-  let nozzleWorld = new THREE.Vector3(0, 1.0, 0); // fallback
-  loader.load('spray-bottle.glb',
-    (gltf) => {
-      bottle = gltf.scene;
-      // standardize scale & rotation if needed
-      bottle.traverse((c) => {
-        if (c.isMesh) {
-          c.castShadow = true;
-          c.receiveShadow = true;
-          // avoid modifying user's material too much
+    // Particle pool + geometry
+    const MAX_PARTICLES = 500; // reduce if slow on mobile
+    const particles = new Float32Array(MAX_PARTICLES * 3);
+    const velocities = new Float32Array(MAX_PARTICLES * 3);
+    const ages = new Float32Array(MAX_PARTICLES);
+    const lifetimes = new Float32Array(MAX_PARTICLES);
+    const opacities = new Float32Array(MAX_PARTICLES);
+    let particleCount = 0;
+
+    const particleGeom = new THREE.BufferGeometry();
+    particleGeom.setAttribute('position', new THREE.BufferAttribute(particles, 3));
+    particleGeom.setAttribute('aOpacity', new THREE.BufferAttribute(opacities, 1));
+    particleGeom.setDrawRange(0, 0);
+
+    const particleMat = new THREE.PointsMaterial({
+      size: 0.06,
+      map: particleTexture,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+      opacity: 1
+    });
+
+    const particlePoints = new THREE.Points(particleGeom, particleMat);
+    particlePoints.frustumCulled = false;
+    scene.add(particlePoints);
+
+    // Helper to spawn N particles in a cone
+    function emitMist(origin, direction, amount = 60) {
+      for (let i = 0; i < amount; i++) {
+        if (particleCount >= MAX_PARTICLES) {
+          // recycle oldest
+          let oldest = 0;
+          let maxAge = -1;
+          for (let j = 0; j < MAX_PARTICLES; j++) {
+            if (ages[j] > maxAge) { maxAge = ages[j]; oldest = j; }
+          }
+          spawnAt(oldest, origin, direction);
+        } else {
+          spawnAt(particleCount, origin, direction);
+          particleCount++;
         }
-      });
-      bottle.scale.set(1.1, 1.1, 1.1);
-      // position to ground nicely
-      bottle.position.set(0, -0.25, 0);
-      modelGroup.add(bottle);
+      }
+      particleGeom.setDrawRange(0, particleCount);
+    }
 
-      // Attempt to detect a nozzle point:
-      // We compute bounding box and pick a front-top point as nozzle approximation.
-      const box = new THREE.Box3().setFromObject(bottle);
-      const size = new THREE.Vector3();
-      box.getSize(size);
-      const center = new THREE.Vector3();
-      box.getCenter(center);
-      // approximate nozzle: slightly in front (z - size.z/2) and near top (y + size.y/2 * 0.6)
-      nozzleWorld.set(center.x, center.y + size.y * 0.18, center.z - size.z * 0.45);
-      bottle.updateWorldMatrix(true, true);
-      bottle.localToWorld(nozzleWorld);
-    },
-    undefined,
-    (err) => {
-      console.error('GLB load error:', err);
-      // fallback: create a simple bottle-like mesh
-      const fallback = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.18, 0.18, 0.7, 12),
-        new THREE.MeshStandardMaterial({ color: 0x88c0ff, roughness: 0.45, metalness: 0.1 })
+    function spawnAt(i, origin, direction) {
+      const spread = 0.28;
+      const jitter = new THREE.Vector3(
+        (Math.random() - 0.5) * spread,
+        (Math.random() - 0.1) * spread,
+        (Math.random() - 0.5) * spread
       );
-      fallback.position.set(0, 0.1, 0);
-      modelGroup.add(fallback);
-      // set nozzle above
-      nozzleWorld.set(0, 0.4, -0.15);
+      const dir = new THREE.Vector3().copy(direction).add(jitter).normalize();
+      const speed = 1.2 + Math.random() * 0.8;
+      velocities[i*3+0] = dir.x * speed;
+      velocities[i*3+1] = dir.y * speed + (Math.random()*0.2);
+      velocities[i*3+2] = dir.z * speed;
+
+      const start = origin.clone().add(dir.clone().multiplyScalar(0.08)).add(new THREE.Vector3(
+        (Math.random()-0.5)*0.02, (Math.random()-0.3)*0.02, (Math.random()-0.5)*0.02
+      ));
+      particles[i*3+0] = start.x;
+      particles[i*3+1] = start.y;
+      particles[i*3+2] = start.z;
+
+      ages[i] = 0;
+      lifetimes[i] = 800 + Math.random() * 900;
+      opacities[i] = 1;
     }
-  );
 
-  // raycaster for click-to-spray detection
-  const raycaster = new THREE.Raycaster();
-  const pointer = new THREE.Vector2();
+    function updateParticles(dt) {
+      const gravity = -0.0012;
+      for (let i = 0; i < particleCount; i++) {
+        ages[i] += dt;
+        const life = lifetimes[i];
+        if (ages[i] >= life) {
+          const last = particleCount - 1;
+          if (i !== last) {
+            particles[i*3+0] = particles[last*3+0];
+            particles[i*3+1] = particles[last*3+1];
+            particles[i*3+2] = particles[last*3+2];
+            velocities[i*3+0] = velocities[last*3+0];
+            velocities[i*3+1] = velocities[last*3+1];
+            velocities[i*3+2] = velocities[last*3+2];
+            ages[i] = ages[last];
+            lifetimes[i] = lifetimes[last];
+            opacities[i] = opacities[last];
+          }
+          particleCount--;
+          particleGeom.setDrawRange(0, particleCount);
+          i--;
+          continue;
+        }
+        velocities[i*3+1] += gravity * (dt);
+        particles[i*3+0] += velocities[i*3+0] * dt * 0.001;
+        particles[i*3+1] += velocities[i*3+1] * dt * 0.001;
+        particles[i*3+2] += velocities[i*3+2] * dt * 0.001;
 
-  function getPointerWorld(x, y) {
-    const rect = canvas.getBoundingClientRect();
-    pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
-    pointer.y = - ((y - rect.top) / rect.height) * 2 + 1;
-    raycaster.setFromCamera(pointer, camera);
-    return raycaster.ray;
-  }
-
-  // On click: try to intersect bottle; if hit, use that point and normal as spray origin/direction.
-  canvas.addEventListener('pointerdown', (ev) => {
-    ev.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const x = ev.clientX;
-    const y = ev.clientY;
-    const r = getPointerWorld(x, y);
-    if (bottle) {
-      const intersects = raycaster.intersectObject(bottle, true);
-      if (intersects.length > 0) {
-        const hit = intersects[0];
-        // world-space origin slightly forward from hit point
-        const origin = hit.point.clone();
-        // approximate nozzle normal by face normal transformed to world
-        const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
-        const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
-        const dir = worldNormal.clone().multiplyScalar(-1).normalize(); // spray away from nozzle
-        emitMist(origin, dir, 120); // stronger burst for realistic mist
-        return;
+        const t = ages[i] / lifetimes[i];
+        opacities[i] = Math.max(0, 1 - (t * t * 1.2));
       }
-    }
-    // fallback: use nozzleWorld & camera forward
-    const origin = nozzleWorld.clone();
-    const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
-    emitMist(origin, dir, 90);
-  });
-
-  // subtle idle rotation if user not dragging
-  let lastTime = performance.now();
-  let isUserInteracting = false;
-  canvas.addEventListener('pointerdown', () => isUserInteracting = true);
-  window.addEventListener('pointerup', () => { isUserInteracting = false; });
-
-  // animation loop
-  function animate() {
-    requestAnimationFrame(animate);
-    const now = performance.now();
-    const dt = now - lastTime;
-    lastTime = now;
-
-    // resize
-    resizeRendererToDisplaySize();
-
-    // idle rotation
-    if (!isUserInteracting) {
-      modelGroup.rotation.y += 0.0007 * dt;
+      particleGeom.attributes.position.needsUpdate = true;
+      particleGeom.attributes.aOpacity.needsUpdate = true;
+      particleMat.opacity = 0.95;
     }
 
-    // update particles
-    updateParticles(dt);
+    // Load model
+    const gltfLoader = new GLTFLoader();
+    let bottle = null;
+    let nozzleWorld = new THREE.Vector3(0, 1.0, 0); // fallback
+    gltfLoader.load('spray-bottle.glb',
+      (gltf) => {
+        bottle = gltf.scene;
+        bottle.traverse((c) => {
+          if (c.isMesh) {
+            c.castShadow = true;
+            c.receiveShadow = true;
+          }
+        });
+        bottle.scale.set(1.1, 1.1, 1.1);
+        bottle.position.set(0, -0.25, 0);
+        modelGroup.add(bottle);
 
-    controls.update();
-    renderer.render(scene, camera);
-  }
-  animate();
+        const box = new THREE.Box3().setFromObject(bottle);
+        const size = new THREE.Vector3();
+        box.getSize(size);
+        const center = new THREE.Vector3();
+        box.getCenter(center);
+        nozzleWorld.set(center.x, center.y + size.y * 0.18, center.z - size.z * 0.45);
+        bottle.updateWorldMatrix(true, true);
+        bottle.localToWorld(nozzleWorld);
+      },
+      undefined,
+      (err) => {
+        console.error('GLB load error:', err);
+        const fallback = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.18, 0.18, 0.7, 12),
+          new THREE.MeshStandardMaterial({ color: 0x88c0ff, roughness: 0.45, metalness: 0.1 })
+        );
+        fallback.position.set(0, 0.1, 0);
+        modelGroup.add(fallback);
+        nozzleWorld.set(0, 0.4, -0.15);
+      }
+    );
 
-  // initial resize
-  setTimeout(resizeRendererToDisplaySize, 100);
-  window.addEventListener('resize', resizeRendererToDisplaySize);
+    // Raycaster
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
 
-  // expose __spray for debugging or UI buttons
-  window.__spray = function () {
-    const origin = nozzleWorld.clone();
-    const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
-    emitMist(origin, dir, 100);
-  };
-})();
+    function getPointerWorld(x, y) {
+      const rect = cv.getBoundingClientRect();
+      pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
+      pointer.y = - ((y - rect.top) / rect.height) * 2 + 1;
+      raycaster.setFromCamera(pointer, camera);
+      return raycaster.ray;
+    }
+
+    // Click to spray
+    cv.addEventListener('pointerdown', (ev) => {
+      ev.preventDefault();
+      const x = ev.clientX;
+      const y = ev.clientY;
+      getPointerWorld(x, y);
+      if (bottle) {
+        const intersects = raycaster.intersectObject(bottle, true);
+        if (intersects.length > 0) {
+          const hit = intersects[0];
+          const origin = hit.point.clone();
+          const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
+          const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
+          const dir = worldNormal.clone().multiplyScalar(-1).normalize();
+          emitMist(origin, dir, 120);
+          return;
+        }
+      }
+      const origin = nozzleWorld.clone();
+      const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
+      emitMist(origin, dir, 90);
+    });
+
+    // Idle rotation detection
+    let last = performance.now();
+    let isUserInteracting = false;
+    cv.addEventListener('pointerdown', () => isUserInteracting = true);
+    window.addEventListener('pointerup', () => { isUserInteracting = false; });
+
+    // Animation loop
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      const dt = now - last;
+      last = now;
+
+      resizeRendererToDisplaySize();
+
+      if (!isUserInteracting) {
+        modelGroup.rotation.y += 0.0007 * dt;
+      }
+
+      updateParticles(dt);
+
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    setTimeout(resizeRendererToDisplaySize, 100);
+    window.addEventListener('resize', resizeRendererToDisplaySize);
+
+    // Expose helper
+    window.__spray = function () {
+      const origin = nozzleWorld.clone();
+      const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
+      emitMist(origin, dir, 100);
+    };
+  })();
 </script>
 
 <!-- Booking / form logic (kept from your original) -->
