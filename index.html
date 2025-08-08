@@ -1,271 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Professional Residential & Commercial Cleaning Services in Gurgaon. Book now for sparkling clean spaces.">
   <title>Sachin Deep Cleaning</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- OneSignal Push Notification Integration START -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
-        safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
-        notifyButton: {
-          enable: true,
-          offset: {
-            bottom: '20px',
-            right: '20px'
-          }
-        },
-      });
-    });
-  </script>
-  <!-- OneSignal Push Notification Integration END -->
-
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    body { font-family: Arial, sans-serif; }
+    /* Hero Section */
     .hero {
-      background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center;
+      position: relative;
+      background: url('images/3d-cleaning-illustration.png') no-repeat center center;
       background-size: cover;
-      color: white;
-      padding: 100px 0;
-      text-align: center;
-    }
-    .services .card { transition: 0.3s ease; }
-    .services .card:hover { transform: scale(1.05); }
-    footer { background: #222; color: #aaa; padding: 20px 0; text-align: center; }
-    .floating-button {
-      position: fixed;
-      bottom: 20px;
-      z-index: 1000;
-      width: 50px;
-      height: 50px;
-      color: white;
-      border-radius: 50%;
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      text-decoration: none;
+      color: white;
+      text-align: center;
     }
-    .call-button { left: 20px; background-color: #007bff; }
-    .whatsapp-button { right: 20px; bottom: 110px; background-color: #25d366; }
-
-    /* Spinner Styling */
-    #spinner {
-      display: none;
-      margin: 20px auto;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #007bff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
+    .hero .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.4);
     }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      padding: 20px;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      font-weight: bold;
+      line-height: 1.2;
+    }
+    .hero .highlight {
+      color: #ffd700;
+    }
+    .hero p {
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .btn-primary {
+      background-color: #0044ff;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 30px;
+      font-size: 1.1rem;
     }
   </style>
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="#">Sachin Deep Cleaning</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-      </ul>
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <h1><span class="highlight">Residential & Commercial</span><br>Cleaning Services</h1>
+      <p>Serving Gurgaon with Professional Cleaning Solutions</p>
+      <a href="#booking" class="btn btn-primary btn-lg mt-3">Book Now</a>
     </div>
-  </div>
-</nav>
+  </section>
 
-<section class="hero">
-  <div class="container">
-    <h1>Residential & Commercial Cleaning Services</h1>
-    <p>Serving Gurgaon with Professional Cleaning Solutions</p>
-    <a href="#booking" class="btn btn-primary mt-3">Book Now</a>
-  </div>
-</section>
-
-<section class="services py-5" id="services">
-  <div class="container">
-    <div class="text-center mb-4">
-      <h2>Our Services</h2>
+  <!-- Booking Section -->
+  <section id="booking" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4">Book Your Cleaning Service</h2>
+      <form action="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" method="POST" class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+        </div>
+        <div class="col-md-6">
+          <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
+        </div>
+        <div class="col-md-12">
+          <textarea name="address" class="form-control" placeholder="Your Address" rows="3" required></textarea>
+        </div>
+        <div class="col-md-6">
+          <select name="service" class="form-select" required>
+            <option value="">Select Service</option>
+            <option>Residential Cleaning</option>
+            <option>Commercial Cleaning</option>
+            <option>Deep Cleaning</option>
+            <option>Carpet Cleaning</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <input type="date" name="date" class="form-control" required>
+        </div>
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
+        </div>
+      </form>
     </div>
-  </div>
-</section>
+  </section>
 
-<section class="py-5 bg-light" id="booking">
-  <div class="container">
-    <div class="text-center mb-4">
-      <h2>Book a Cleaning Service</h2>
-      <p>Fill out the form below to schedule a cleaning</p>
-    </div>
-    <form id="bookingForm" class="row g-3">
-      <div class="col-md-6">
-        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-      </div>
-      <div class="col-md-6">
-        <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
-      </div>
-      <div class="col-md-6">
-        <select name="bhk" class="form-select" required>
-          <option value="" disabled selected>Select BHK Type</option>
-          <option value="1RK">1RK</option>
-          <option value="1BHK">1BHK</option>
-          <option value="2BHK">2BHK</option>
-          <option value="3BHK">3BHK</option>
-          <option value="4BHK">4BHK</option>
-          <option value="5BHK">5BHK</option>
-        </select>
-      </div>
-      <div class="col-md-6">
-        <select name="furnished" class="form-select" required>
-          <option value="" disabled selected>Furnishing</option>
-          <option value="Furnished">Furnished</option>
-          <option value="Non-Furnished">Non-Furnished</option>
-        </select>
-      </div>
-
-      <!-- Add-ons -->
-      <div class="col-12">
-        <label class="form-label">Add-on Services (optional)</label><br>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500">
-          <label class="form-check-label">Carpet Cleaning (+₹500)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300">
-          <label class="form-check-label">Fridge Cleaning (+₹300)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400">
-          <label class="form-check-label">Balcony Cleaning (+₹400)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="600">
-          <label class="form-check-label">Pest Control (+₹600)</label>
-        </div>
-      </div>
-
-      <!-- Display Price -->
-      <div class="col-12">
-        <h5>Estimated Price: ₹<span id="estimatedPrice">0</span></h5>
-      </div>
-
-      <input type="hidden" name="price">
-      <input type="hidden" name="addons">
-      <input type="hidden" name="payment" value="Pay After Work">
-
-      <div class="col-12 text-center">
-        <button type="submit" class="btn btn-primary">Submit Booking</button>
-      </div>
-    </form>
-
-    <!-- Spinner element -->
-    <div id="spinner"></div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
-  </div>
-</footer>
-
-<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
-  <i class="fas fa-phone-alt"></i>
-</a>
-<a href="https://wa.me/919267905943" class="floating-button whatsapp-button" title="Chat on WhatsApp" target="_blank">
-  <i class="fab fa-whatsapp"></i>
-</a>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  const pricing = {
-    "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
-    "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
-    "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
-    "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
-    "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
-    "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
-  };
-
-  function calculateTotal() {
-    const bhk = document.querySelector('[name="bhk"]').value;
-    const furnished = document.querySelector('[name="furnished"]').value;
-
-    let total = pricing[bhk]?.[furnished] || 0;
-    const addonsDetails = [];
-
-    document.querySelectorAll('.addon:checked').forEach(addon => {
-      const price = parseInt(addon.dataset.price);
-      total += price;
-      addonsDetails.push(${addon.value}: ₹${price});
-    });
-
-    document.getElementById("estimatedPrice").innerText = total;
-    document.querySelector('[name="price"]').value = total;
-    document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
-  }
-
-  window.addEventListener('DOMContentLoaded', calculateTotal);
-
-  document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
-  document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
-  document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
-
-  document.getElementById("bookingForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const form = e.target;
-
-    // Show spinner and hide form
-    document.getElementById("spinner").style.display = "block";
-    form.style.display = "none";
-
-    const data = new FormData(form);
-
-    fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
-      method: "POST",
-      body: new URLSearchParams(data)
-    })
-    .then(() => {
-      window.location.href = "thankyou.html?" + new URLSearchParams(data).toString();
-    })
-    .catch((err) => {
-      alert("Something went wrong. Please try again.");
-      console.error("Error submitting form", err);
-      form.style.display = "block";
-      document.getElementById("spinner").style.display = "none";
-    });
-  });
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log("✅ Service Worker registered", reg))
-        .catch(err => console.error("❌ Service Worker failed", err));
-    });
-  }
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
