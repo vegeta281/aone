@@ -1,663 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sachin Deep Cleaning</title>
-
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#007bff" />
-  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
-  <!-- OneSignal Push Notification Integration START -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
-        safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
-        notifyButton: {
-          enable: true,
-          offset: {
-            bottom: '20px',
-            right: '20px'
-          }
-        },
-      });
-    });
-  </script>
-  <!-- OneSignal Push Notification Integration END -->
-
   <style>
-    body { font-family: Arial, sans-serif; }
-    .hero {
-      background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center;
-      background-size: cover;
-      color: white;
-      padding: 100px 0;
-      text-align: center;
-    }
-    .services .card { transition: 0.3s ease; }
-    .services .card:hover { transform: scale(1.05); }
-    footer { background: #222; color: #aaa; padding: 20px 0; text-align: center; }
-    .floating-button {
-      position: fixed;
-      bottom: 20px;
-      z-index: 1000;
-      width: 50px;
-      height: 50px;
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      text-decoration: none;
-    }
-    .call-button { left: 20px; background-color: #007bff; }
-    .whatsapp-button { right: 20px; bottom: 110px; background-color: #25d366; }
-
-    /* Spinner Styling */
-    #spinner {
-      display: none;
-      margin: 20px auto;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #007bff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* 3D viewer styles (embedded into Our Services) */
-    .service-3d {
-      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
-      border-radius: 8px;
-      padding: 12px;
-      height: 520px;
-      position: relative;
-      overflow: hidden;
-    }
-    #sprayModelCanvas { width: 100%; height: 100%; display: block; }
-    .three-hint {
-      position: absolute;
-      right: 12px;
-      bottom: 12px;
-      z-index: 20;
-      background: rgba(0,0,0,0.45);
-      color: #dbe7ff;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 13px;
-      backdrop-filter: blur(4px);
-    }
-    /* small responsiveness */
-    @media (max-width: 992px) {
-      .service-3d { height: 360px; }
-      canvas { height: 360px !important; }
-    }
+    body { margin: 0; background: #111; color: white; font-family: Arial, sans-serif; }
+    canvas { display: block; }
+    header { padding: 15px; text-align: center; background: #007bff; }
+    h1 { margin: 0; }
+    .services { padding: 20px; background: #222; }
+    .services h2 { text-align: center; }
+    .service-list { display: flex; flex-wrap: wrap; justify-content: center; }
+    .service-item { background: #333; margin: 10px; padding: 15px; border-radius: 10px; width: 200px; text-align: center; }
+    .contact-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .contact-buttons a { background: #28a745; padding: 10px 15px; border-radius: 50px; color: white; text-decoration: none; text-align: center; }
+    .contact-buttons a.call { background: #007bff; }
+    form { padding: 20px; background: #222; }
+    input, textarea { width: 100%; padding: 8px; margin: 5px 0; border: none; border-radius: 5px; }
+    button { padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
+  <header>
+    <h1>Sachin Deep Cleaning</h1>
+  </header>
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
-  <div class="container">
-    <a class="navbar-brand" href="#">Sachin Deep Cleaning</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
-        <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-      </ul>
+  <!-- 3D Scene -->
+  <div id="scene-container" style="width:100%; height:400px;"></div>
+
+  <!-- Our Services -->
+  <section class="services">
+    <h2>Our Services</h2>
+    <div class="service-list">
+      <div class="service-item">Home Deep Cleaning</div>
+      <div class="service-item">Office Cleaning</div>
+      <div class="service-item">Carpet Cleaning</div>
+      <div class="service-item">Sofa Cleaning</div>
+      <div class="service-item">Floor Polishing</div>
     </div>
+  </section>
+
+  <!-- Contact Form -->
+  <form>
+    <h2>Book a Cleaning</h2>
+    <input type="text" placeholder="Your Name" required>
+    <input type="tel" placeholder="Phone Number" required>
+    <textarea placeholder="Your Message"></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <!-- Call & WhatsApp Buttons -->
+  <div class="contact-buttons">
+    <a href="tel:+919876543210" class="call">📞 Call Us</a>
+    <a href="https://wa.me/919876543210" target="_blank">💬 WhatsApp</a>
   </div>
-</nav>
 
-<section class="hero">
-  <div class="container">
-    <h1>Residential & Commercial Cleaning Services</h1>
-    <p>Serving Gurgaon with Professional Cleaning Solutions</p>
-    <a href="#booking" class="btn btn-primary mt-3">Book Now</a>
-  </div>
-</section>
+  <!-- Three.js & 3D Model Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
 
-<!-- Our Services: left = text cards, right = 3D viewer -->
-<section class="services py-5" id="services">
-  <div class="container">
-    <div class="row g-4 align-items-start">
-      <div class="col-lg-6">
-        <div class="text-center mb-4">
-          <h2>Our Services</h2>
-          <p>We offer residential & commercial cleaning, carpet cleaning, pest control and more.</p>
-        </div>
+  <script>
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(60, window.innerWidth / 400, 0.1, 1000);
+    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, 400);
+    document.getElementById("scene-container").appendChild(renderer.domElement);
 
-        <!-- Example service cards (keep your original content; added a few) -->
-        <div class="row gy-3">
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Home Deep Cleaning</h5>
-              <p class="mb-0">Full home cleaning, sanitization & disinfection.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Commercial Cleaning</h5>
-              <p class="mb-0">Office and shop cleaning with professional team.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Carpet & Sofa</h5>
-              <p class="mb-0">Steam cleaning and stain removal.</p>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card p-3">
-              <h5>Pest Control</h5>
-              <p class="mb-0">Safe and certified pest control services.</p>
-            </div>
-          </div>
-        </div>
-      </div>
+    // Light
+    let light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(2, 5, 5);
+    scene.add(light);
 
-      <!-- 3D viewer embedded here -->
-      <div class="col-lg-6">
-        <div class="service-3d">
-          <canvas id="sprayModelCanvas" aria-label="3D spray bottle viewer"></canvas>
-          <div class="three-hint">Drag to rotate • Click to spray</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="py-5 bg-light" id="booking">
-  <div class="container">
-    <div class="text-center mb-4">
-      <h2>Book a Cleaning Service</h2>
-      <p>Fill out the form below to schedule a cleaning</p>
-    </div>
-    <form id="bookingForm" class="row g-3">
-      <div class="col-md-6">
-        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-      </div>
-      <div class="col-md-6">
-        <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
-      </div>
-      <div class="col-md-6">
-        <select name="bhk" class="form-select" required>
-          <option value="" disabled selected>Select BHK Type</option>
-          <option value="1RK">1RK</option>
-          <option value="1BHK">1BHK</option>
-          <option value="2BHK">2BHK</option>
-          <option value="3BHK">3BHK</option>
-          <option value="4BHK">4BHK</option>
-          <option value="5BHK">5BHK</option>
-        </select>
-      </div>
-      <div class="col-md-6">
-        <select name="furnished" class="form-select" required>
-          <option value="" disabled selected>Furnishing</option>
-          <option value="Furnished">Furnished</option>
-          <option value="Non-Furnished">Non-Furnished</option>
-        </select>
-      </div>
-
-      <!-- Add-ons -->
-      <div class="col-12">
-        <label class="form-label">Add-on Services (optional)</label><br>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500">
-          <label class="form-check-label">Carpet Cleaning (+₹500)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300">
-          <label class="form-check-label">Fridge Cleaning (+₹300)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400">
-          <label class="form-check-label">Balcony Cleaning (+₹400)</label>
-        </div>
-        <div class="form-check form-check-inline">
-          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="600">
-          <label class="form-check-label">Pest Control (+₹600)</label>
-        </div>
-      </div>
-
-      <!-- Display Price -->
-      <div class="col-12">
-        <h5>Estimated Price: ₹<span id="estimatedPrice">0</span></h5>
-      </div>
-
-      <input type="hidden" name="price">
-      <input type="hidden" name="addons">
-      <input type="hidden" name="payment" value="Pay After Work">
-
-      <div class="col-12 text-center">
-        <button type="submit" class="btn btn-primary">Submit Booking</button>
-      </div>
-    </form>
-
-    <!-- Spinner element -->
-    <div id="spinner" style="display:none;"></div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
-  </div>
-</footer>
-
-<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
-  <i class="fas fa-phone-alt"></i>
-</a>
-<a href="https://wa.me/919267905943" class="floating-button whatsapp-button" title="Chat on WhatsApp" target="_blank">
-  <i class="fab fa-whatsapp"></i>
-</a>
-
-<!-- Bootstrap bundle -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- NOTE:
-  We DO NOT include the older three.min.js build or examples/js files.
-  Instead we use ES Modules in the module script below to avoid "OrbitControls is not a constructor".
--->
-
-<!-- Modern Three.js + GLTF + OrbitControls as ES module -->
-<script type="module">
-  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
-  import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
-  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/GLTFLoader.js';
-
-  (function () {
-    const canvas = document.getElementById('sprayModelCanvas');
-
-    // If canvas does not exist (older copy paste), create a canvas and append to wrapper
-    if (!canvas) {
-      const wrapper = document.querySelector('.service-3d');
-      const c = document.createElement('canvas');
-      c.id = 'sprayModelCanvas';
-      c.setAttribute('aria-label','3D spray bottle viewer');
-      c.style.width = '100%';
-      c.style.height = '100%';
-      wrapper.insertBefore(c, wrapper.firstChild);
-    }
-
-    const cv = document.getElementById('sprayModelCanvas');
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true });
-    renderer.setPixelRatio(window.devicePixelRatio || 1);
-
-    // Scene & Camera
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x071018);
-
-    const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
-    camera.position.set(0, 1.2, 2.6);
-
-    // Resize helper
-    function resizeRendererToDisplaySize() {
-      const parent = cv.parentElement;
-      const width = parent.clientWidth;
-      const height = parent.clientHeight;
-      if (cv.width !== width || cv.height !== height) {
-        renderer.setSize(width, height, false);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-      }
-    }
-
-    // Lights
-    const hemi = new THREE.HemisphereLight(0xffffff, 0x111122, 0.9);
-    scene.add(hemi);
-    const dir = new THREE.DirectionalLight(0xffffff, 0.9);
-    dir.position.set(3, 4, 2);
-    scene.add(dir);
-
-    // Ground plane
-    const ground = new THREE.Mesh(
+    // Floor
+    let floor = new THREE.Mesh(
       new THREE.PlaneGeometry(20, 20),
-      new THREE.MeshStandardMaterial({ color: 0x061018, roughness: 0.95 })
+      new THREE.MeshStandardMaterial({ color: 0x555555 })
     );
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -1.2;
-    scene.add(ground);
+    floor.rotation.x = -Math.PI / 2;
+    scene.add(floor);
 
-    // Controls
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.dampingFactor = 0.12;
-    controls.minDistance = 1;
-    controls.maxDistance = 6;
-    controls.target.set(0, 0.8, 0);
+    // Load spray bottle model from root
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+      'spray-bottle.glb',
+      function (gltf) {
+        let model = gltf.scene;
+        model.position.set(0, 0, 0);
+        scene.add(model);
 
-    // container for model
-    const modelGroup = new THREE.Group();
-    scene.add(modelGroup);
-
-    // Particle texture (soft round) generated on the fly
-    function makeParticleTexture() {
-      const size = 64;
-      const tx = document.createElement('canvas');
-      tx.width = tx.height = size;
-      const ctx = tx.getContext('2d');
-      const g = ctx.createRadialGradient(size/2, size/2, 2, size/2, size/2, size/2);
-      g.addColorStop(0, 'rgba(255,255,255,1)');
-      g.addColorStop(0.2, 'rgba(255,255,255,0.9)');
-      g.addColorStop(0.55, 'rgba(180,200,255,0.35)');
-      g.addColorStop(1, 'rgba(180,200,255,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,size,size);
-      const t = new THREE.CanvasTexture(tx);
-      t.minFilter = THREE.LinearFilter;
-      t.needsUpdate = true;
-      return t;
-    }
-    const particleTexture = makeParticleTexture();
-
-    // Particle pool + geometry
-    const MAX_PARTICLES = 500; // reduce if slow on mobile
-    const particles = new Float32Array(MAX_PARTICLES * 3);
-    const velocities = new Float32Array(MAX_PARTICLES * 3);
-    const ages = new Float32Array(MAX_PARTICLES);
-    const lifetimes = new Float32Array(MAX_PARTICLES);
-    const opacities = new Float32Array(MAX_PARTICLES);
-    let particleCount = 0;
-
-    const particleGeom = new THREE.BufferGeometry();
-    particleGeom.setAttribute('position', new THREE.BufferAttribute(particles, 3));
-    particleGeom.setAttribute('aOpacity', new THREE.BufferAttribute(opacities, 1));
-    particleGeom.setDrawRange(0, 0);
-
-    const particleMat = new THREE.PointsMaterial({
-      size: 0.06,
-      map: particleTexture,
-      transparent: true,
-      depthWrite: false,
-      blending: THREE.AdditiveBlending,
-      sizeAttenuation: true,
-      opacity: 1
-    });
-
-    const particlePoints = new THREE.Points(particleGeom, particleMat);
-    particlePoints.frustumCulled = false;
-    scene.add(particlePoints);
-
-    // Helper to spawn N particles in a cone
-    function emitMist(origin, direction, amount = 60) {
-      for (let i = 0; i < amount; i++) {
-        if (particleCount >= MAX_PARTICLES) {
-          // recycle oldest
-          let oldest = 0;
-          let maxAge = -1;
-          for (let j = 0; j < MAX_PARTICLES; j++) {
-            if (ages[j] > maxAge) { maxAge = ages[j]; oldest = j; }
-          }
-          spawnAt(oldest, origin, direction);
-        } else {
-          spawnAt(particleCount, origin, direction);
-          particleCount++;
-        }
-      }
-      particleGeom.setDrawRange(0, particleCount);
-    }
-
-    function spawnAt(i, origin, direction) {
-      const spread = 0.28;
-      const jitter = new THREE.Vector3(
-        (Math.random() - 0.5) * spread,
-        (Math.random() - 0.1) * spread,
-        (Math.random() - 0.5) * spread
-      );
-      const dir = new THREE.Vector3().copy(direction).add(jitter).normalize();
-      const speed = 1.2 + Math.random() * 0.8;
-      velocities[i*3+0] = dir.x * speed;
-      velocities[i*3+1] = dir.y * speed + (Math.random()*0.2);
-      velocities[i*3+2] = dir.z * speed;
-
-      const start = origin.clone().add(dir.clone().multiplyScalar(0.08)).add(new THREE.Vector3(
-        (Math.random()-0.5)*0.02, (Math.random()-0.3)*0.02, (Math.random()-0.5)*0.02
-      ));
-      particles[i*3+0] = start.x;
-      particles[i*3+1] = start.y;
-      particles[i*3+2] = start.z;
-
-      ages[i] = 0;
-      lifetimes[i] = 800 + Math.random() * 900;
-      opacities[i] = 1;
-    }
-
-    function updateParticles(dt) {
-      const gravity = -0.0012;
-      for (let i = 0; i < particleCount; i++) {
-        ages[i] += dt;
-        const life = lifetimes[i];
-        if (ages[i] >= life) {
-          const last = particleCount - 1;
-          if (i !== last) {
-            particles[i*3+0] = particles[last*3+0];
-            particles[i*3+1] = particles[last*3+1];
-            particles[i*3+2] = particles[last*3+2];
-            velocities[i*3+0] = velocities[last*3+0];
-            velocities[i*3+1] = velocities[last*3+1];
-            velocities[i*3+2] = velocities[last*3+2];
-            ages[i] = ages[last];
-            lifetimes[i] = lifetimes[last];
-            opacities[i] = opacities[last];
-          }
-          particleCount--;
-          particleGeom.setDrawRange(0, particleCount);
-          i--;
-          continue;
-        }
-        velocities[i*3+1] += gravity * (dt);
-        particles[i*3+0] += velocities[i*3+0] * dt * 0.001;
-        particles[i*3+1] += velocities[i*3+1] * dt * 0.001;
-        particles[i*3+2] += velocities[i*3+2] * dt * 0.001;
-
-        const t = ages[i] / lifetimes[i];
-        opacities[i] = Math.max(0, 1 - (t * t * 1.2));
-      }
-      particleGeom.attributes.position.needsUpdate = true;
-      particleGeom.attributes.aOpacity.needsUpdate = true;
-      particleMat.opacity = 0.95;
-    }
-
-    // Load model
-    const gltfLoader = new GLTFLoader();
-    let bottle = null;
-    let nozzleWorld = new THREE.Vector3(0, 1.0, 0); // fallback
-    gltfLoader.load('spray-bottle.glb',
-      (gltf) => {
-        bottle = gltf.scene;
-        bottle.traverse((c) => {
-          if (c.isMesh) {
-            c.castShadow = true;
-            c.receiveShadow = true;
-          }
+        // Spray mist on click
+        window.addEventListener("click", () => {
+          let particles = new THREE.Points(
+            new THREE.BufferGeometry().setAttribute(
+              'position',
+              new THREE.Float32BufferAttribute(
+                Array.from({ length: 300 }, () => (Math.random() - 0.5) * 2),
+                3
+              )
+            ),
+            new THREE.PointsMaterial({ color: 0xccccff, size: 0.05, transparent: true, opacity: 0.8 })
+          );
+          particles.position.set(0, 1, 0);
+          scene.add(particles);
+          setTimeout(() => scene.remove(particles), 500);
         });
-        bottle.scale.set(1.1, 1.1, 1.1);
-        bottle.position.set(0, -0.25, 0);
-        modelGroup.add(bottle);
-
-        const box = new THREE.Box3().setFromObject(bottle);
-        const size = new THREE.Vector3();
-        box.getSize(size);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        nozzleWorld.set(center.x, center.y + size.y * 0.18, center.z - size.z * 0.45);
-        bottle.updateWorldMatrix(true, true);
-        bottle.localToWorld(nozzleWorld);
       },
       undefined,
-      (err) => {
-        console.error('GLB load error:', err);
-        const fallback = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.18, 0.18, 0.7, 12),
-          new THREE.MeshStandardMaterial({ color: 0x88c0ff, roughness: 0.45, metalness: 0.1 })
-        );
-        fallback.position.set(0, 0.1, 0);
-        modelGroup.add(fallback);
-        nozzleWorld.set(0, 0.4, -0.15);
+      function (error) {
+        console.error('Error loading GLB:', error);
       }
     );
 
-    // Raycaster
-    const raycaster = new THREE.Raycaster();
-    const pointer = new THREE.Vector2();
+    camera.position.set(2, 2, 5);
 
-    function getPointerWorld(x, y) {
-      const rect = cv.getBoundingClientRect();
-      pointer.x = ((x - rect.left) / rect.width) * 2 - 1;
-      pointer.y = - ((y - rect.top) / rect.height) * 2 + 1;
-      raycaster.setFromCamera(pointer, camera);
-      return raycaster.ray;
-    }
-
-    // Click to spray
-    cv.addEventListener('pointerdown', (ev) => {
-      ev.preventDefault();
-      const x = ev.clientX;
-      const y = ev.clientY;
-      getPointerWorld(x, y);
-      if (bottle) {
-        const intersects = raycaster.intersectObject(bottle, true);
-        if (intersects.length > 0) {
-          const hit = intersects[0];
-          const origin = hit.point.clone();
-          const normalMatrix = new THREE.Matrix3().getNormalMatrix(hit.object.matrixWorld);
-          const worldNormal = hit.face.normal.clone().applyMatrix3(normalMatrix).normalize();
-          const dir = worldNormal.clone().multiplyScalar(-1).normalize();
-          emitMist(origin, dir, 120);
-          return;
-        }
-      }
-      const origin = nozzleWorld.clone();
-      const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
-      emitMist(origin, dir, 90);
-    });
-
-    // Idle rotation detection
-    let last = performance.now();
-    let isUserInteracting = false;
-    cv.addEventListener('pointerdown', () => isUserInteracting = true);
-    window.addEventListener('pointerup', () => { isUserInteracting = false; });
-
-    // Animation loop
     function animate() {
       requestAnimationFrame(animate);
-      const now = performance.now();
-      const dt = now - last;
-      last = now;
-
-      resizeRendererToDisplaySize();
-
-      if (!isUserInteracting) {
-        modelGroup.rotation.y += 0.0007 * dt;
-      }
-
-      updateParticles(dt);
-
-      controls.update();
       renderer.render(scene, camera);
     }
     animate();
 
-    setTimeout(resizeRendererToDisplaySize, 100);
-    window.addEventListener('resize', resizeRendererToDisplaySize);
-
-    // Expose helper
-    window.__spray = function () {
-      const origin = nozzleWorld.clone();
-      const dir = camera.position.clone().sub(origin).normalize().multiplyScalar(-1);
-      emitMist(origin, dir, 100);
-    };
-  })();
-</script>
-
-<!-- Booking / form logic (kept from your original) -->
-<script>
-  const pricing = {
-    "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
-    "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
-    "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
-    "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
-    "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
-    "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
-  };
-
-  function calculateTotal() {
-    const bhk = document.querySelector('[name="bhk"]').value;
-    const furnished = document.querySelector('[name="furnished"]').value;
-
-    let total = pricing[bhk]?.[furnished] || 0;
-    const addonsDetails = [];
-
-    document.querySelectorAll('.addon:checked').forEach(addon => {
-      const price = parseInt(addon.dataset.price);
-      total += price;
-      addonsDetails.push(`${addon.value}: ₹${price}`);
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / 400;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, 400);
     });
-
-    document.getElementById("estimatedPrice").innerText = total;
-    document.querySelector('[name="price"]').value = total;
-    document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
-  }
-
-  window.addEventListener('DOMContentLoaded', calculateTotal);
-
-  document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
-  document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
-  document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
-
-  document.getElementById("bookingForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    const form = e.target;
-
-    // Show spinner and hide form
-    document.getElementById("spinner").style.display = "block";
-    form.style.display = "none";
-
-    const data = new FormData(form);
-
-    fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
-      method: "POST",
-      body: new URLSearchParams(data)
-    })
-    .then(() => {
-      window.location.href = "thankyou.html?" + new URLSearchParams(data).toString();
-    })
-    .catch((err) => {
-      alert("Something went wrong. Please try again.");
-      console.error("Error submitting form", err);
-      form.style.display = "block";
-      document.getElementById("spinner").style.display = "none";
-    });
-  });
-</script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(reg => console.log("✅ Service Worker registered", reg))
-        .catch(err => console.error("❌ Service Worker failed", err));
-    });
-  }
-</script>
-
+  </script>
 </body>
 </html>
