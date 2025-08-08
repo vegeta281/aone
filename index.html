@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sachin Deep Cleaning</title>
 
   <link rel="manifest" href="manifest.json" />
@@ -78,55 +78,75 @@
     /* Reviews Section */
     #reviews {
       background: #f8f9fa;
-      padding: 50px 0;
+      padding: 60px 15px;
+      text-align: center;
     }
     #reviews h2 {
       margin-bottom: 40px;
+      font-weight: 700;
+      color: #007bff;
+    }
+    #reviewSlider {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
     }
     .review-card {
       background: white;
-      border-radius: 8px;
+      border-radius: 10px;
       padding: 20px;
-      box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-      min-height: 200px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      flex: 1 1 calc(33.333% - 20px);
+      min-width: 280px;
+      max-width: 350px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      text-align: left;
     }
     .review-header {
       display: flex;
       align-items: center;
       margin-bottom: 15px;
+      gap: 15px;
+      width: 100%;
     }
     .review-header img {
+      border-radius: 50%;
       width: 50px;
       height: 50px;
-      border-radius: 50%;
-      margin-right: 15px;
+      object-fit: cover;
+      border: 2px solid #007bff;
     }
     .reviewer-name {
       font-weight: 600;
-      margin: 0;
+      font-size: 1.1rem;
+      margin-bottom: 0;
     }
     .reviewer-location {
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       color: #555;
     }
     .review-text {
       font-style: italic;
       margin-bottom: 15px;
       flex-grow: 1;
+      color: #333;
     }
     .star-rating {
-      color: #ffc107;
-      font-size: 1.1rem;
+      color: #f8ce0b;
+      font-size: 1.2rem;
+      text-align: center;
     }
 
-    /* Slider container */
-    #reviewSlider {
-      max-width: 900px;
-      margin: 0 auto;
-      position: relative;
+    @media(max-width: 768px) {
+      .review-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -143,7 +163,6 @@
         <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
         <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
         <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
-        <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
       </ul>
     </div>
   </div>
@@ -162,16 +181,15 @@
     <div class="text-center mb-4">
       <h2>Our Services</h2>
     </div>
-    <!-- You can add your services cards here -->
   </div>
 </section>
 
 <!-- Reviews Section -->
-<section id="reviews" class="py-5">
+<section id="reviews">
   <div class="container">
-    <h2 class="text-center">Customer Reviews</h2>
-    <div id="reviewSlider" class="row g-4">
-      <!-- Reviews will be injected here by JS -->
+    <h2>Customer Reviews</h2>
+    <div id="reviewSlider" class="row g-3">
+      <!-- Reviews will be injected here -->
     </div>
   </div>
 </section>
@@ -331,62 +349,64 @@
 </script>
 
 <script>
-  // ------------- Customer Reviews -------------
+  // Reviews Data with Indian names and Gurgaon locations
   const reviewsData = [
-    {name: "Amit Sharma", location: "South City", text: "Fantastic cleaning service! Very professional and thorough.", img: 1},
-    {name: "Neha Gupta", location: "Sushant Lok", text: "My home looks amazing after their cleaning! Highly recommended.", img: 2},
-    {name: "Rahul Singh", location: "Sector 14", text: "Reliable and efficient cleaning team. Will book again!", img: 3},
-    {name: "Priya Patel", location: "DLF Phase 1", text: "Excellent attention to detail. Loved the carpet cleaning!", img: 4},
-    {name: "Karan Verma", location: "Sector 56", text: "Staff was friendly and on time. Great service.", img: 5},
-    {name: "Anjali Mehta", location: "Palam Vihar", text: "Thorough and affordable. My go-to cleaning service.", img: 6},
-    {name: "Suresh Iyer", location: "Sector 50", text: "Professional and trustworthy team. Highly recommended.", img: 7},
-    {name: "Ritu Joshi", location: "Sector 45", text: "Made my house spotless. Amazing job!", img: 8},
-    {name: "Manish Kumar", location: "Sector 31", text: "Prompt and reliable. Will use again.", img: 9},
-    {name: "Sunita Reddy", location: "Sector 55", text: "The best cleaning service in town. Friendly staff.", img: 10},
-    {name: "Deepak Singh", location: "Sector 40", text: "Quality service at reasonable prices.", img: 11},
-    {name: "Divya Sharma", location: "Sector 29", text: "Very satisfied with the balcony cleaning service.", img: 12},
-    {name: "Vikas Jain", location: "Sector 14", text: "Highly professional and efficient.", img: 13},
-    {name: "Neetu Kaur", location: "Sector 37", text: "Excellent service, will recommend to friends.", img: 14},
-    {name: "Rahul Mehta", location: "Sector 18", text: "Attention to detail and friendly staff.", img: 15},
-    {name: "Pooja Das", location: "Sector 9", text: "Loved the pest control add-on. Very effective!", img: 16},
-    {name: "Ankit Gupta", location: "South City 2", text: "Great service with timely updates.", img: 17},
-    {name: "Sanjay Kumar", location: "Sector 44", text: "Professional team and excellent cleaning.", img: 18},
-    {name: "Swati Mishra", location: "Sector 15", text: "My house has never looked better!", img: 19},
-    {name: "Rajesh Singh", location: "Sector 21", text: "Affordable and reliable cleaning.", img: 20},
-    {name: "Kavita Patel", location: "Sushant Lok Phase 2", text: "Fantastic service and friendly staff.", img: 21},
-    {name: "Mohit Sharma", location: "Sector 32", text: "Highly recommend for deep cleaning.", img: 22},
-    {name: "Sneha Rao", location: "Sector 51", text: "Very professional and courteous team.", img: 23},
-    {name: "Aakash Verma", location: "Sector 12", text: "Did a great job with my apartment.", img: 24},
-    {name: "Neha Singh", location: "Sector 23", text: "Good value for money and excellent results.", img: 25},
-    {name: "Rohit Joshi", location: "Sector 6", text: "Fast and efficient cleaning service.", img: 26},
-    {name: "Tina Sharma", location: "Sector 20", text: "My carpets look brand new!", img: 27},
-    {name: "Saurabh Kumar", location: "Sector 49", text: "Very detailed and careful cleaning.", img: 28},
-    {name: "Rekha Gupta", location: "Sector 33", text: "Highly satisfied with the service.", img: 29},
-    {name: "Manoj Singh", location: "Sector 5", text: "Will definitely use again.", img: 30},
-    {name: "Priti Patel", location: "Sector 7", text: "Excellent customer support and service.", img: 31},
-    {name: "Vijay Kumar", location: "Sector 17", text: "The best cleaning team I've hired.", img: 32},
-    {name: "Simran Kaur", location: "Sector 24", text: "Prompt and efficient service.", img: 33},
-    {name: "Nitin Sharma", location: "Sector 38", text: "Very happy with the results.", img: 34},
-    {name: "Riya Das", location: "Sector 19", text: "Friendly staff and great attention to detail.", img: 35},
-    {name: "Aditya Mehta", location: "Sector 27", text: "Affordable pricing and excellent quality.", img: 36},
-    {name: "Sneha Singh", location: "Sector 16", text: "Highly professional and trustworthy.", img: 37},
-    {name: "Arjun Verma", location: "Sector 39", text: "Great communication and service.", img: 38},
-    {name: "Divya Sharma", location: "Sector 28", text: "My go-to cleaning company now.", img: 39},
-    {name: "Sanjana Patel", location: "Sector 35", text: "Superb cleaning and excellent team.", img: 40},
-    {name: "Ramesh Kumar", location: "Sector 41", text: "Very reliable and efficient.", img: 41},
-    {name: "Anita Joshi", location: "Sector 34", text: "Highly recommend for pest control too.", img: 42},
-    {name: "Karan Mehta", location: "Sector 13", text: "Best cleaning service in the city!", img: 43},
-    {name: "Simran Kaur", location: "Sector 11", text: "Professional and detail-oriented.", img: 44},
-    {name: "Amit Singh", location: "Sector 25", text: "Will definitely book again.", img: 45},
-    {name: "Pooja Sharma", location: "Sector 22", text: "Very thorough and courteous team.", img: 46},
-    {name: "Rohit Gupta", location: "Sector 30", text: "Affordable and professional.", img: 47},
-    {name: "Anjali Patel", location: "Sector 36", text: "Highly recommended for home cleaning.", img: 48},
-    {name: "Suresh Kumar", location: "Sector 42", text: "Excellent service and friendly staff.", img: 49},
-    {name: "Neha Sharma", location: "Sector 26", text: "My house looks spotless!", img: 50}
+    {name: "Amit Sharma", location: "South City 1", text: "Amazing cleaning service. Highly recommended!"},
+    {name: "Priya Verma", location: "Sushant Lok", text: "Very professional and punctual team."},
+    {name: "Rohit Kumar", location: "Sector 14", text: "My home looks spotless after their cleaning."},
+    {name: "Neha Singh", location: "Sector 49", text: "Friendly staff and thorough cleaning."},
+    {name: "Vikram Patel", location: "Golf Course Road", text: "Affordable and reliable service."},
+    {name: "Simran Kaur", location: "Palam Vihar", text: "Great attention to detail."},
+    {name: "Rahul Mehta", location: "Sector 56", text: "They transformed my office space."},
+    {name: "Pooja Gupta", location: "DLF Phase 1", text: "Excellent customer support."},
+    {name: "Sandeep Singh", location: "Sector 45", text: "Very satisfied with the results."},
+    {name: "Anjali Joshi", location: "Sector 22", text: "Will definitely book again."},
+    {name: "Karan Verma", location: "South City 2", text: "Highly recommended for deep cleaning."},
+    {name: "Divya Sharma", location: "Sushant Lok Phase 1", text: "Efficient and timely service."},
+    {name: "Sunil Kumar", location: "Sector 31", text: "The best cleaning service in Gurgaon."},
+    {name: "Ritika Jain", location: "Sector 37", text: "Friendly and hardworking staff."},
+    {name: "Manish Gupta", location: "Sector 18", text: "Cleaners were very polite and thorough."},
+    {name: "Megha Patel", location: "Sector 40", text: "Highly professional team."},
+    {name: "Aakash Singh", location: "Sushant Lok Phase 2", text: "Affordable prices and excellent quality."},
+    {name: "Sneha Verma", location: "Sector 21", text: "My carpets have never looked better."},
+    {name: "Rajat Sharma", location: "Sector 50", text: "Quick response and great service."},
+    {name: "Shreya Joshi", location: "Sector 57", text: "Very thorough cleaning and polite staff."},
+    {name: "Ankit Mehta", location: "Sector 29", text: "Trustworthy and efficient."},
+    {name: "Neelam Singh", location: "Sector 44", text: "Excellent attention to detail."},
+    {name: "Pankaj Kumar", location: "DLF Phase 2", text: "My house looks brand new!"},
+    {name: "Rekha Gupta", location: "Sector 36", text: "Affordable and reliable cleaning."},
+    {name: "Suresh Patel", location: "Sector 55", text: "Highly recommended for pest control."},
+    {name: "Meena Sharma", location: "Palam Vihar", text: "Great cleaning service with friendly staff."},
+    {name: "Rajesh Verma", location: "Sector 26", text: "Very professional and detail-oriented."},
+    {name: "Kavita Singh", location: "Sector 33", text: "Quick and efficient service."},
+    {name: "Vijay Kumar", location: "Sector 20", text: "Excellent value for money."},
+    {name: "Sonal Patel", location: "South City 1", text: "Highly skilled and courteous staff."},
+    {name: "Aman Sharma", location: "Sector 58", text: "I am very happy with their service."},
+    {name: "Rashmi Verma", location: "Sushant Lok", text: "They pay attention to every corner."},
+    {name: "Deepak Singh", location: "Sector 19", text: "Reliable and trustworthy cleaning."},
+    {name: "Anita Jain", location: "Sector 38", text: "Very satisfied with the service quality."},
+    {name: "Kunal Mehta", location: "Golf Course Road", text: "Great team and punctual."},
+    {name: "Swati Gupta", location: "Sector 42", text: "Highly professional cleaning service."},
+    {name: "Ramesh Kumar", location: "Sector 34", text: "Affordable prices and excellent results."},
+    {name: "Priyanka Singh", location: "Sector 25", text: "Very polite and hardworking staff."},
+    {name: "Ajay Patel", location: "DLF Phase 3", text: "Would definitely recommend."},
+    {name: "Kiran Sharma", location: "Sector 48", text: "My office has never been cleaner."},
+    {name: "Mitali Verma", location: "Sector 51", text: "Professional and efficient team."},
+    {name: "Sanjay Singh", location: "Sector 24", text: "Excellent customer service."},
+    {name: "Ritu Jain", location: "Sector 43", text: "Very thorough cleaning."},
+    {name: "Vikas Kumar", location: "Sector 17", text: "Affordable and quality service."},
+    {name: "Sheetal Gupta", location: "South City 2", text: "Highly recommended for home cleaning."},
+    {name: "Nitin Mehta", location: "Sector 39", text: "Friendly and efficient staff."},
+    {name: "Geeta Sharma", location: "Sector 23", text: "Cleaners were very professional."},
+    {name: "Sanjana Singh", location: "Sector 35", text: "Will book again soon."},
   ];
 
+  function getAvatarUrl(name) {
+    return `https://avatars.dicebear.com/api/micah/${encodeURIComponent(name)}.svg`;
+  }
+
   function createStarRatingHTML() {
-    return '<i class="fas fa-star"></i>'.repeat(5);
+    return `<i class="fas fa-star"></i>`.repeat(5);
   }
 
   function createReviewCard(review) {
@@ -394,7 +414,7 @@
       <div class="col-md-4">
         <div class="review-card">
           <div class="review-header">
-            <img src="https://i.pravatar.cc/50?img=${review.img}" alt="${review.name}">
+            <img src="${getAvatarUrl(review.name)}" alt="${review.name}">
             <div>
               <p class="reviewer-name mb-0">${review.name}</p>
               <small class="reviewer-location">${review.location}</small>
@@ -407,30 +427,30 @@
     `;
   }
 
-  function showReviews() {
-    const slider = document.getElementById("reviewSlider");
-    let startIndex = 0;
-    const perSlide = 3; // show 3 reviews at once
+  // Slider Logic - shows 3 reviews at a time, slides every 3 seconds
+  let currentIndex = 0;
+  const reviewsPerSlide = 3;
+  const reviewContainer = document.getElementById('reviewSlider');
 
-    function render() {
-      slider.innerHTML = "";
-      for (let i = 0; i < perSlide; i++) {
-        const review = reviewsData[(startIndex + i) % reviewsData.length];
-        slider.insertAdjacentHTML("beforeend", createReviewCard(review));
-      }
+  function renderReviews() {
+    reviewContainer.innerHTML = '';
+    for(let i = 0; i < reviewsPerSlide; i++) {
+      const idx = (currentIndex + i) % reviewsData.length;
+      reviewContainer.innerHTML += createReviewCard(reviewsData[idx]);
     }
-
-    function nextSlide() {
-      startIndex = (startIndex + perSlide) % reviewsData.length;
-      render();
-    }
-
-    render();
-    setInterval(nextSlide, 3000);
   }
 
-  window.addEventListener("DOMContentLoaded", showReviews);
+  function slideReviews() {
+    currentIndex = (currentIndex + reviewsPerSlide) % reviewsData.length;
+    renderReviews();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderReviews();
+    setInterval(slideReviews, 3000);
+  });
 </script>
 
 </body>
 </html>
+
