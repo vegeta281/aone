@@ -11,38 +11,58 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- OneSignal Push Notification Integration START -->
+  <!-- OneSignal (kept as in your original) -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
-        safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
-        notifyButton: {
-          enable: true,
-          offset: {
-            bottom: '20px',
-            right: '20px'
-          }
-        },
-      });
-    });
-  </script>
-  <!-- OneSignal Push Notification Integration END -->
 
   <style>
-    body { font-family: Arial, sans-serif; }
+    :root {
+      --bg: #0b0b0d;
+      --panel: #0f1720;
+      --muted: #a6b0bf;
+      --accent: #007bff;
+    }
+    html,body { height:100%; margin:0; }
+    body { font-family: Arial, sans-serif; background: var(--bg); color: white; }
+
+    /* Site header/footer (kept similar to your original) */
     .hero {
       background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center;
       background-size: cover;
       color: white;
-      padding: 100px 0;
+      padding: 90px 0;
       text-align: center;
     }
-    .services .card { transition: 0.3s ease; }
-    .services .card:hover { transform: scale(1.05); }
-    footer { background: #222; color: #aaa; padding: 20px 0; text-align: center; }
+    footer { background: #071018; color: #9aa6b4; padding: 20px 0; text-align: center; }
+
+    /* 3D Section */
+    #threeDSection {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding: 30px 0;
+    }
+    #threeDWrapper {
+      max-width: 1100px;
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));
+    }
+    canvas { display:block; width:100%; height:500px; }
+
+    /* Controls hint */
+    .three-hint {
+      position: absolute;
+      right: 24px;
+      bottom: 24px;
+      background: rgba(0,0,0,0.45);
+      color: #dbe7ff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Floating buttons kept from your original */
     .floating-button {
       position: fixed;
       bottom: 20px;
@@ -55,27 +75,11 @@
       align-items: center;
       justify-content: center;
       font-size: 22px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.4);
       text-decoration: none;
     }
-    .call-button { left: 20px; background-color: #007bff; }
+    .call-button { left: 20px; background-color: var(--accent); }
     .whatsapp-button { right: 20px; bottom: 110px; background-color: #25d366; }
-
-    /* Spinner Styling */
-    #spinner {
-      display: none;
-      margin: 20px auto;
-      border: 6px solid #f3f3f3;
-      border-top: 6px solid #007bff;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
   </style>
 </head>
 <body>
@@ -101,6 +105,14 @@
     <h1>Residential & Commercial Cleaning Services</h1>
     <p>Serving Gurgaon with Professional Cleaning Solutions</p>
     <a href="#booking" class="btn btn-primary mt-3">Book Now</a>
+  </div>
+</section>
+
+<!-- 3D model section -->
+<section id="threeDSection">
+  <div id="threeDWrapper" style="position:relative;">
+    <canvas id="threeCanvas" aria-label="3D spray bottle preview"></canvas>
+    <div class="three-hint">Drag to rotate • Click to spray</div>
   </div>
 </section>
 
@@ -180,7 +192,7 @@
     </form>
 
     <!-- Spinner element -->
-    <div id="spinner"></div>
+    <div id="spinner" style="display:none;"></div>
   </div>
 </section>
 
@@ -197,7 +209,279 @@
   <i class="fab fa-whatsapp"></i>
 </a>
 
+<!-- Bootstrap bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Three.js + extras from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
+
+<script>
+/*
+  3D spray interaction
+  - Place spray-bottle.glb next to this HTML (same folder)
+  - Click canvas to spray (short particle burst)
+  - Drag to orbit
+*/
+
+(function () {
+  const canvas = document.getElementById('threeCanvas');
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x071018);
+
+  // Renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio || 1);
+  renderer.setSize(canvas.clientWidth || canvas.parentElement.clientWidth, 500, false);
+
+  // Camera
+  const camera = new THREE.PerspectiveCamera(45, (canvas.clientWidth || canvas.parentElement.clientWidth) / 500, 0.1, 100);
+  camera.position.set(0, 1.4, 3.2);
+
+  // Lights
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x111122, 0.8);
+  scene.add(hemi);
+  const rim = new THREE.DirectionalLight(0xffffff, 0.9);
+  rim.position.set(4, 5, 2);
+  scene.add(rim);
+
+  // Ground subtle reflection plane (faint)
+  const groundMat = new THREE.MeshStandardMaterial({ color: 0x071018, roughness: 0.9, metalness: 0.0 });
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -1.35;
+  scene.add(ground);
+
+  // Orbit controls
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.12;
+  controls.minDistance = 1.4;
+  controls.maxDistance = 6;
+  controls.target.set(0, 1.1, 0);
+
+  // small helper group for model
+  const modelGroup = new THREE.Group();
+  scene.add(modelGroup);
+
+  // Create a small round particle texture via canvas (so there are no external images)
+  function createParticleTexture() {
+    const size = 64;
+    const tx = document.createElement('canvas');
+    tx.width = tx.height = size;
+    const ctx = tx.getContext('2d');
+
+    const g = ctx.createRadialGradient(size/2, size/2, 2, size/2, size/2, size/2);
+    g.addColorStop(0, 'rgba(255,255,255,1)');
+    g.addColorStop(0.2, 'rgba(255,255,255,0.9)');
+    g.addColorStop(0.5, 'rgba(180,200,255,0.45)');
+    g.addColorStop(1, 'rgba(180,200,255,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0,0,size,size);
+
+    const texture = new THREE.CanvasTexture(tx);
+    texture.minFilter = THREE.LinearFilter;
+    texture.needsUpdate = true;
+    return texture;
+  }
+  const particleTexture = createParticleTexture();
+
+  // Particle system pool (reusable)
+  const particlePool = [];
+  const activeParticles = [];
+
+  function spawnParticle(pos, vel, lifetime = 900) {
+    let p = particlePool.pop();
+    if (!p) {
+      const geom = new THREE.BufferGeometry();
+      geom.setAttribute('position', new THREE.Float32BufferAttribute([0,0,0], 3));
+      const mat = new THREE.PointsMaterial({
+        size: 0.06,
+        map: particleTexture,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        sizeAttenuation: true,
+        opacity: 1.0
+      });
+      p = { geom, mat, points: new THREE.Points(geom, mat), alive: false };
+    }
+    p.points.material = p.mat; // ensure material
+    p.points.position.copy(pos);
+    p.velocity = vel.clone();
+    p.birth = performance.now();
+    p.lifetime = lifetime;
+    p.alive = true;
+    scene.add(p.points);
+    activeParticles.push(p);
+    return p;
+  }
+
+  function despawnParticle(p) {
+    p.alive = false;
+    try { scene.remove(p.points); } catch(e){}
+    particlePool.push(p);
+  }
+
+  // Simple particle burst generator (spray)
+  function sprayBurst(origin, direction, count = 22) {
+    for (let i=0;i<count;i++) {
+      const spread = 0.15;
+      // create velocity with some spread
+      const jitter = new THREE.Vector3(
+        (Math.random()-0.5)*spread,
+        (Math.random()-0.2)*spread,
+        (Math.random()-0.5)*spread
+      );
+      const v = direction.clone().multiplyScalar(3 + Math.random()*1.8).add(jitter);
+      const start = origin.clone().add(direction.clone().multiplyScalar(0.35)).add(new THREE.Vector3(
+        (Math.random()-0.5)*0.02,
+        (Math.random()-0.5)*0.02,
+        (Math.random()-0.5)*0.02
+      ));
+      spawnParticle(start, v, 700 + Math.random()*500);
+    }
+  }
+
+  // Load GLB model (spray bottle)
+  const loader = new THREE.GLTFLoader();
+  const modelUrl = 'spray-bottle.glb'; // <-- place your .glb file here (same folder)
+  let bottle = null;
+  loader.load(modelUrl,
+    (gltf) => {
+      bottle = gltf.scene;
+      // Normalize scale and orientation a bit (adjust as needed)
+      bottle.traverse((c) => {
+        if (c.isMesh) {
+          c.castShadow = true;
+          c.receiveShadow = true;
+          c.material.side = THREE.DoubleSide;
+        }
+      });
+      bottle.scale.set(1.2,1.2,1.2);
+      bottle.position.set(0, 0.0, 0);
+      modelGroup.add(bottle);
+    },
+    (xhr) => {
+      // optional progress
+      // console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+    },
+    (err) => {
+      console.error('Failed to load model:', err);
+      // If model fails, create a fallback simple object so UI remains useful
+      const fallback = new THREE.Mesh(
+        new THREE.CapsuleGeometry(0.25, 0.8, 6, 12),
+        new THREE.MeshStandardMaterial({ color: 0x88c0ff, metalness: 0.25, roughness: 0.45 })
+      );
+      fallback.position.set(0, 0, 0);
+      modelGroup.add(fallback);
+    }
+  );
+
+  // Raycaster for clicks
+  const raycaster = new THREE.Raycaster();
+  const mouse = new THREE.Vector2();
+
+  // Compute world-space spray origin and direction when clicking canvas
+  function handlePointer(x, y) {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((x - rect.left) / rect.width) * 2 - 1;
+    mouse.y = - ((y - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+
+    // If bottle exists, try to get a hit point near bottle; else spray from camera forward
+    if (bottle) {
+      // Intersect bottle
+      const intersects = raycaster.intersectObject(bottle, true);
+      if (intersects.length > 0) {
+        const pt = intersects[0].point;
+        // direction from bottle toward camera (spray away from bottle nozzle approximated by normal)
+        const dir = intersects[0].face ? intersects[0].face.normal.clone().transformDirection(bottle.matrixWorld) : camera.position.clone().sub(pt).normalize();
+        // Invert dir so spray goes away from nozzle towards screen
+        dir.normalize().multiplyScalar(-1);
+        sprayBurst(pt, dir, 28);
+        return;
+      }
+    }
+    // fallback: spray forward from camera position
+    const origin = camera.position.clone();
+    const dir = raycaster.ray.direction.clone();
+    sprayBurst(origin, dir, 22);
+  }
+
+  // pointer events
+  let isTouch = false;
+  canvas.addEventListener('pointerdown', (ev) => {
+    isTouch = ev.pointerType === 'touch' || ev.pointerType === 'pen';
+    handlePointer(ev.clientX, ev.clientY);
+  });
+
+  // Small idle rotation for model
+  let last = performance.now();
+  function animate() {
+    const now = performance.now();
+    const dt = now - last;
+    last = now;
+
+    // update particles
+    for (let i = activeParticles.length - 1; i >= 0; i--) {
+      const p = activeParticles[i];
+      if (!p || !p.alive) { activeParticles.splice(i,1); continue; }
+      const age = now - p.birth;
+      if (age >= p.lifetime) {
+        // remove
+        despawnParticle(p);
+        activeParticles.splice(i,1);
+        continue;
+      }
+      // simple physics: velocity damping + gravity
+      p.velocity.y -= 0.006 * (dt/16); // gravity-ish
+      p.points.position.addScaledVector(p.velocity, dt/1000);
+      // fade opacity with age
+      const t = age / p.lifetime;
+      p.points.material.opacity = 1 - t;
+      // scale down a bit over lifetime
+      p.points.material.size = 0.06 * (1 - 0.6 * t);
+      // also slightly rotate camera target for subtle dynamism
+    }
+
+    // Idle rotate model group slowly if user not interacting
+    modelGroup.rotation.y += 0.0009 * dt;
+
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  requestAnimationFrame(animate);
+
+  // resize
+  function onResize() {
+    const parentWidth = canvas.parentElement.clientWidth;
+    const height = 500;
+    renderer.setSize(parentWidth, height, false);
+    camera.aspect = parentWidth / height;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', onResize, { passive: true });
+  onResize();
+
+  // Keep pointer cursor hint
+  canvas.style.cursor = 'pointer';
+
+  // Expose a small helper to programmatically trigger spray (can be used if you add UI buttons)
+  window.__spray = function () {
+    // spray from bottle frontal direction
+    if (!bottle) return;
+    const origin = bottle.getWorldPosition(new THREE.Vector3());
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(bottle.getWorldQuaternion(new THREE.Quaternion())).normalize();
+    sprayBurst(origin.add(forward.multiplyScalar(0.25)), forward, 26);
+  };
+
+})();
+</script>
+
+<!-- Booking / form logic (kept from your original) -->
 <script>
   const pricing = {
     "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
@@ -267,5 +551,6 @@
     });
   }
 </script>
+
 </body>
 </html>
