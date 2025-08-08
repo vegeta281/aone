@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sachin Deep Cleaning</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧽</text></svg>">
   <style>
     body { margin: 0; background: #111; color: white; font-family: Arial, sans-serif; }
-    canvas { display: block; }
     header { padding: 15px; text-align: center; background: #007bff; }
     h1 { margin: 0; }
+    canvas { display: block; }
     .services { padding: 20px; background: #222; }
     .services h2 { text-align: center; }
     .service-list { display: flex; flex-wrap: wrap; justify-content: center; }
@@ -56,42 +57,45 @@
     <a href="https://wa.me/919876543210" target="_blank">💬 WhatsApp</a>
   </div>
 
-  <!-- Three.js & 3D Model Loader -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
+  <!-- Three.js ES Module -->
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+    import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/controls/OrbitControls.js';
 
-  <script>
-    let scene = new THREE.Scene();
-    let camera = new THREE.PerspectiveCamera(60, window.innerWidth / 400, 0.1, 1000);
-    let renderer = new THREE.WebGLRenderer({ antialias: true });
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / 400, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, 400);
     document.getElementById("scene-container").appendChild(renderer.domElement);
 
-    // Light
-    let light = new THREE.DirectionalLight(0xffffff, 1);
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(2, 5, 5);
     scene.add(light);
 
     // Floor
-    let floor = new THREE.Mesh(
+    const floor = new THREE.Mesh(
       new THREE.PlaneGeometry(20, 20),
       new THREE.MeshStandardMaterial({ color: 0x555555 })
     );
     floor.rotation.x = -Math.PI / 2;
     scene.add(floor);
 
-    // Load spray bottle model from root
-    const loader = new THREE.GLTFLoader();
+    // Load spray bottle model
+    const loader = new GLTFLoader();
     loader.load(
       'spray-bottle.glb',
-      function (gltf) {
-        let model = gltf.scene;
+      (gltf) => {
+        const model = gltf.scene;
         model.position.set(0, 0, 0);
+        model.scale.set(2, 2, 2);
         scene.add(model);
 
         // Spray mist on click
         window.addEventListener("click", () => {
-          let particles = new THREE.Points(
+          const particles = new THREE.Points(
             new THREE.BufferGeometry().setAttribute(
               'position',
               new THREE.Float32BufferAttribute(
@@ -107,19 +111,23 @@
         });
       },
       undefined,
-      function (error) {
-        console.error('Error loading GLB:', error);
-      }
+      (error) => console.error('Error loading GLB:', error)
     );
 
+    // Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+
     camera.position.set(2, 2, 5);
+    controls.update();
 
     function animate() {
       requestAnimationFrame(animate);
+      controls.update();
       renderer.render(scene, camera);
     }
     animate();
 
+    // Resize handling
     window.addEventListener("resize", () => {
       camera.aspect = window.innerWidth / 400;
       camera.updateProjectionMatrix();
