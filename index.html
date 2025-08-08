@@ -546,7 +546,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 </script>
-  // Register Service Worker
+ <script>
+// Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
@@ -576,6 +577,7 @@ installBtn.addEventListener('click', async () => {
   deferredPrompt = null;
   installBtn.style.display = 'none'; // Hide install button
 });
+</script>
 
 </body>
 </html>
