@@ -611,13 +611,28 @@ installBtn.addEventListener('click', async () => {
 <script>
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(async function(OneSignal) {
-  // Wait until OneSignal is ready before binding the click
-  document.getElementById("notifyBtn").addEventListener("click", async () => {
-    console.log("Notification button clicked");
+  const notifyBtn = document.getElementById("notifyBtn");
+
+  notifyBtn.addEventListener("click", async () => {
     try {
-      await OneSignal.showSlidedownPrompt();
+      const isSupported = await OneSignal.Notifications.isPushSupported();
+      if (!isSupported) {
+        alert("Push notifications are not supported in this browser.");
+        return;
+      }
+
+      const permission = await OneSignal.Notifications.permission;
+      console.log("Current permission:", permission);
+
+      if (permission === "granted") {
+        alert("You are already subscribed to notifications.");
+        return;
+      }
+
+      await OneSignal.Slidedown.promptPush();
     } catch (err) {
-      console.error("Error showing prompt:", err);
+      console.error("Error showing notification prompt:", err);
+      alert("Unable to show notification prompt. Check console for details.");
     }
   });
 });
