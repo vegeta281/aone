@@ -349,62 +349,68 @@
 </script>
 
 <script>
-  // Reviews Data with Indian names and Gurgaon locations
+  // Reviews Data with gender field added
   const reviewsData = [
-    {name: "Amit Sharma", location: "South City 1", text: "Amazing cleaning service. Highly recommended!"},
-    {name: "Priya Verma", location: "Sushant Lok", text: "Very professional and punctual team."},
-    {name: "Rohit Kumar", location: "Sector 14", text: "My home looks spotless after their cleaning."},
-    {name: "Neha Singh", location: "Sector 49", text: "Friendly staff and thorough cleaning."},
-    {name: "Vikram Patel", location: "Golf Course Road", text: "Affordable and reliable service."},
-    {name: "Simran Kaur", location: "Palam Vihar", text: "Great attention to detail."},
-    {name: "Rahul Mehta", location: "Sector 56", text: "They transformed my office space."},
-    {name: "Pooja Gupta", location: "DLF Phase 1", text: "Excellent customer support."},
-    {name: "Sandeep Singh", location: "Sector 45", text: "Very satisfied with the results."},
-    {name: "Anjali Joshi", location: "Sector 22", text: "Will definitely book again."},
-    {name: "Karan Verma", location: "South City 2", text: "Highly recommended for deep cleaning."},
-    {name: "Divya Sharma", location: "Sushant Lok Phase 1", text: "Efficient and timely service."},
-    {name: "Sunil Kumar", location: "Sector 31", text: "The best cleaning service in Gurgaon."},
-    {name: "Ritika Jain", location: "Sector 37", text: "Friendly and hardworking staff."},
-    {name: "Manish Gupta", location: "Sector 18", text: "Cleaners were very polite and thorough."},
-    {name: "Megha Patel", location: "Sector 40", text: "Highly professional team."},
-    {name: "Aakash Singh", location: "Sushant Lok Phase 2", text: "Affordable prices and excellent quality."},
-    {name: "Sneha Verma", location: "Sector 21", text: "My carpets have never looked better."},
-    {name: "Rajat Sharma", location: "Sector 50", text: "Quick response and great service."},
-    {name: "Shreya Joshi", location: "Sector 57", text: "Very thorough cleaning and polite staff."},
-    {name: "Ankit Mehta", location: "Sector 29", text: "Trustworthy and efficient."},
-    {name: "Neelam Singh", location: "Sector 44", text: "Excellent attention to detail."},
-    {name: "Pankaj Kumar", location: "DLF Phase 2", text: "My house looks brand new!"},
-    {name: "Rekha Gupta", location: "Sector 36", text: "Affordable and reliable cleaning."},
-    {name: "Suresh Patel", location: "Sector 55", text: "Highly recommended for pest control."},
-    {name: "Meena Sharma", location: "Palam Vihar", text: "Great cleaning service with friendly staff."},
-    {name: "Rajesh Verma", location: "Sector 26", text: "Very professional and detail-oriented."},
-    {name: "Kavita Singh", location: "Sector 33", text: "Quick and efficient service."},
-    {name: "Vijay Kumar", location: "Sector 20", text: "Excellent value for money."},
-    {name: "Sonal Patel", location: "South City 1", text: "Highly skilled and courteous staff."},
-    {name: "Aman Sharma", location: "Sector 58", text: "I am very happy with their service."},
-    {name: "Rashmi Verma", location: "Sushant Lok", text: "They pay attention to every corner."},
-    {name: "Deepak Singh", location: "Sector 19", text: "Reliable and trustworthy cleaning."},
-    {name: "Anita Jain", location: "Sector 38", text: "Very satisfied with the service quality."},
-    {name: "Kunal Mehta", location: "Golf Course Road", text: "Great team and punctual."},
-    {name: "Swati Gupta", location: "Sector 42", text: "Highly professional cleaning service."},
-    {name: "Ramesh Kumar", location: "Sector 34", text: "Affordable prices and excellent results."},
-    {name: "Priyanka Singh", location: "Sector 25", text: "Very polite and hardworking staff."},
-    {name: "Ajay Patel", location: "DLF Phase 3", text: "Would definitely recommend."},
-    {name: "Kiran Sharma", location: "Sector 48", text: "My office has never been cleaner."},
-    {name: "Mitali Verma", location: "Sector 51", text: "Professional and efficient team."},
-    {name: "Sanjay Singh", location: "Sector 24", text: "Excellent customer service."},
-    {name: "Ritu Jain", location: "Sector 43", text: "Very thorough cleaning."},
-    {name: "Vikas Kumar", location: "Sector 17", text: "Affordable and quality service."},
-    {name: "Sheetal Gupta", location: "South City 2", text: "Highly recommended for home cleaning."},
-    {name: "Nitin Mehta", location: "Sector 39", text: "Friendly and efficient staff."},
-    {name: "Geeta Sharma", location: "Sector 23", text: "Cleaners were very professional."},
-    {name: "Sanjana Singh", location: "Sector 35", text: "Will book again soon."},
+    {name: "Amit Sharma", gender: "male", location: "South City 1", text: "Amazing cleaning service. Highly recommended!"},
+    {name: "Priya Verma", gender: "female", location: "Sushant Lok", text: "Very professional and punctual team."},
+    {name: "Rohit Kumar", gender: "male", location: "Sector 14", text: "My home looks spotless after their cleaning."},
+    {name: "Neha Singh", gender: "female", location: "Sector 49", text: "Friendly staff and thorough cleaning."},
+    {name: "Vikram Patel", gender: "male", location: "Golf Course Road", text: "Affordable and reliable service."},
+    {name: "Simran Kaur", gender: "female", location: "Palam Vihar", text: "Great attention to detail."},
+    {name: "Rahul Mehta", gender: "male", location: "Sector 56", text: "They transformed my office space."},
+    {name: "Pooja Gupta", gender: "female", location: "DLF Phase 1", text: "Excellent customer support."},
+    {name: "Sandeep Singh", gender: "male", location: "Sector 45", text: "Very satisfied with the results."},
+    {name: "Anjali Joshi", gender: "female", location: "Sector 22", text: "Will definitely book again."},
+    {name: "Karan Verma", gender: "male", location: "South City 2", text: "Highly recommended for deep cleaning."},
+    {name: "Divya Sharma", gender: "female", location: "Sushant Lok Phase 1", text: "Efficient and timely service."},
+    {name: "Sunil Kumar", gender: "male", location: "Sector 31", text: "The best cleaning service in Gurgaon."},
+    {name: "Ritika Jain", gender: "female", location: "Sector 37", text: "Friendly and hardworking staff."},
+    {name: "Manish Gupta", gender: "male", location: "Sector 18", text: "Cleaners were very polite and thorough."},
+    {name: "Megha Patel", gender: "female", location: "Sector 40", text: "Highly professional team."},
+    {name: "Aakash Singh", gender: "male", location: "Sushant Lok Phase 2", text: "Affordable prices and excellent quality."},
+    {name: "Sneha Verma", gender: "female", location: "Sector 21", text: "My carpets have never looked better."},
+    {name: "Rajat Sharma", gender: "male", location: "Sector 50", text: "Quick response and great service."},
+    {name: "Shreya Joshi", gender: "female", location: "Sector 57", text: "Very thorough cleaning and polite staff."},
+    {name: "Ankit Mehta", gender: "male", location: "Sector 29", text: "Trustworthy and efficient."},
+    {name: "Neelam Singh", gender: "female", location: "Sector 44", text: "Excellent attention to detail."},
+    {name: "Pankaj Kumar", gender: "male", location: "DLF Phase 2", text: "My house looks brand new!"},
+    {name: "Rekha Gupta", gender: "female", location: "Sector 36", text: "Affordable and reliable cleaning."},
+    {name: "Suresh Patel", gender: "male", location: "Sector 55", text: "Highly recommended for pest control."},
+    {name: "Meena Sharma", gender: "female", location: "Palam Vihar", text: "Great cleaning service with friendly staff."},
+    {name: "Rajesh Verma", gender: "male", location: "Sector 26", text: "Very professional and detail-oriented."},
+    {name: "Kavita Singh", gender: "female", location: "Sector 33", text: "Quick and efficient service."},
+    {name: "Vijay Kumar", gender: "male", location: "Sector 20", text: "Excellent value for money."},
+    {name: "Sonal Patel", gender: "female", location: "South City 1", text: "Highly skilled and courteous staff."},
+    {name: "Aman Sharma", gender: "male", location: "Sector 58", text: "I am very happy with their service."},
+    {name: "Rashmi Verma", gender: "female", location: "Sushant Lok", text: "They pay attention to every corner."},
+    {name: "Deepak Singh", gender: "male", location: "Sector 19", text: "Reliable and trustworthy cleaning."},
+    {name: "Anita Jain", gender: "female", location: "Sector 38", text: "Very satisfied with the service quality."},
+    {name: "Kunal Mehta", gender: "male", location: "Golf Course Road", text: "Great team and punctual."},
+    {name: "Swati Gupta", gender: "female", location: "Sector 42", text: "Highly professional cleaning service."},
+    {name: "Ramesh Kumar", gender: "male", location: "Sector 34", text: "Affordable prices and excellent results."},
+    {name: "Priyanka Singh", gender: "female", location: "Sector 25", text: "Very polite and hardworking staff."},
+    {name: "Ajay Patel", gender: "male", location: "DLF Phase 3", text: "Would definitely recommend."},
+    {name: "Kiran Sharma", gender: "female", location: "Sector 48", text: "My office has never been cleaner."},
+    {name: "Mitali Verma", gender: "female", location: "Sector 51", text: "Professional and efficient team."},
+    {name: "Sanjay Singh", gender: "male", location: "Sector 24", text: "Excellent customer service."},
+    {name: "Ritu Jain", gender: "female", location: "Sector 43", text: "Very thorough cleaning."},
+    {name: "Vikas Kumar", gender: "male", location: "Sector 17", text: "Affordable and quality service."},
+    {name: "Sheetal Gupta", gender: "female", location: "South City 2", text: "Highly recommended for home cleaning."},
+    {name: "Nitin Mehta", gender: "male", location: "Sector 39", text: "Friendly and efficient staff."},
+    {name: "Geeta Sharma", gender: "female", location: "Sector 23", text: "Cleaners were very professional."},
+    {name: "Sanjana Singh", gender: "female", location: "Sector 35", text: "Will book again soon."},
   ];
 
- function getAvatarUrl(name) {
-  const seed = encodeURIComponent(name);
-  return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&mouth[]=smile&eyes[]=happy&hair[]=short&skin[]=brown`;
-}
+  function getAvatarUrl(name, gender) {
+    const seed = encodeURIComponent(name);
+    if (gender === 'female') {
+      // Longer hair, earrings for females
+      return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=long&mouth[]=smile&eyes[]=happy&skin[]=brown&accessories[]=earrings`;
+    } else {
+      // Short hair for males
+      return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=short&mouth[]=smile&eyes[]=happy&skin[]=brown`;
+    }
+  }
 
   function createStarRatingHTML() {
     return `<i class="fas fa-star"></i>`.repeat(5);
@@ -412,17 +418,17 @@
 
   function createReviewCard(review) {
     return `
-      <div class="col-md-4">
-        <div class="review-card">
-          <div class="review-header">
-            <img src="${getAvatarUrl(review.name)}" alt="${review.name}">
+      <div class="col-md-4 mb-4">
+        <div class="review-card p-3 border rounded shadow-sm bg-white">
+          <div class="review-header d-flex align-items-center mb-3">
+            <img src="${getAvatarUrl(review.name, review.gender)}" alt="${review.name}" class="rounded-circle me-3" width="60" height="60">
             <div>
-              <p class="reviewer-name mb-0">${review.name}</p>
-              <small class="reviewer-location">${review.location}</small>
+              <p class="reviewer-name mb-0 fw-bold">${review.name}</p>
+              <small class="reviewer-location text-muted">${review.location}</small>
             </div>
           </div>
-          <p class="review-text">"${review.text}"</p>
-          <div class="star-rating">${createStarRatingHTML()}</div>
+          <p class="review-text fst-italic">"${review.text}"</p>
+          <div class="star-rating text-warning">${createStarRatingHTML()}</div>
         </div>
       </div>
     `;
