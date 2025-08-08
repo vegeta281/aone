@@ -491,19 +491,21 @@
 </script>
 <script>
   window.OneSignalDeferred.push(() => {
-    OneSignal.getNotificationPermission().then(permission => {
-      if (permission === 'default') {
-        document.getElementById('subscribe-btn').style.display = 'block';
-      }
-    });
-  });
+    // Force show subscribe button for testing
+    const btn = document.getElementById('subscribe-btn');
+    btn.style.display = 'block';
+    console.log('Subscribe button forced visible');
 
-  document.getElementById('subscribe-btn').addEventListener('click', () => {
-    window.OneSignalDeferred.push(() => {
+    OneSignal.getNotificationPermission().then(permission => {
+      console.log('Current Notification Permission:', permission);
+    });
+
+    btn.addEventListener('click', () => {
+      console.log('Subscribe button clicked, registering for push notifications...');
       OneSignal.registerForPushNotifications()
         .then(() => {
           alert('Thanks for enabling notifications!');
-          document.getElementById('subscribe-btn').style.display = 'none';
+          btn.style.display = 'none';
         })
         .catch((error) => {
           console.error('Error enabling notifications:', error);
