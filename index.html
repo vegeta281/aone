@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -159,11 +159,13 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-     <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto">
+       <ul class="navbar-nav ms-auto">
   <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
   <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
   <li class="nav-item"><a class="nav-link" href="#booking">Booking</a></li>
 </ul>
+      </ul>
     </div>
   </div>
 </nav>
@@ -191,7 +193,7 @@
           </div>
         </div>
       </div>
-     
+      
       <div class="col-md-4">
         <div class="card h-100 text-center shadow-sm">
           <div class="card-body">
@@ -201,7 +203,7 @@
           </div>
         </div>
       </div>
-     
+      
       <div class="col-md-4">
         <div class="card h-100 text-center shadow-sm">
           <div class="card-body">
@@ -211,7 +213,7 @@
           </div>
         </div>
       </div>
-     
+      
       <div class="col-md-4">
         <div class="card h-100 text-center shadow-sm">
           <div class="card-body">
@@ -221,7 +223,7 @@
           </div>
         </div>
       </div>
-     
+      
       <div class="col-md-4">
         <div class="card h-100 text-center shadow-sm">
           <div class="card-body">
@@ -231,7 +233,7 @@
           </div>
         </div>
       </div>
-     
+      
       <div class="col-md-4">
         <div class="card h-100 text-center shadow-sm">
           <div class="card-body">
@@ -361,7 +363,7 @@
     document.querySelectorAll('.addon:checked').forEach(addon => {
       const price = parseInt(addon.dataset.price);
       total += price;
-      addonsDetails.push(`${addon.value}: ₹${price}`);
+      addonsDetails.push(${addon.value}: ₹${price});
     });
 
     document.getElementById("estimatedPrice").innerText = total;
@@ -466,19 +468,19 @@
     const seed = encodeURIComponent(name);
     if (gender === 'female') {
       // Longer hair, earrings for females
-      return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=long&mouth[]=smile&eyes[]=happy&skin[]=brown&accessories[]=earrings`;
+      return https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=long&mouth[]=smile&eyes[]=happy&skin[]=brown&accessories[]=earrings;
     } else {
       // Short hair for males
-      return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=short&mouth[]=smile&eyes[]=happy&skin[]=brown`;
+      return https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=short&mouth[]=smile&eyes[]=happy&skin[]=brown;
     }
   }
 
   function createStarRatingHTML() {
-    return `<i class="fas fa-star"></i>`.repeat(5);
+    return <i class="fas fa-star"></i>.repeat(5);
   }
 
   function createReviewCard(review) {
-    return `
+    return 
       <div class="col-md-4 mb-4">
         <div class="review-card p-3 border rounded shadow-sm bg-white">
           <div class="review-header d-flex align-items-center mb-3">
@@ -492,7 +494,7 @@
           <div class="star-rating text-warning">${createStarRatingHTML()}</div>
         </div>
       </div>
-    `;
+    ;
   }
 
   // Slider Logic - shows 3 reviews at a time, slides every 3 seconds
@@ -521,5 +523,3 @@
 
 </body>
 </html>
-
-
