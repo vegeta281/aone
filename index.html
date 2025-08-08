@@ -2,104 +2,93 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Professional Residential & Commercial Cleaning Services in Gurgaon. Book now for sparkling clean spaces.">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sachin Deep Cleaning</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
   <style>
-    /* Hero Section */
-    .hero {
+    body { margin: 0; overflow: hidden; }
+    #hero3d-container {
       position: relative;
-      background: url('images/3d-cleaning-illustration.png') no-repeat center center;
-      background-size: cover;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      text-align: center;
+      width: 100vw;
+      height: 100vh;
     }
-    .hero .overlay {
+    #hero-overlay {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.4);
-    }
-    .hero-content {
-      position: relative;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #fff;
+      font-family: Arial, sans-serif;
+      background: rgba(0,0,0,0.5);
+      padding: 6px 12px;
+      border-radius: 4px;
       z-index: 2;
-      max-width: 800px;
-      padding: 20px;
+      pointer-events: none;
     }
-    .hero h1 {
-      font-size: 3rem;
-      font-weight: bold;
-      line-height: 1.2;
-    }
-    .hero .highlight {
-      color: #ffd700;
-    }
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 20px;
-    }
-    .btn-primary {
-      background-color: #0044ff;
-      border: none;
-      padding: 12px 30px;
-      border-radius: 30px;
-      font-size: 1.1rem;
-    }
+    #booking { position: absolute; bottom: 40px; width: 100%; text-align: center; z-index: 2; }
+    button.book-btn { padding: 12px 24px; font-size: 1.1rem; border: none; border-radius: 30px; background-color: #0044ff; color: #fff; }
   </style>
 </head>
 <body>
 
-  <!-- Hero Section -->
-  <section class="hero">
-    <div class="overlay"></div>
-    <div class="container hero-content">
-      <h1><span class="highlight">Residential & Commercial</span><br>Cleaning Services</h1>
-      <p>Serving Gurgaon with Professional Cleaning Solutions</p>
-      <a href="#booking" class="btn btn-primary btn-lg mt-3">Book Now</a>
+  <div id="hero3d-container">
+    <div id="hero-overlay">Drag to rotate — Click to spray</div>
+    <div id="booking">
+      <button class="book-btn" onclick="window.location='#bookingSection'">Book Now</button>
     </div>
-  </section>
+  </div>
 
-  <!-- Booking Section -->
-  <section id="booking" class="py-5">
-    <div class="container">
-      <h2 class="text-center mb-4">Book Your Cleaning Service</h2>
-      <form action="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec" method="POST" class="row g-3">
-        <div class="col-md-6">
-          <input type="text" name="name" class="form-control" placeholder="Your Name" required>
-        </div>
-        <div class="col-md-6">
-          <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
-        </div>
-        <div class="col-md-12">
-          <textarea name="address" class="form-control" placeholder="Your Address" rows="3" required></textarea>
-        </div>
-        <div class="col-md-6">
-          <select name="service" class="form-select" required>
-            <option value="">Select Service</option>
-            <option>Residential Cleaning</option>
-            <option>Commercial Cleaning</option>
-            <option>Deep Cleaning</option>
-            <option>Carpet Cleaning</option>
-          </select>
-        </div>
-        <div class="col-md-6">
-          <input type="date" name="date" class="form-control" required>
-        </div>
-        <div class="col-12 text-center">
-          <button type="submit" class="btn btn-primary btn-lg">Confirm Booking</button>
-        </div>
-      </form>
-    </div>
-  </section>
+  <!-- Booking form -->
+  <div id="bookingSection" style="padding:40px; background:#f0f0f0;">
+    <!-- Your booking form goes here -->
+  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Three.js scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    const container = document.getElementById('hero3d-container');
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 1, 3);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enableZoom = false;
+
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    scene.add(light);
+
+    const loader = new THREE.GLTFLoader();
+    loader.load('spray-bottle.glb', gltf => {
+      const model = gltf.scene;
+      model.scale.set(1.5, 1.5, 1.5);
+      scene.add(model);
+
+      container.addEventListener('click', () => {
+        // Add spray animation or effect
+        model.rotation.x += 0.1;
+      });
+
+      animate();
+    });
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth/window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
 </body>
 </html>
+
