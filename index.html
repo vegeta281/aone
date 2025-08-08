@@ -489,7 +489,29 @@
     setInterval(slideReviews, 3000);
   });
 </script>
+<script>
+  window.OneSignalDeferred.push(() => {
+    OneSignal.getNotificationPermission().then(permission => {
+      if (permission === 'default') {
+        document.getElementById('subscribe-btn').style.display = 'block';
+      }
+    });
+  });
 
+  document.getElementById('subscribe-btn').addEventListener('click', () => {
+    window.OneSignalDeferred.push(() => {
+      OneSignal.registerForPushNotifications()
+        .then(() => {
+          alert('Thanks for enabling notifications!');
+          document.getElementById('subscribe-btn').style.display = 'none';
+        })
+        .catch((error) => {
+          console.error('Error enabling notifications:', error);
+          alert('Failed to enable notifications. Please try again.');
+        });
+    });
+  });
+</script>
 </body>
 </html>
 
