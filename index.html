@@ -637,5 +637,43 @@ OneSignalDeferred.push(async function(OneSignal) {
   });
 });
 </script>
+  <script>
+document.addEventListener("DOMContentLoaded", function () {
+  const pricing = {
+    "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+    "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+    "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+    "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+    "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+    "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+  };
+
+  function calculateTotal() {
+    const bhk = document.querySelector('[name="bhk"]').value;
+    const furnished = document.querySelector('[name="furnished"]').value;
+
+    let total = pricing[bhk]?.[furnished] || 0;
+    const addonsDetails = [];
+
+    document.querySelectorAll('.addon:checked').forEach(addon => {
+      const price = parseInt(addon.dataset.price);
+      total += price;
+      addonsDetails.push(`${addon.value}: ₹${price}`);
+    });
+
+    document.getElementById("estimatedPrice").innerText = total;
+    document.querySelector('[name="price"]').value = total;
+    document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
+  }
+
+  // Run once on load
+  calculateTotal();
+
+  // Event listeners
+  document.querySelector('[name="bhk"]').addEventListener("change", calculateTotal);
+  document.querySelector('[name="furnished"]').addEventListener("change", calculateTotal);
+  document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
+});
+</script>
 </body>
 </html>
