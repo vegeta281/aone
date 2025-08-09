@@ -382,7 +382,7 @@ target="_blank">
 </button>
 
 <!-- OneSignal Push Notification Integration -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -553,92 +553,72 @@ deferredPrompt = null;
 installBtn.style.display = 'none';
 });
 
-// OneSignal Initialization and Notification Handling
-window.OneSignalDeferred = window.OneSignalDeferred || [];
-OneSignalDeferred.push(async function(OneSignal) {
-try {
-// Initialize OneSignal
-await OneSignal.init({
-appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
-safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
-notifyButton: { enable: false },
-allowLocalhostAsSecureOrigin: true // For testing on localhost
-});
-
+// Native Browser Notifications (Backup Solution)
+function setupSimpleNotifications() {
 const notifyBtn = document.getElementById("notifyBtn");
 
-// Check initial subscription status
-updateNotificationButtonStatus();
+notifyBtn.addEventListener("click", function() {
+console.log("Requesting notification permission...");
 
-notifyBtn.addEventListener("click", async () => {
-try {
-// Check if push notifications are supported
-const isSupported = await OneSignal.Notifications.isPushSupported();
-if (!isSupported) {
-alert("Push notifications are not supported in this browser.");
+if (!('Notification' in window)) {
+alert('Your browser does not support notifications.');
 return;
 }
 
-// Check current permission status
-const permission = await OneSignal.Notifications.permission;
-console.log("Current permission:", permission);
-
-if (permission === "granted") {
-// Check if user is subscribed
-const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
-if (isSubscribed) {
-alert("You are already subscribed to notifications!");
-return;
-}
-}
-
-if (permission === "denied") {
-alert("Notifications are blocked. Please enable them in your browser settings.");
-return;
-}
-
-// Request permission and subscribe
-const result = await OneSignal.Slidedown.promptPush();
-console.log("Slidedown result:", result);
-
-// Update button status after prompt
-setTimeout(updateNotificationButtonStatus, 1000);
-
-} catch (err) {
-console.error("Error handling notification prompt:", err);
-alert("Unable to enable notifications. Please try again.");
-}
+if (Notification.permission === 'granted') {
+alert('Notifications are already enabled!');
+new Notification('Sachin Deep Cleaning', {
+body: 'You will receive updates about our cleaning services!',
+icon: '/favicon.ico'
 });
+notifyBtn.classList.add('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
+return;
+}
 
-// Function to update button appearance based on subscription status
-async function updateNotificationButtonStatus() {
-try {
-const permission = await OneSignal.Notifications.permission;
-const isSubscribed = await OneSignal.User.PushSubscription.optedIn;
+if (Notification.permission === 'denied') {
+alert('Notifications are blocked. Please enable them in your browser settings.');
+return;
+}
 
-if (permission === "granted" && isSubscribed) {
-notifyBtn.classList.add("subscribed");
-notifyBtn.title = "Notifications Enabled";
-notifyBtn.innerHTML = '<i class="fas fa-bell-slash"></i>';
+// Request permission
+Notification.requestPermission().then(function(permission) {
+console.log('Permission result:', permission);
+if (permission === 'granted') {
+alert('Notifications enabled! You will receive updates about our services.');
+new Notification('Sachin Deep Cleaning', {
+body: 'Welcome! You will now receive our service updates.',
+icon: '/favicon.ico'
+});
+notifyBtn.classList.add('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
+notifyBtn.title = 'Notifications Enabled';
+
+// Store the permission status
+localStorage.setItem('notificationsEnabled', 'true');
 } else {
-notifyBtn.classList.remove("subscribed");
-notifyBtn.title = "Enable Notifications";
-notifyBtn.innerHTML = '<i class="fas fa-bell"></i>';
+alert('Notifications blocked. You can enable them later in browser settings.');
 }
-} catch (err) {
-console.error("Error checking notification status:", err);
-}
-}
-
-// Listen for subscription changes
-OneSignal.User.PushSubscription.addEventListener('change', (event) => {
-console.log("Push subscription changed:", event);
-updateNotificationButtonStatus();
+});
 });
 
-} catch (error) {
-console.error("OneSignal initialization error:", error);
+// Check if notifications were previously enabled
+if (localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === 'granted') {
+notifyBtn.classList.add('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
+notifyBtn.title = 'Notifications Enabled';
 }
+}
+
+// Use simple notifications if OneSignal fails
+document.addEventListener('DOMContentLoaded', function() {
+// Try OneSignal first, fallback to simple notifications after 3 seconds
+setTimeout(function() {
+if (!window.OneSignal || !document.getElementById("notifyBtn").onclick) {
+console.log("Falling back to native notifications");
+setupSimpleNotifications();
+}
+}, 3000);
 });
 
 // Initialize reviews
