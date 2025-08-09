@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -39,7 +39,6 @@ font-size: 22px;
 box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 text-decoration: none;
 }
-
 /* Spinner Styling */
 #spinner {
 display: none;
@@ -66,10 +65,9 @@ right: 20px;
 bottom: 20px;
 background-color: #25d366;
 }
-
 /* Left side buttons */
 #installBtn {
-display: flex;
+display: none; /* Initially hidden */
 align-items: center;
 justify-content: center;
 position: fixed;
@@ -103,15 +101,12 @@ justify-content: center;
 box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 transition: background-color 0.3s ease;
 }
-
 .notification-button.subscribed {
 background-color: #4caf50;
 }
-
 .notification-button:hover {
 transform: scale(1.1);
 }
-
 /* Reviews Section */
 #reviews {
 background: #f8f9fa;
@@ -171,7 +166,6 @@ color: #f8ce0b;
 font-size: 1.2rem;
 text-align: center;
 }
-
 @media(max-width: 768px) {
 .review-card {
 flex: 1 1 100%;
@@ -307,7 +301,6 @@ max-width: 100%;
 </select>
 </div>
 
-<!-- Add-ons -->
 <div class="col-12">
 <label class="form-label">Add-on Services (optional)</label><br>
 <div class="form-check form-check-inline">
@@ -328,7 +321,6 @@ max-width: 100%;
 </div>
 </div>
 
-<!-- Display Price -->
 <div class="col-12">
 <h5>Estimated Price: ₹<span id="estimatedPrice">0</span></h5>
 </div>
@@ -342,17 +334,14 @@ max-width: 100%;
 </div>
 </form>
 
-<!-- Spinner element -->
 <div id="spinner"></div>
 </div>
 </section>
 
-<!-- Reviews Section -->
 <section id="reviews">
 <div class="container">
 <h2>Customer Reviews</h2>
 <div id="reviewSlider" class="row g-3">
-<!-- Reviews will be injected here -->
 </div>
 </div>
 </section>
@@ -363,26 +352,21 @@ max-width: 100%;
 </div>
 </footer>
 
-<!-- Right side -->
 <a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
 <i class="fas fa-phone-alt"></i>
 </a>
-<a href="https://wa.me/919267905943?text=Hello%2C%20I%20am%20interested%20in%20Sachin%20Deep%20Cleaning%20Services.%20Please%20get%20in%20touch%E2%80%A6" 
+<a href="https://wa.me/919267905943?text=Hello%2C%20I%20am%20interested%20in%20Sachin%20Deep%20Cleaning%20Services.%20Please%20get%20in%20touch%E2%80%A6"
 class="floating-button whatsapp-button"
 target="_blank">
-<i class="fab fa-whatsapp"></i> 
+<i class="fab fa-whatsapp"></i>
 </a>
 
-<!-- Left side -->
 <button id="installBtn" title="Download App">
 <i class="fas fa-download"></i>
 </button>
 <button class="notification-button" id="notifyBtn" title="Enable Notifications">
 <i class="fas fa-bell"></i>
 </button>
-
-<!-- OneSignal Push Notification Integration -->
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -450,19 +434,19 @@ return '<i class="fas fa-star"></i>'.repeat(5);
 
 function createReviewCard(review) {
 return `
-   <div class="col-md-4 mb-4">
-     <div class="review-card p-3 border rounded shadow-sm bg-white">
-       <div class="review-header mb-3">
-         <div>
-           <p class="reviewer-name mb-0 fw-bold">${review.name}</p>
-           <small class="reviewer-location text-muted">${review.location}</small>
-         </div>
-       </div>
-       <p class="review-text fst-italic">"${review.text}"</p>
-       <div class="star-rating text-warning">${createStarRatingHTML()}</div>
-     </div>
-   </div>
- `;
+<div class="col-md-4 mb-4">
+<div class="review-card p-3 border rounded shadow-sm bg-white">
+<div class="review-header mb-3">
+<div>
+<p class="reviewer-name mb-0 fw-bold">${review.name}</p>
+<small class="reviewer-location text-muted">${review.location}</small>
+</div>
+</div>
+<p class="review-text fst-italic">"${review.text}"</p>
+<div class="star-rating text-warning">${createStarRatingHTML()}</div>
+</div>
+</div>
+`;
 }
 
 let currentIndex = 0;
@@ -496,8 +480,13 @@ formData.forEach((value, key) => {
 data[key] = value;
 });
 
+// NOTE: This Google Apps Script URL is a public endpoint.
+// In a production environment, you should protect this with
+// a server-side proxy to prevent abuse.
+const formSubmissionUrl = "https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec";
+
 try {
-const response = await fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
+const response = await fetch(formSubmissionUrl, {
 method: "POST",
 headers: { "Content-Type": "application/x-www-form-urlencoded" },
 body: new URLSearchParams(data).toString()
@@ -521,278 +510,8 @@ spinner.style.display = "none";
 }
 });
 
-// Enhanced Service Worker Registration with Notification Support
-if ('serviceWorker' in navigator) {
-window.addEventListener('load', () => {
-// Register service worker with notification support
-navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
-.then(reg => {
-console.log('Service Worker registered for notifications:', reg.scope);
-// Check if push manager is supported
-if ('PushManager' in window) {
-console.log('Push messaging is supported');
-}
-})
-.catch(err => {
-console.error('Service Worker registration failed:', err);
-// Create inline service worker for basic functionality
-createInlineServiceWorker();
-});
-});
-}
-
-// Create a basic service worker inline if registration fails
-function createInlineServiceWorker() {
-if ('serviceWorker' in navigator) {
-const swCode = `
-self.addEventListener('notificationclick', function(event) {
-console.log('Notification clicked');
-event.notification.close();
-event.waitUntil(
-clients.openWindow('/')
-);
-});
-
-self.addEventListener('push', function(event) {
-console.log('Push received');
-if (event.data) {
-const data = event.data.json();
-const options = {
-body: data.body || 'New update from Sachin Deep Cleaning',
-icon: '/favicon.ico',
-badge: '/favicon.ico',
-tag: 'cleaning-update'
-};
-event.waitUntil(
-self.registration.showNotification(data.title || 'Sachin Deep Cleaning', options)
-);
-}
-});
-`;
-
-const blob = new Blob([swCode], { type: 'application/javascript' });
-const swURL = URL.createObjectURL(blob);
-
-navigator.serviceWorker.register(swURL)
-.then(reg => console.log('Inline Service Worker registered'))
-.catch(err => console.error('Inline Service Worker failed:', err));
-}
-}
-
-// PWA Install
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-window.addEventListener('beforeinstallprompt', (e) => {
-e.preventDefault();
-deferredPrompt = e;
-installBtn.style.display = 'flex';
-});
-
-installBtn.addEventListener('click', async () => {
-if (!deferredPrompt) return;
-deferredPrompt.prompt();
-const choiceResult = await deferredPrompt.userChoice;
-if (choiceResult.outcome === 'accepted') {
-console.log('User accepted the app install');
-} else {
-console.log('User dismissed the app install');
-}
-deferredPrompt = null;
-installBtn.style.display = 'none';
-});
-
-// Mobile-Optimized Notification System
-function setupMobileNotifications() {
-const notifyBtn = document.getElementById("notifyBtn");
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-const isAndroid = /Android/i.test(navigator.userAgent);
-const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-
-console.log('Device info:', { isMobile, isIOS, isAndroid, isStandalone });
-
-notifyBtn.addEventListener("click", function() {
-console.log("Notification button clicked on mobile device");
-
-// Check if running as PWA
-if (isMobile && !isStandalone) {
-alert('For best notification experience, please "Add to Home Screen" first, then enable notifications from the installed app.');
-return;
-}
-
-// iOS specific handling
-if (isIOS) {
-if (isStandalone) {
-// iOS PWA - use service worker for notifications
-handleIOSNotifications();
-} else {
-alert('Please add this app to your home screen first for notifications to work properly on iOS.');
-return;
-}
-} 
-// Android specific handling
-else if (isAndroid) {
-handleAndroidNotifications();
-} 
-// Desktop/other devices
-else {
-handleDesktopNotifications();
-}
-});
-
-// Check initial notification status
-checkNotificationStatus();
-}
-
-function handleIOSNotifications() {
-console.log('Handling iOS notifications...');
-
-// For iOS PWA, we need to use service worker
-if ('serviceWorker' in navigator && 'PushManager' in window) {
-navigator.serviceWorker.ready.then(function(registration) {
-console.log('Service Worker ready for iOS');
-
-// Request notification permission
-Notification.requestPermission().then(function(permission) {
-console.log('iOS notification permission:', permission);
-
-if (permission === 'granted') {
-// Subscribe to push notifications
-registration.pushManager.subscribe({
-userVisibleOnly: true,
-applicationServerKey: urlBase64ToUint8Array('BEl62iUYgUivxIkv69yViEuiBIa40j8uYKHFrXnWMVeL5ZKcN9EZK8A4aOOvYbR8m6jHSZPSO5E5YXjLm9M5Zhs') // Your VAPID key
-}).then(function(subscription) {
-console.log('iOS push subscription successful:', subscription);
-updateNotificationButton(true);
-alert('Notifications enabled! You will receive updates about our services.');
-storeSubscription(subscription);
-}).catch(function(error) {
-console.error('iOS push subscription failed:', error);
-alert('Failed to enable push notifications. Please try again.');
-});
-} else {
-alert('Notifications blocked. Please enable them in Safari settings.');
-}
-});
-}).catch(function(error) {
-console.error('Service Worker not ready:', error);
-alert('Please make sure you added this app to your home screen.');
-});
-} else {
-alert('Push notifications not supported. Please update your iOS version.');
-}
-}
-
-function handleAndroidNotifications() {
-console.log('Handling Android notifications...');
-
-if (!('Notification' in window)) {
-alert('Notifications not supported on this device.');
-return;
-}
-
-if (Notification.permission === 'granted') {
-console.log('Android notifications already granted');
-updateNotificationButton(true);
-showTestNotification();
-return;
-}
-
-if (Notification.permission === 'denied') {
-alert('Notifications are blocked. Please enable them in your browser settings:\n1. Tap the menu (3 dots)\n2. Go to Site Settings\n3. Enable Notifications');
-return;
-}
-
-// Request permission for Android
-Notification.requestPermission().then(function(permission) {
-console.log('Android notification permission:', permission);
-if (permission === 'granted') {
-updateNotificationButton(true);
-showTestNotification();
-alert('Notifications enabled! You will receive updates about our cleaning services.');
-} else {
-alert('Please enable notifications in your browser settings for updates.');
-}
-});
-}
-
-function handleDesktopNotifications() {
-console.log('Handling desktop notifications...');
-
-if (!('Notification' in window)) {
-alert('Your browser does not support notifications.');
-return;
-}
-
-if (Notification.permission === 'granted') {
-updateNotificationButton(true);
-showTestNotification();
-return;
-}
-
-if (Notification.permission === 'denied') {
-alert('Notifications are blocked. Please enable them in your browser settings.');
-return;
-}
-
-Notification.requestPermission().then(function(permission) {
-if (permission === 'granted') {
-updateNotificationButton(true);
-showTestNotification();
-} else {
-alert('Notifications blocked. You can enable them later in browser settings.');
-}
-});
-}
-
-function showTestNotification() {
-if (Notification.permission === 'granted') {
-const notification = new Notification('Sachin Deep Cleaning', {
-body: 'Notifications are now enabled! You\'ll receive updates about our services.',
-icon: '/favicon.ico',
-badge: '/favicon.ico',
-tag: 'welcome',
-requireInteraction: false,
-silent: false
-});
-
-notification.onclick = function() {
-window.focus();
-notification.close();
-};
-
-// Auto close after 5 seconds
-setTimeout(() => notification.close(), 5000);
-}
-}
-
-function updateNotificationButton(enabled) {
-const notifyBtn = document.getElementById("notifyBtn");
-if (enabled) {
-notifyBtn.classList.add('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
-notifyBtn.title = 'Notifications Enabled';
-localStorage.setItem('notificationsEnabled', 'true');
-} else {
-notifyBtn.classList.remove('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-bell"></i>';
-notifyBtn.title = 'Enable Notifications';
-}
-}
-
-function checkNotificationStatus() {
-if (Notification.permission === 'granted') {
-updateNotificationButton(true);
-}
-}
-
-function storeSubscription(subscription) {
-// Store subscription details for sending notifications later
-localStorage.setItem('pushSubscription', JSON.stringify(subscription));
-// Here you would typically send this to your server
-console.log('Subscription stored:', subscription);
-}
+// SERVICE WORKER & PWA LOGIC
+const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa40j8uYKHFrXnWMVeL5ZKcN9EZK8A4aOOvYbR8m6jHSZPSO5E5YXjLm9M5Zhs';
 
 // Utility function for VAPID key conversion
 function urlBase64ToUint8Array(base64String) {
@@ -806,21 +525,147 @@ outputArray[i] = rawData.charCodeAt(i);
 return outputArray;
 }
 
-// Initialize mobile notifications
-document.addEventListener('DOMContentLoaded', function() {
-setTimeout(function() {
-console.log('Initializing mobile notification system');
-setupMobileNotifications();
-}, 1000);
+async function subscribeToPush() {
+if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+alert('Push notifications not supported by this browser.');
+return;
+}
+
+try {
+const registration = await navigator.serviceWorker.ready;
+const existingSubscription = await registration.pushManager.getSubscription();
+if (existingSubscription) {
+console.log('Already subscribed:', existingSubscription);
+return existingSubscription;
+}
+
+const subscription = await registration.pushManager.subscribe({
+userVisibleOnly: true,
+applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
 });
 
-// Initialize reviews
+console.log('Push subscription successful:', subscription);
+// You would typically send this subscription object to your server here
+localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+return subscription;
+} catch (error) {
+console.error('Push subscription failed:', error);
+throw error;
+}
+}
+
+async function handleNotificationSubscription() {
+const notifyBtn = document.getElementById("notifyBtn");
+const currentPermission = Notification.permission;
+
+if (currentPermission === 'granted') {
+updateNotificationButton(true);
+showTestNotification();
+} else if (currentPermission === 'denied') {
+alert('Notifications are blocked. Please enable them in your browser settings.');
+} else {
+try {
+const permission = await Notification.requestPermission();
+if (permission === 'granted') {
+await subscribeToPush();
+updateNotificationButton(true);
+showTestNotification();
+alert('Notifications enabled! You will receive updates about our services.');
+} else {
+alert('Notifications blocked. You can enable them later in browser settings.');
+}
+} catch (error) {
+console.error('Error requesting notification permission:', error);
+alert('Failed to enable push notifications. Please try again.');
+}
+}
+}
+
+function updateNotificationButton(enabled) {
+const notifyBtn = document.getElementById("notifyBtn");
+if (enabled) {
+notifyBtn.classList.add('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
+notifyBtn.title = 'Notifications Enabled';
+} else {
+notifyBtn.classList.remove('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-bell"></i>';
+notifyBtn.title = 'Enable Notifications';
+}
+}
+
+function showTestNotification() {
+if (Notification.permission === 'granted') {
+const notification = new Notification('Sachin Deep Cleaning', {
+body: 'Notifications are now enabled! You\'ll receive updates about our services.',
+icon: '/favicon.ico',
+tag: 'welcome',
+});
+notification.onclick = function() {
+window.focus();
+notification.close();
+};
+setTimeout(() => notification.close(), 5000);
+}
+}
+
+// PWA Installation Logic
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Hide or show the install button based on beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+e.preventDefault();
+deferredPrompt = e;
+installBtn.style.display = 'flex';
+});
+
+// Install button click handler
+installBtn.addEventListener('click', async () => {
+if (deferredPrompt) {
+deferredPrompt.prompt();
+const choiceResult = await deferredPrompt.userChoice;
+if (choiceResult.outcome === 'accepted') {
+console.log('User accepted the app install');
+} else {
+console.log('User dismissed the app install');
+}
+deferredPrompt = null;
+installBtn.style.display = 'none';
+} else {
+// Fallback for when the prompt doesn't appear
+// Provide clear instructions for manual installation
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+if (isIOS) {
+alert('To install the app on iOS, tap the "Share" button and select "Add to Home Screen".');
+} else {
+alert('To install the app, tap the menu (three dots) in your browser and select "Add to Home Screen".');
+}
+}
+});
+
+// Initial setup
 document.addEventListener('DOMContentLoaded', () => {
 renderReviews();
-setInterval(slideReviews, 5000); // Changed to 5 seconds for better UX
+setInterval(slideReviews, 5000);
+document.getElementById("notifyBtn").addEventListener("click", handleNotificationSubscription);
+
+// Register service worker and check initial notification status
+if ('serviceWorker' in navigator) {
+navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+.then(reg => {
+console.log('Service Worker registered successfully:', reg);
+if (Notification.permission === 'granted') {
+updateNotificationButton(true);
+}
+})
+.catch(err => console.error('Service Worker registration failed:', err));
+} else {
+console.log('Service Workers are not supported.');
+}
 });
+
 </script>
 
 </body>
 </html>
-
