@@ -521,13 +521,62 @@ spinner.style.display = "none";
 }
 });
 
-// Service Worker Registration
+// Enhanced Service Worker Registration with Notification Support
 if ('serviceWorker' in navigator) {
 window.addEventListener('load', () => {
-navigator.serviceWorker.register('/service-worker.js')
-.then(reg => console.log('Service Worker registered:', reg.scope))
-.catch(err => console.error('Service Worker registration failed:', err));
+// Register service worker with notification support
+navigator.serviceWorker.register('/sw.js', { scope: '/' })
+.then(reg => {
+console.log('Service Worker registered for notifications:', reg.scope);
+// Check if push manager is supported
+if ('PushManager' in window) {
+console.log('Push messaging is supported');
+}
+})
+.catch(err => {
+console.error('Service Worker registration failed:', err);
+// Create inline service worker for basic functionality
+createInlineServiceWorker();
 });
+});
+}
+
+// Create a basic service worker inline if registration fails
+function createInlineServiceWorker() {
+if ('serviceWorker' in navigator) {
+const swCode = `
+self.addEventListener('notificationclick', function(event) {
+console.log('Notification clicked');
+event.notification.close();
+event.waitUntil(
+clients.openWindow('/')
+);
+});
+
+self.addEventListener('push', function(event) {
+console.log('Push received');
+if (event.data) {
+const data = event.data.json();
+const options = {
+body: data.body || 'New update from Sachin Deep Cleaning',
+icon: '/favicon.ico',
+badge: '/favicon.ico',
+tag: 'cleaning-update'
+};
+event.waitUntil(
+self.registration.showNotification(data.title || 'Sachin Deep Cleaning', options)
+);
+}
+});
+`;
+
+const blob = new Blob([swCode], { type: 'application/javascript' });
+const swURL = URL.createObjectURL(blob);
+
+navigator.serviceWorker.register(swURL)
+.then(reg => console.log('Inline Service Worker registered'))
+.catch(err => console.error('Inline Service Worker failed:', err));
+}
 }
 
 // PWA Install
@@ -553,12 +602,123 @@ deferredPrompt = null;
 installBtn.style.display = 'none';
 });
 
-// Native Browser Notifications (Backup Solution)
-function setupSimpleNotifications() {
+// Mobile-Optimized Notification System
+function setupMobileNotifications() {
 const notifyBtn = document.getElementById("notifyBtn");
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isAndroid = /Android/i.test(navigator.userAgent);
+const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+console.log('Device info:', { isMobile, isIOS, isAndroid, isStandalone });
 
 notifyBtn.addEventListener("click", function() {
-console.log("Requesting notification permission...");
+console.log("Notification button clicked on mobile device");
+
+// Check if running as PWA
+if (isMobile && !isStandalone) {
+alert('For best notification experience, please "Add to Home Screen" first, then enable notifications from the installed app.');
+return;
+}
+
+// iOS specific handling
+if (isIOS) {
+if (isStandalone) {
+// iOS PWA - use service worker for notifications
+handleIOSNotifications();
+} else {
+alert('Please add this app to your home screen first for notifications to work properly on iOS.');
+return;
+}
+} 
+// Android specific handling
+else if (isAndroid) {
+handleAndroidNotifications();
+} 
+// Desktop/other devices
+else {
+handleDesktopNotifications();
+}
+});
+
+// Check initial notification status
+checkNotificationStatus();
+}
+
+function handleIOSNotifications() {
+console.log('Handling iOS notifications...');
+
+// For iOS PWA, we need to use service worker
+if ('serviceWorker' in navigator && 'PushManager' in window) {
+navigator.serviceWorker.ready.then(function(registration) {
+console.log('Service Worker ready for iOS');
+
+// Request notification permission
+Notification.requestPermission().then(function(permission) {
+console.log('iOS notification permission:', permission);
+
+if (permission === 'granted') {
+// Subscribe to push notifications
+registration.pushManager.subscribe({
+userVisibleOnly: true,
+applicationServerKey: urlBase64ToUint8Array('BEl62iUYgUivxIkv69yViEuiBIa40j8uYKHFrXnWMVeL5ZKcN9EZK8A4aOOvYbR8m6jHSZPSO5E5YXjLm9M5Zhs') // Your VAPID key
+}).then(function(subscription) {
+console.log('iOS push subscription successful:', subscription);
+updateNotificationButton(true);
+alert('Notifications enabled! You will receive updates about our services.');
+storeSubscription(subscription);
+}).catch(function(error) {
+console.error('iOS push subscription failed:', error);
+alert('Failed to enable push notifications. Please try again.');
+});
+} else {
+alert('Notifications blocked. Please enable them in Safari settings.');
+}
+});
+}).catch(function(error) {
+console.error('Service Worker not ready:', error);
+alert('Please make sure you added this app to your home screen.');
+});
+} else {
+alert('Push notifications not supported. Please update your iOS version.');
+}
+}
+
+function handleAndroidNotifications() {
+console.log('Handling Android notifications...');
+
+if (!('Notification' in window)) {
+alert('Notifications not supported on this device.');
+return;
+}
+
+if (Notification.permission === 'granted') {
+console.log('Android notifications already granted');
+updateNotificationButton(true);
+showTestNotification();
+return;
+}
+
+if (Notification.permission === 'denied') {
+alert('Notifications are blocked. Please enable them in your browser settings:\n1. Tap the menu (3 dots)\n2. Go to Site Settings\n3. Enable Notifications');
+return;
+}
+
+// Request permission for Android
+Notification.requestPermission().then(function(permission) {
+console.log('Android notification permission:', permission);
+if (permission === 'granted') {
+updateNotificationButton(true);
+showTestNotification();
+alert('Notifications enabled! You will receive updates about our cleaning services.');
+} else {
+alert('Please enable notifications in your browser settings for updates.');
+}
+});
+}
+
+function handleDesktopNotifications() {
+console.log('Handling desktop notifications...');
 
 if (!('Notification' in window)) {
 alert('Your browser does not support notifications.');
@@ -566,13 +726,8 @@ return;
 }
 
 if (Notification.permission === 'granted') {
-alert('Notifications are already enabled!');
-new Notification('Sachin Deep Cleaning', {
-body: 'You will receive updates about our cleaning services!',
-icon: '/favicon.ico'
-});
-notifyBtn.classList.add('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
+updateNotificationButton(true);
+showTestNotification();
 return;
 }
 
@@ -581,44 +736,82 @@ alert('Notifications are blocked. Please enable them in your browser settings.')
 return;
 }
 
-// Request permission
 Notification.requestPermission().then(function(permission) {
-console.log('Permission result:', permission);
 if (permission === 'granted') {
-alert('Notifications enabled! You will receive updates about our services.');
-new Notification('Sachin Deep Cleaning', {
-body: 'Welcome! You will now receive our service updates.',
-icon: '/favicon.ico'
-});
-notifyBtn.classList.add('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
-notifyBtn.title = 'Notifications Enabled';
-
-// Store the permission status
-localStorage.setItem('notificationsEnabled', 'true');
+updateNotificationButton(true);
+showTestNotification();
 } else {
 alert('Notifications blocked. You can enable them later in browser settings.');
 }
 });
+}
+
+function showTestNotification() {
+if (Notification.permission === 'granted') {
+const notification = new Notification('Sachin Deep Cleaning', {
+body: 'Notifications are now enabled! You\'ll receive updates about our services.',
+icon: '/favicon.ico',
+badge: '/favicon.ico',
+tag: 'welcome',
+requireInteraction: false,
+silent: false
 });
 
-// Check if notifications were previously enabled
-if (localStorage.getItem('notificationsEnabled') === 'true' && Notification.permission === 'granted') {
+notification.onclick = function() {
+window.focus();
+notification.close();
+};
+
+// Auto close after 5 seconds
+setTimeout(() => notification.close(), 5000);
+}
+}
+
+function updateNotificationButton(enabled) {
+const notifyBtn = document.getElementById("notifyBtn");
+if (enabled) {
 notifyBtn.classList.add('subscribed');
 notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
 notifyBtn.title = 'Notifications Enabled';
+localStorage.setItem('notificationsEnabled', 'true');
+} else {
+notifyBtn.classList.remove('subscribed');
+notifyBtn.innerHTML = '<i class="fas fa-bell"></i>';
+notifyBtn.title = 'Enable Notifications';
 }
 }
 
-// Use simple notifications if OneSignal fails
-document.addEventListener('DOMContentLoaded', function() {
-// Try OneSignal first, fallback to simple notifications after 3 seconds
-setTimeout(function() {
-if (!window.OneSignal || !document.getElementById("notifyBtn").onclick) {
-console.log("Falling back to native notifications");
-setupSimpleNotifications();
+function checkNotificationStatus() {
+if (Notification.permission === 'granted') {
+updateNotificationButton(true);
 }
-}, 3000);
+}
+
+function storeSubscription(subscription) {
+// Store subscription details for sending notifications later
+localStorage.setItem('pushSubscription', JSON.stringify(subscription));
+// Here you would typically send this to your server
+console.log('Subscription stored:', subscription);
+}
+
+// Utility function for VAPID key conversion
+function urlBase64ToUint8Array(base64String) {
+const padding = '='.repeat((4 - base64String.length % 4) % 4);
+const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+const rawData = window.atob(base64);
+const outputArray = new Uint8Array(rawData.length);
+for (let i = 0; i < rawData.length; ++i) {
+outputArray[i] = rawData.charCodeAt(i);
+}
+return outputArray;
+}
+
+// Initialize mobile notifications
+document.addEventListener('DOMContentLoaded', function() {
+setTimeout(function() {
+console.log('Initializing mobile notification system');
+setupMobileNotifications();
+}, 1000);
 });
 
 // Initialize reviews
