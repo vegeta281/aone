@@ -189,7 +189,6 @@ max-width: 100%;
 <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
 </ul>
 </div>
-</div>
 </nav>
 
 <section class="hero">
@@ -364,13 +363,22 @@ target="_blank">
 <button id="installBtn" title="Download App">
 <i class="fas fa-download"></i>
 </button>
-<button class="notification-button" id="notifyBtn" title="Enable Notifications">
-<i class="fas fa-bell"></i>
-</button>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
+// OneSignal SDK for Push Notifications
+window.OneSignal = window.OneSignal || [];
+OneSignal.push(function() {
+  OneSignal.init({
+    appId: "YOUR_ONESIGNAL_APP_ID",
+    serviceWorkerPath: "service-worker.js",
+    allowLocalhostAsSecureOrigin: true,
+  });
+
+  // Automatically show the native permission prompt
+  OneSignal.showNativePrompt();
+});
+
 // Pricing calculation
 const pricing = {
 "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
@@ -510,121 +518,6 @@ spinner.style.display = "none";
 }
 });
 
-// SERVICE WORKER & PWA LOGIC
-const VAPID_PUBLIC_KEY = 'BEl62iUYgUivxIkv69yViEuiBIa40j8uYKHFrXnWMVeL5ZKcN9EZK8A4aOOvYbR8m6jHSZPSO5E5YXjLm9M5Zhs';
-
-// Utility function for VAPID key conversion
-function urlBase64ToUint8Array(base64String) {
-const padding = '='.repeat((4 - base64String.length % 4) % 4);
-const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-const rawData = window.atob(base64);
-const outputArray = new Uint8Array(rawData.length);
-for (let i = 0; i < rawData.length; ++i) {
-outputArray[i] = rawData.charCodeAt(i);
-}
-return outputArray;
-}
-
-async function subscribeToPush() {
-if (!('serviceWorker' in navigator && 'PushManager' in window)) {
-alert('Push notifications not supported by this browser.');
-return;
-}
-
-try {
-const registration = await navigator.serviceWorker.ready;
-const existingSubscription = await registration.pushManager.getSubscription();
-if (existingSubscription) {
-console.log('Already subscribed:', existingSubscription);
-return existingSubscription;
-}
-
-const subscription = await registration.pushManager.subscribe({
-userVisibleOnly: true,
-applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-});
-
-console.log('Push subscription successful:', subscription);
-// You would typically send this subscription object to your server here
-localStorage.setItem('pushSubscription', JSON.stringify(subscription));
-return subscription;
-} catch (error) {
-console.error('Push subscription failed:', error);
-throw error;
-}
-}
-
-// New function to detect iOS and standalone mode
-function isIOS() {
-    const userAgent = window.navigator.userAgent;
-    const isAppleDevice = /iPad|iPhone|iPod/.test(userAgent);
-    const isInStandaloneMode = ('standalone' in window.navigator) && (window.navigator.standalone);
-
-    return isAppleDevice && !isInStandaloneMode;
-}
-
-async function handleNotificationSubscription() {
-    const notifyBtn = document.getElementById("notifyBtn");
-    const currentPermission = Notification.permission;
-
-    // Check for iOS and if the app is NOT in standalone mode
-    if (isIOS()) {
-        alert('To enable notifications on your iPhone, you must first add this website to your home screen. Tap the "Share" button at the bottom of Safari and select "Add to Home Screen".');
-        return;
-    }
-
-    // Handle notifications for all other platforms and iOS in standalone mode
-    if (currentPermission === 'granted') {
-        updateNotificationButton(true);
-        showTestNotification();
-    } else if (currentPermission === 'denied') {
-        alert('Notifications are blocked. Please enable them in your browser settings.');
-    } else {
-        try {
-            const permission = await Notification.requestPermission();
-            if (permission === 'granted') {
-                await subscribeToPush();
-                updateNotificationButton(true);
-                showTestNotification();
-                alert('Notifications enabled! You will receive updates about our services.');
-            } else {
-                alert('Notifications blocked. You can enable them later in browser settings.');
-            }
-        } catch (error) {
-            console.error('Error requesting notification permission:', error);
-            alert('Failed to enable push notifications. Please try again.');
-        }
-    }
-}
-
-function updateNotificationButton(enabled) {
-const notifyBtn = document.getElementById("notifyBtn");
-if (enabled) {
-notifyBtn.classList.add('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-check"></i>';
-notifyBtn.title = 'Notifications Enabled';
-} else {
-notifyBtn.classList.remove('subscribed');
-notifyBtn.innerHTML = '<i class="fas fa-bell"></i>';
-notifyBtn.title = 'Enable Notifications';
-}
-}
-
-function showTestNotification() {
-if (Notification.permission === 'granted') {
-const notification = new Notification('Sachin Deep Cleaning', {
-body: 'Notifications are now enabled! You\'ll receive updates about our services.',
-icon: '/favicon.ico',
-tag: 'welcome',
-});
-notification.onclick = function() {
-window.focus();
-notification.close();
-};
-setTimeout(() => notification.close(), 5000);
-}
-}
-
 // PWA Installation Logic
 let deferredPrompt;
 const installBtn = document.getElementById('installBtn');
@@ -664,23 +557,18 @@ alert('To install the app, tap the menu (three dots) in your browser and select 
 document.addEventListener('DOMContentLoaded', () => {
 renderReviews();
 setInterval(slideReviews, 5000);
-document.getElementById("notifyBtn").addEventListener("click", handleNotificationSubscription);
 
-// Register service worker and check initial notification status
+// Register service worker
 if ('serviceWorker' in navigator) {
 navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
 .then(reg => {
 console.log('Service Worker registered successfully:', reg);
-if (Notification.permission === 'granted') {
-updateNotificationButton(true);
-}
 })
 .catch(err => console.error('Service Worker registration failed:', err));
 } else {
 console.log('Service Workers are not supported.');
 }
 });
-
 </script>
 
 </body>
