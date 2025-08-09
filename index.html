@@ -675,5 +675,21 @@ document.addEventListener("DOMContentLoaded", function () {
   document.querySelectorAll('.addon').forEach(el => el.addEventListener("change", calculateTotal));
 });
 </script>
+  <button id="subscribeBtn">Enable Notifications</button>
+
+<script>
+document.getElementById("subscribeBtn").addEventListener("click", function () {
+  OneSignal.push(function() {
+    OneSignal.isPushNotificationsEnabled(function(isEnabled) {
+      if (!isEnabled) {
+        // Ask user for permission
+        OneSignal.registerForPushNotifications();
+      } else {
+        alert("You're already subscribed to notifications!");
+      }
+    });
+  });
+});
+</script>
 </body>
 </html>
