@@ -525,7 +525,7 @@ spinner.style.display = "none";
 if ('serviceWorker' in navigator) {
 window.addEventListener('load', () => {
 // Register service worker with notification support
-navigator.serviceWorker.register('/sw.js', { scope: '/' })
+navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
 .then(reg => {
 console.log('Service Worker registered for notifications:', reg.scope);
 // Check if push manager is supported
