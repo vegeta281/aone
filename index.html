@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -39,7 +40,7 @@ font-size: 22px;
 box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 text-decoration: none;
 }
-/* Spinner Styling */
+/* Spinner Styling /
 #spinner {
 display: none;
 margin: 20px auto;
@@ -54,7 +55,7 @@ animation: spin 1s linear infinite;
 0% { transform: rotate(0deg); }
 100% { transform: rotate(360deg); }
 }
-/* Right side buttons */
+/ Right side buttons /
 .call-button {
 right: 20px;
 bottom: 90px;
@@ -65,9 +66,9 @@ right: 20px;
 bottom: 20px;
 background-color: #25d366;
 }
-/* Left side buttons */
+/ Left side buttons /
 #installBtn {
-display: none; /* Initially hidden */
+display: none; / Initially hidden /
 align-items: center;
 justify-content: center;
 position: fixed;
@@ -107,7 +108,7 @@ background-color: #4caf50;
 .notification-button:hover {
 transform: scale(1.1);
 }
-/* Reviews Section */
+/ Reviews Section */
 #reviews {
 background: #f8f9fa;
 padding: 60px 15px;
@@ -173,6 +174,7 @@ max-width: 100%;
 }
 }
 </style>
+
 </head>
 <body>
 
@@ -369,14 +371,14 @@ target="_blank">
 // OneSignal SDK for Push Notifications
 window.OneSignal = window.OneSignal || [];
 OneSignal.push(function() {
-  OneSignal.init({
-    appId: "YOUR_ONESIGNAL_APP_ID",
-    serviceWorkerPath: "service-worker.js",
-    allowLocalhostAsSecureOrigin: true,
-  });
+  OneSignal.init({
+    appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
+    serviceWorkerPath: "service-worker.js",
+    allowLocalhostAsSecureOrigin: true,
+  });
 
-  // Automatically show the native permission prompt
-  OneSignal.showNativePrompt();
+  // Automatically show the native permission prompt
+  OneSignal.showNativePrompt();
 });
 
 // Pricing calculation
@@ -399,7 +401,7 @@ const addonsDetails = [];
 document.querySelectorAll('.addon:checked').forEach(addon => {
 const price = parseInt(addon.dataset.price);
 total += price;
-addonsDetails.push(`${addon.value}: ₹${price}`);
+addonsDetails.push(${addon.value}: ₹${price});
 });
 
 document.getElementById("estimatedPrice").innerText = total;
@@ -441,20 +443,7 @@ return '<i class="fas fa-star"></i>'.repeat(5);
 }
 
 function createReviewCard(review) {
-return `
-<div class="col-md-4 mb-4">
-<div class="review-card p-3 border rounded shadow-sm bg-white">
-<div class="review-header mb-3">
-<div>
-<p class="reviewer-name mb-0 fw-bold">${review.name}</p>
-<small class="reviewer-location text-muted">${review.location}</small>
-</div>
-</div>
-<p class="review-text fst-italic">"${review.text}"</p>
-<div class="star-rating text-warning">${createStarRatingHTML()}</div>
-</div>
-</div>
-`;
+return &lt;div class=&quot;col-md-4 mb-4&quot;&gt; &lt;div class=&quot;review-card p-3 border rounded shadow-sm bg-white&quot;&gt; &lt;div class=&quot;review-header mb-3&quot;&gt; &lt;div&gt; &lt;p class=&quot;reviewer-name mb-0 fw-bold&quot;&gt;${review.name}&lt;/p&gt; &lt;small class=&quot;reviewer-location text-muted&quot;&gt;${review.location}&lt;/small&gt; &lt;/div&gt; &lt;/div&gt; &lt;p class=&quot;review-text fst-italic&quot;&gt;&quot;${review.text}&quot;&lt;/p&gt; &lt;div class=&quot;star-rating text-warning&quot;&gt;${createStarRatingHTML()}&lt;/div&gt; &lt;/div&gt; &lt;/div&gt;;
 }
 
 let currentIndex = 0;
