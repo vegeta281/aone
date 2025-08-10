@@ -157,11 +157,17 @@
       gap: 15px;
       width: 100%;
     }
-    .review-header img {
+    .avatar-placeholder {
       border-radius: 50%;
       width: 50px;
       height: 50px;
-      object-fit: cover;
+      background: linear-gradient(45deg, #007bff, #0056b3);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
       border: 2px solid #007bff;
     }
     .reviewer-name {
@@ -204,8 +210,8 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
   <li class="nav-item"><a class="nav-link" href="#services">Services</a></li>
-  <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
   <li class="nav-item"><a class="nav-link" href="#booking">Booking</a></li>
+  <li class="nav-item"><a class="nav-link" href="#reviews">Reviews</a></li>
 </ul>
     </div>
   </div>
@@ -288,16 +294,6 @@
   </div>
 </section>
 
-<!-- Reviews Section -->
-<section id="reviews">
-  <div class="container">
-    <h2>Customer Reviews</h2>
-    <div id="reviewSlider" class="row g-3">
-      <!-- Reviews will be injected here -->
-    </div>
-  </div>
-</section>
-
 <section class="py-5 bg-light" id="booking">
   <div class="container">
     <div class="text-center mb-4">
@@ -370,6 +366,16 @@
   </div>
 </section>
 
+<!-- Reviews Section -->
+<section id="reviews">
+  <div class="container">
+    <h2>Customer Reviews</h2>
+    <div id="reviewSlider" class="row g-3">
+      <!-- Reviews will be injected here -->
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="container">
     <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
@@ -379,6 +385,7 @@
   <!-- Right side -->
 <a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
   <i class="fas fa-phone-alt"></i>
+</a>
 <a href="https://wa.me/919267905943?text=Hello%2C%20I%20am%20interested%20in%20Sachin%20Deep%20Cleaning%20Services.%20Please%20get%20in%20touch%E2%80%A6" 
  class="floating-button whatsapp-button"
    target="_blank">
@@ -386,7 +393,7 @@
 </a>
 
 <!-- Left side -->
-<button id="installBtn" title="Download App">
+<button id="installBtn" title="Download App" style="display: none;">
   <i class="fas fa-download"></i>
 </button>
 <button class="notification-button" id="notifyBtn" title="Enable Notifications">
@@ -478,13 +485,8 @@ const reviewsData = [
   {name: "Sanjana Singh", gender: "female", location: "Sector 35", text: "Will book again soon."},
 ];
 
-function getAvatarUrl(name, gender) {
-  const seed = encodeURIComponent(name);
-  if (gender === 'female') {
-    return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=long&mouth[]=smile&eyes[]=happy&skin[]=brown&accessories[]=earrings`;
-  } else {
-    return `https://api.dicebear.com/6.x/avataaars/svg?seed=${seed}&hair[]=short&mouth[]=smile&eyes[]=happy&skin[]=brown`;
-  }
+function getInitials(name) {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase();
 }
 
 function createStarRatingHTML() {
@@ -496,7 +498,7 @@ function createReviewCard(review) {
     <div class="col-md-4 mb-4">
       <div class="review-card p-3 border rounded shadow-sm bg-white">
         <div class="review-header d-flex align-items-center mb-3">
-          <img src="${getAvatarUrl(review.name, review.gender)}" alt="${review.name}" class="rounded-circle me-3" width="60" height="60">
+          <div class="avatar-placeholder me-3">${getInitials(review.name)}</div>
           <div>
             <p class="reviewer-name mb-0 fw-bold">${review.name}</p>
             <small class="reviewer-location text-muted">${review.location}</small>
@@ -532,8 +534,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
   <script>
-  // Your existing pricing, reviews, etc. JS here...
-
   // Add this booking form submission handler:
   document.getElementById("bookingForm").addEventListener("submit", async function(e) {
     e.preventDefault();
@@ -578,12 +578,18 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 </script>
  <script>
-// Register Service Worker
+// Register Service Worker with error handling
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered:', reg.scope))
-      .catch(err => console.error('Service Worker registration failed:', err));
+      .then(reg => {
+        console.log('Service Worker registered:', reg.scope);
+        return reg;
+      })
+      .catch(err => {
+        console.warn('Service Worker registration failed:', err);
+        // Don't show error to user, just log it
+      });
   });
 }
 
@@ -598,45 +604,38 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 installBtn.addEventListener('click', async () => {
   if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  const choiceResult = await deferredPrompt.userChoice;
-  if (choiceResult.outcome === 'accepted') {
-    console.log('User accepted the app install');
-  } else {
-    console.log('User dismissed the app install');
+  
+  try {
+    deferredPrompt.prompt();
+    const choiceResult = await deferredPrompt.userChoice;
+    if (choiceResult.outcome === 'accepted') {
+      console.log('User accepted the app install');
+    } else {
+      console.log('User dismissed the app install');
+    }
+  } catch (err) {
+    console.warn('Error during app install:', err);
+  } finally {
+    deferredPrompt = null;
+    installBtn.style.display = 'none'; // Hide install button
   }
-  deferredPrompt = null;
-  installBtn.style.display = 'none'; // Hide install button
+});
+
+// Handle app already installed
+window.addEventListener('appinstalled', (evt) => {
+  console.log('App was installed');
+  installBtn.style.display = 'none';
 });
 </script>
 <script>
+// OneSignal notification handling with better error management
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(async function(OneSignal) {
   const notifyBtn = document.getElementById("notifyBtn");
 
   notifyBtn.addEventListener("click", async () => {
     try {
-      const isSupported = await OneSignal.Notifications.isPushSupported();
-      if (!isSupported) {
-        alert("Push notifications are not supported in this browser.");
+      // Check if push notifications are supported
+      if (!('Notification' in window)) {
+        alert("This browser doesn't support notifications.");
         return;
-      }
-
-      const permission = await OneSignal.Notifications.permission;
-      console.log("Current permission:", permission);
-
-      if (permission === "granted") {
-        alert("You are already subscribed to notifications.");
-        return;
-      }
-
-      await OneSignal.Slidedown.promptPush();
-    } catch (err) {
-      console.error("Error showing notification prompt:", err);
-      alert("Unable to show notification prompt. Check console for details.");
-    }
-  });
-});
-</script>
-</body>
-</html>
