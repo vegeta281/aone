@@ -791,45 +791,100 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
   });
 });
-// Booking form submission handler
-document.getElementById("bookingForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  let lat = "", lon = "", address = "";
+  let locationReady = false;
 
-  const spinner = document.getElementById("spinner");
-  spinner.style.display = "block";
+  // Function to fetch location + address
+  async function fetchLocation() {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported");
+        return resolve(false);
+      }
 
-  const form = e.target;
-  const formData = new FormData(form);
-  const data = {};
-  formData.forEach((value, key) => {
-    data[key] = value;
-  });
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        lat = pos.coords.latitude;
+        lon = pos.coords.longitude;
 
-  try {
-    const response = await fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams(data).toString()
+        try {
+          const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+          const resp = await fetch(nomUrl, {
+            headers: {
+              'Accept-Language': 'en',
+              'User-Agent': 'SachinDeepCleaning/1.0'
+            }
+          });
+          const data = await resp.json();
+          if (data?.display_name) {
+            address = data.display_name;
+            document.getElementById("address").value = address;
+          }
+        } catch (err) {
+          console.error("Reverse geocode failed:", err);
+        }
+
+        locationReady = true;
+        resolve(true);
+      }, (err) => {
+        console.warn("Geolocation error:", err);
+        resolve(false);
+      }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     });
-
-    const text = await response.text();
-
-    if (response.ok && text.trim() === "Success") {
-      alert("Booking submitted successfully! Thank you.");
-      form.reset();
-      calculateTotal();
-    } else {
-      alert("Failed to submit booking. Please try again.");
-      console.error("Response:", text);
-    }
-  } catch (err) {
-    alert("Error submitting booking: " + err.message);
-    console.error(err);
-  } finally {
-    spinner.style.display = "none";
   }
-});
 
+  // Intercept form submission
+  const form = document.getElementById("bookingForm");
+  form.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    // Wait for the location to be ready before sending
+    if (!locationReady) {
+      await fetchLocation();
+    }
+
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "block";
+
+    const formData = new FormData(form);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+
+    // Add location data
+    data.latitude = lat;
+    data.longitude = lon;
+    data.address = address || data.address || "";
+
+    try {
+      const response = await fetch(
+        "https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: new URLSearchParams(data).toString()
+        }
+      );
+
+      const text = await response.text();
+
+      if (response.ok && text.trim() === "Success") {
+        alert("Booking submitted successfully!");
+        form.reset();
+        calculateTotal();
+      } else {
+        alert("Failed to submit booking. Please try again.");
+        console.error("Response:", text);
+      }
+    } catch (err) {
+      alert("Error submitting booking: " + err.message);
+      console.error(err);
+    } finally {
+      spinner.style.display = "none";
+    }
+  });
+});
+</script>
 // Service Worker and PWA functionality
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
