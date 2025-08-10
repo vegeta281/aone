@@ -12,82 +12,68 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <!-- OneSignal Push Notification Integration START -->
-  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-  <script>
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      try {
-        // Detect if running as PWA on iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                      window.navigator.standalone === true;
-        const isIOSPWA = isIOS && isPWA;
-
-        await OneSignal.init({
-          appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
-          safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
-          notifyButton: { 
-            enable: !isIOSPWA, // Disable OneSignal button on iOS PWA
-            position: 'bottom-left',
-            theme: 'default',
-            size: 'medium',
-            offset: {
-              bottom: '20px',
-              left: '20px'
-            },
-            colors: {
-              'circle.background': '#ff9800',
-              'circle.foreground': 'white',
-              'badge.background': '#ff9800',
-              'badge.foreground': 'white',
-              'dialog.button.background.hovering': '#ff9800',
-              'dialog.button.background.active': '#ff9800',
-              'dialog.button.foreground': 'white'
-            },
-            text: {
-              'tip.state.unsubscribed': 'Get notified about cleaning offers',
-              'tip.state.subscribed': "You're subscribed to notifications",
-              'tip.state.blocked': "You've blocked notifications",
-              'message.prenotify': 'Click to get notified about cleaning services and offers',
-              'message.action.subscribed': "Thanks! You'll receive notifications about our cleaning services",
-              'message.action.resubscribed': "You're subscribed to our cleaning service notifications",
-              'dialog.main.title': 'Manage Site Notifications',
-              'dialog.main.button.subscribe': 'Allow Notifications',
-              'dialog.main.button.unsubscribe': 'Block Notifications',
-              'dialog.blocked.title': 'Unblock Notifications',
-              'dialog.blocked.message': "Follow these instructions to allow notifications:"
-            }
-          },
-          serviceWorkerParam: { scope: '/onesignal/' },
-          serviceWorkerPath: 'OneSignalSDKWorker.js'
-        });
-        
-        // Handle button visibility based on platform
-        const customNotifyBtn = document.getElementById("notifyBtn");
-        if (customNotifyBtn) {
-          if (isIOSPWA) {
-            // Show custom button with iOS-specific messaging
-            customNotifyBtn.style.display = 'flex';
-            customNotifyBtn.title = 'Get Updates (iOS)';
-          } else {
-            // Hide custom button since OneSignal button is enabled
-            customNotifyBtn.style.display = 'none';
-          }
+<!-- OneSignal Push Notification Integration START -->
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+window.OneSignalDeferred = window.OneSignalDeferred || [];
+OneSignalDeferred.push(async function(OneSignal) {
+  try {
+    await OneSignal.init({
+      appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
+      safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
+      notifyButton: { 
+        enable: true, // ✅ Always enable the OneSignal bell
+        position: 'bottom-left',
+        theme: 'default',
+        size: 'medium',
+        offset: {
+          bottom: '20px',
+          left: '20px'
+        },
+        colors: {
+          'circle.background': '#ff9800',
+          'circle.foreground': 'white',
+          'badge.background': '#ff9800',
+          'badge.foreground': 'white',
+          'dialog.button.background.hovering': '#ff9800',
+          'dialog.button.background.active': '#ff9800',
+          'dialog.button.foreground': 'white'
+        },
+        text: {
+          'tip.state.unsubscribed': 'Get notified about cleaning offers',
+          'tip.state.subscribed': "You're subscribed to notifications",
+          'tip.state.blocked': "You've blocked notifications",
+          'message.prenotify': 'Click to get notified about cleaning services and offers',
+          'message.action.subscribed': "Thanks! You'll receive notifications about our cleaning services",
+          'message.action.resubscribed': "You're subscribed to our cleaning service notifications",
+          'dialog.main.title': 'Manage Site Notifications',
+          'dialog.main.button.subscribe': 'Allow Notifications',
+          'dialog.main.button.unsubscribe': 'Block Notifications',
+          'dialog.blocked.title': 'Unblock Notifications',
+          'dialog.blocked.message': "Follow these instructions to allow notifications:"
         }
-        
-      } catch (err) {
-        console.warn('OneSignal initialization failed:', err);
-        // Show custom button as fallback
-        const customNotifyBtn = document.getElementById("notifyBtn");
-        if (customNotifyBtn) {
-          customNotifyBtn.style.display = 'flex';
-        }
-      }
+      },
+      serviceWorkerParam: { scope: '/onesignal/' },
+      serviceWorkerPath: 'OneSignalSDKWorker.js'
     });
-  </script>
-  <!-- OneSignal Push Notification Integration END -->
 
+    // Optional: Hide your custom button if the OneSignal bell is active
+    const customNotifyBtn = document.getElementById("notifyBtn");
+    if (customNotifyBtn) {
+      customNotifyBtn.style.display = 'none';
+    }
+
+  } catch (err) {
+    console.warn('OneSignal initialization failed:', err);
+    // Show custom button as fallback
+    const customNotifyBtn = document.getElementById("notifyBtn");
+    if (customNotifyBtn) {
+      customNotifyBtn.style.display = 'flex';
+    }
+  }
+});
+</script>
+<!-- OneSignal Push Notification Integration END -->
   <style>
     body { font-family: Arial, sans-serif; }
     .hero {
