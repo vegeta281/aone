@@ -749,28 +749,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
 
-      const googleKey = "AlzaSyAzge7qCKu2-C_pPIY-ryF"; // ← put your key here (or keep as placeholder to use OSM)
       try {
-        if (googleKey && googleKey !== "AIzaSyAv55qZ2oD9WGzEyykedIM3Qz62iS1z13g") {
-          // Google Geocoding (recommended for production, restrict the key in console)
-          const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lon}&key=${googleKey}`;
-          const resp = await fetch(url);
-          const json = await resp.json();
-          if (json.status === "OK" && json.results && json.results.length) {
-            document.getElementById("address").value = json.results[0].formatted_address;
-          } else {
-            throw new Error("No address found from Google");
+        // Always use OpenStreetMap Nominatim
+        const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+        const resp = await fetch(nomUrl, {
+          headers: {
+            'Accept-Language': 'en', // optional: return address in English
+            'User-Agent': 'SachinDeepCleaning/1.0' // polite for OSM API
           }
+        });
+        const data = await resp.json();
+        if (data && data.display_name) {
+          document.getElementById("address").value = data.display_name;
         } else {
-          // Fallback: OpenStreetMap Nominatim (no API key) — OK for light use
-          const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-          const resp2 = await fetch(nomUrl, { headers: { 'Accept-Language': 'en' }});
-          const j2 = await resp2.json();
-          if (j2 && j2.display_name) {
-            document.getElementById("address").value = j2.display_name;
-          } else {
-            throw new Error("No address from OSM");
-          }
+          throw new Error("No address found from OSM");
         }
       } catch (err) {
         console.error(err);
@@ -779,6 +771,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.disabled = false;
         btn.innerHTML = origHTML;
       }
+
     }, (err) => {
       btn.disabled = false;
       btn.innerHTML = origHTML;
