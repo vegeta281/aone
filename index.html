@@ -293,6 +293,64 @@
     #ios-notification-banner a {
       color: white;
       text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    /* Better mobile experience */
+    @media(max-width: 480px) {
+      #ios-notification-banner {
+        font-size: 13px;
+        padding: 10px 40px 10px 15px;
+      }
+    }
+
+    /* iOS Instructions Modal */
+    #ios-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+    }
+    #ios-modal.show {
+      display: flex;
+    }
+    .ios-modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px 25px;
+      margin: 20px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .ios-modal-content h3 {
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .ios-modal-content .step {
+      background: #f8f9fa;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      text-align: left;
+    }
+    .ios-modal-content .step strong {
+      color: #007bff;
+    }
+    .ios-modal-content .url-box {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -300,8 +358,31 @@
 
 <!-- iOS PWA Notification Banner -->
 <div id="ios-notification-banner">
-  📱 For notifications, <a href="#" onclick="openInSafari()">open in Safari</a> instead of the home screen app
+  📱 For notifications, please use Safari browser instead of this home screen app
   <button class="close-banner" onclick="closeBanner()">&times;</button>
+</div>
+
+<!-- iOS Instructions Modal -->
+<div id="ios-modal">
+  <div class="ios-modal-content">
+    <h3>🔔 Enable Notifications</h3>
+    <p>iOS home screen apps don't support web notifications yet.</p>
+    
+    <div class="step">
+      <strong>Option 1:</strong> Open this website in Safari browser where notifications work perfectly.
+    </div>
+    
+    <div class="step">
+      <strong>Option 2:</strong> Copy this URL and paste it in Safari:
+      <div class="url-box" id="url-display"></div>
+      <button class="btn btn-sm btn-primary mt-2" onclick="copyUrl()">Copy URL</button>
+    </div>
+    
+    <div class="mt-3">
+      <button class="btn btn-secondary me-2" onclick="closeModal()">Maybe Later</button>
+      <button class="btn btn-primary" onclick="openInNewTab()">Try Opening Safari</button>
+    </div>
+  </div>
 </div>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
@@ -615,16 +696,41 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // iOS banner functions
-function openInSafari() {
-  const currentUrl = window.location.href;
-  // Try to open in Safari
-  window.location.href = 'x-web-search://' + encodeURIComponent(currentUrl);
-  closeBanner();
-}
-
 function closeBanner() {
   document.getElementById('ios-notification-banner').classList.remove('show');
   localStorage.setItem('ios_banner_dismissed', 'true');
+}
+
+function closeModal() {
+  document.getElementById('ios-modal').classList.remove('show');
+  localStorage.setItem('ios_notification_dismissed', 'true');
+  document.getElementById('notifyBtn').style.display = 'none';
+}
+
+function copyUrl() {
+  const url = window.location.href;
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('URL copied! Now paste it in Safari browser.');
+    }).catch(() => {
+      // Fallback - show the URL for manual copying
+      prompt('Copy this URL manually:', url);
+    });
+  } else {
+    // Fallback for older browsers
+    prompt('Copy this URL manually:', url);
+  }
+}
+
+function openInNewTab() {
+  // This will try to open in a new tab, which might open Safari on iOS
+  const newWindow = window.open(window.location.href, '_blank');
+  if (!newWindow) {
+    // If popup blocked, show the URL to copy
+    copyUrl();
+  } else {
+    closeModal();
+  }
 }
 
 // Booking form submission handler
@@ -725,22 +831,9 @@ OneSignalDeferred.push(async function(OneSignal) {
         const isIOSPWA = isIOS && isPWA;
 
         if (isIOSPWA) {
-          // iOS PWA - Show alternative options
-          const userChoice = confirm(
-            "iOS PWAs don't support web push notifications yet.\n\n" +
-            "Would you like to:\n" +
-            "• OK: Open in Safari to enable notifications\n" +
-            "• Cancel: Continue without notifications"
-          );
-          
-          if (userChoice) {
-            // Open the website in Safari where notifications work
-            window.location.href = window.location.href.replace(/^https?:\/\//, 'x-web-search://');
-          } else {
-            // Store preference to not show again
-            localStorage.setItem('ios_notification_dismissed', 'true');
-            notifyBtn.style.display = 'none';
-          }
+          // iOS PWA - Show modal with instructions
+          document.getElementById('url-display').textContent = window.location.href;
+          document.getElementById('ios-modal').classList.add('show');
           return;
         }
 
