@@ -18,11 +18,17 @@
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       try {
+        // Detect if running as PWA on iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true;
+        const isIOSPWA = isIOS && isPWA;
+
         await OneSignal.init({
           appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
           safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
           notifyButton: { 
-            enable: true,
+            enable: !isIOSPWA, // Disable OneSignal button on iOS PWA
             position: 'bottom-left',
             theme: 'default',
             size: 'medium',
@@ -57,10 +63,17 @@
           serviceWorkerPath: 'OneSignalSDKWorker.js'
         });
         
-        // Hide custom notification button since OneSignal button is now enabled
+        // Handle button visibility based on platform
         const customNotifyBtn = document.getElementById("notifyBtn");
         if (customNotifyBtn) {
-          customNotifyBtn.style.display = 'none';
+          if (isIOSPWA) {
+            // Show custom button with iOS-specific messaging
+            customNotifyBtn.style.display = 'flex';
+            customNotifyBtn.title = 'Get Updates (iOS)';
+          } else {
+            // Hide custom button since OneSignal button is enabled
+            customNotifyBtn.style.display = 'none';
+          }
         }
         
       } catch (err) {
@@ -246,9 +259,50 @@
         max-width: 100%;
       }
     }
+
+    /* iOS PWA Notification Banner */
+    #ios-notification-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      z-index: 2000;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    #ios-notification-banner.show {
+      transform: translateY(0);
+    }
+    #ios-notification-banner .close-banner {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #ios-notification-banner a {
+      color: white;
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
+
+<!-- iOS PWA Notification Banner -->
+<div id="ios-notification-banner">
+  📱 For notifications, <a href="#" onclick="openInSafari()">open in Safari</a> instead of the home screen app
+  <button class="close-banner" onclick="closeBanner()">&times;</button>
+</div>
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
   <div class="container">
@@ -546,7 +600,32 @@ function slideReviews() {
 document.addEventListener('DOMContentLoaded', () => {
   renderReviews();
   setInterval(slideReviews, 3000);
+  
+  // Show iOS PWA notification banner if applicable
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                window.navigator.standalone === true;
+  const isIOSPWA = isIOS && isPWA;
+  
+  if (isIOSPWA && !localStorage.getItem('ios_banner_dismissed')) {
+    setTimeout(() => {
+      document.getElementById('ios-notification-banner').classList.add('show');
+    }, 2000);
+  }
 });
+
+// iOS banner functions
+function openInSafari() {
+  const currentUrl = window.location.href;
+  // Try to open in Safari
+  window.location.href = 'x-web-search://' + encodeURIComponent(currentUrl);
+  closeBanner();
+}
+
+function closeBanner() {
+  document.getElementById('ios-notification-banner').classList.remove('show');
+  localStorage.setItem('ios_banner_dismissed', 'true');
+}
 
 // Booking form submission handler
 document.getElementById("bookingForm").addEventListener("submit", async function(e) {
@@ -631,7 +710,7 @@ window.addEventListener('appinstalled', (evt) => {
   installBtn.style.display = 'none';
 });
 
-// OneSignal notification handling - Fallback for custom button
+// OneSignal notification handling - Enhanced for iOS PWA
 window.OneSignalDeferred = window.OneSignalDeferred || [];
 OneSignalDeferred.push(async function(OneSignal) {
   const notifyBtn = document.getElementById("notifyBtn");
@@ -639,38 +718,78 @@ OneSignalDeferred.push(async function(OneSignal) {
   if (notifyBtn) {
     notifyBtn.addEventListener("click", async () => {
       try {
+        // Detect platform
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                      window.navigator.standalone === true;
+        const isIOSPWA = isIOS && isPWA;
+
+        if (isIOSPWA) {
+          // iOS PWA - Show alternative options
+          const userChoice = confirm(
+            "iOS PWAs don't support web push notifications yet.\n\n" +
+            "Would you like to:\n" +
+            "• OK: Open in Safari to enable notifications\n" +
+            "• Cancel: Continue without notifications"
+          );
+          
+          if (userChoice) {
+            // Open the website in Safari where notifications work
+            window.location.href = window.location.href.replace(/^https?:\/\//, 'x-web-search://');
+          } else {
+            // Store preference to not show again
+            localStorage.setItem('ios_notification_dismissed', 'true');
+            notifyBtn.style.display = 'none';
+          }
+          return;
+        }
+
         if (!('Notification' in window)) {
           alert("This browser doesn't support notifications.");
           return;
         }
 
-        const permission = await OneSignal.Notifications.requestPermission();
-        if (permission) {
-          alert("Notifications enabled! You'll receive updates about our cleaning services.");
+        // Try OneSignal first
+        try {
+          const permission = await OneSignal.Notifications.requestPermission();
+          if (permission) {
+            alert("Notifications enabled! You'll receive updates about our cleaning services.");
+            notifyBtn.style.display = 'none';
+            return;
+          }
+        } catch (oneSignalErr) {
+          console.warn('OneSignal permission error:', oneSignalErr);
+        }
+
+        // Fallback to browser's native notification API
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          new Notification('Sachin Deep Cleaning', {
+            body: 'Updates enabled! We\'ll notify you about cleaning services and offers.',
+            icon: '/icons/apple-touch-icon-180x180.png',
+            tag: 'cleaning-service',
+            requireInteraction: true
+          });
           notifyBtn.style.display = 'none';
         } else {
           alert("Please enable notifications to stay updated with our services.");
         }
+
       } catch (err) {
-        console.warn('Notification permission error:', err);
-        // Fallback to browser's native notification API
-        try {
-          const permission = await Notification.requestPermission();
-          if (permission === 'granted') {
-            new Notification('Sachin Deep Cleaning', {
-              body: 'Notifications enabled! We\'ll keep you updated about our cleaning services.',
-              icon: '/icons/apple-touch-icon-180x180.png'
-            });
-            notifyBtn.style.display = 'none';
-          } else {
-            alert("Please enable notifications to stay updated with our services.");
-          }
-        } catch (fallbackErr) {
-          console.warn('Fallback notification error:', fallbackErr);
-          alert("Unable to enable notifications at this time.");
-        }
+        console.warn('Notification error:', err);
+        alert("Unable to enable notifications at this time.");
       }
     });
+
+    // Check if should hide button for iOS PWA users who dismissed
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                  window.navigator.standalone === true;
+    const isIOSPWA = isIOS && isPWA;
+    
+    if (isIOSPWA && localStorage.getItem('ios_notification_dismissed') === 'true') {
+      notifyBtn.style.display = 'none';
+    }
   }
 });
 </script>
