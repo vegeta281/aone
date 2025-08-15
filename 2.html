@@ -323,15 +323,18 @@
         </div>
 
         <!-- addons (kept minimal) -->
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <label class="form-check">
-            <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning(Per carpet)" data-price="500"> Carpet (+₹500)
+        <div id="addonsWrap" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center">
+          <label class="form-check" style="display:flex;align-items:center;gap:8px">
+            <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500" data-unit="per_carpet"> Carpet Cleaning (per carpet) +₹500
+            <input type="number" class="form-control addon-qty" min="1" value="1" data-for="Carpet Cleaning" style="width:68px;margin-left:6px;display:none">
           </label>
-          <label class="form-check">
-            <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300"> Fridge (+₹300)
+          <label class="form-check" style="display:flex;align-items:center;gap:8px">
+            <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300" data-unit="flat"> Fridge Cleaning +₹300
+            <input type="number" class="form-control addon-qty" min="1" value="1" data-for="Fridge Cleaning" style="width:68px;margin-left:6px;display:none">
           </label>
-           <label class="form-check">
-            <input class="form-check-input addon" type="checkbox" value="Sofa Cleaning(Per seat)" data-price="150"> Fridge (+₹300)
+          <label class="form-check" style="display:flex;align-items:center;gap:8px">
+            <input class="form-check-input addon" type="checkbox" value="Sofa Cleaning" data-price="150" data-unit="per_seat"> Sofa Cleaning (per seat) +₹150
+            <input type="number" class="form-control addon-qty" min="1" value="1" data-for="Sofa Cleaning" style="width:68px;margin-left:6px;display:none">
           </label>
         </div>
 
@@ -447,13 +450,39 @@
         }
         var addons = [];
         var addonChecked = document.querySelectorAll('.addon:checked');
-        for (var i=0;i<addonChecked.length;i++){ var a = addonChecked[i]; var p = parseInt(a.getAttribute('data-price'))||0; total += p; addons.push(a.value + ': ₹' + p); }
+        for (var i=0;i<addonChecked.length;i++){
+          var a = addonChecked[i];
+          var base = parseInt(a.getAttribute('data-price'))||0;
+          var qtyEl = document.querySelector('.addon-qty[data-for="'+a.value+'"]');
+          var qty = qtyEl ? Math.max(1, parseInt(qtyEl.value)||1) : 1;
+          var p = base * qty;
+          total += p;
+          var label = a.value;
+          if (qtyEl && qty>1) label += ' x' + qty;
+          addons.push(label + ': ₹' + p);
+        }
         var est = document.getElementById('estimatedPrice'); if (est) est.textContent = '₹' + total;
         var priceInput = document.querySelector('[name="price"]'); if (priceInput) priceInput.value = total;
         var addonsInput = document.querySelector('[name="addons"]'); if (addonsInput) addonsInput.value = addons.join(', ');
       }
 
-      var addonEls = document.querySelectorAll('.addon'); for (var i=0;i<addonEls.length;i++){ addonEls[i].addEventListener('change', calculateModalTotal); }
+      var addonEls = document.querySelectorAll('.addon');
+      var qtyEls = document.querySelectorAll('.addon-qty');
+      addonEls.forEach(function(chk){
+        chk.addEventListener('change', function(){
+          var qty = document.querySelector('.addon-qty[data-for="'+chk.value+'"]');
+          if (qty){
+            qty.style.display = chk.checked ? 'inline-block' : 'none';
+          }
+          calculateModalTotal();
+        });
+      });
+      qtyEls.forEach(function(q){
+        q.addEventListener('change', function(){
+          if (parseInt(q.value) < 1) q.value = 1;
+          calculateModalTotal();
+        });
+      });
       var bhkSelect = document.querySelector('[name="bhk"]'); if (bhkSelect) bhkSelect.addEventListener('change', calculateModalTotal);
       var furnSelect = document.querySelector('[name="furnished"]'); if (furnSelect) furnSelect.addEventListener('change', calculateModalTotal);
 
@@ -523,6 +552,7 @@
   </script>
 </body>
 </html>
+
 
 
 
