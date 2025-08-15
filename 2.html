@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sachin — Urban Company style (Dark)</title>
+  <title>Sachin Deep Cleaning </title>
 
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#071025" />
@@ -141,7 +141,35 @@
       padding:10px;
       border-radius:8px;
       box-shadow: none;
+      appearance: none;
+      -webkit-appearance: none;
     }
+    .form-select {
+      position: relative;
+      padding-right: 36px; /* leave room for native arrow */
+      min-width:140px;
+    }
+
+    /* Improve readability of native dropdown options (works in most browsers) */
+    .form-select option {
+      background: #ffffff;
+      color: #0b1624;
+      padding:6px 8px;
+    }
+    .form-select option:disabled {
+      color: rgba(0,0,0,0.45);
+    }
+
+    /* When select is focused, highlight it so users can see the active control */
+    .form-select:focus {
+      outline: 2px solid rgba(15,111,255,0.18);
+      box-shadow: 0 6px 18px rgba(15,111,255,0.06);
+      border-color: rgba(15,111,255,0.28);
+    }
+
+    /* Hide default IE/Edge arrow so styling is consistent; native arrow will still show in many browsers */
+    .form-select::-ms-expand { display: none; }
+
     .form-control::placeholder { color: rgba(255,255,255,0.45); }
     .btn.btn-outline-secondary {
       color: #fff;
@@ -149,7 +177,7 @@
       background: rgba(255,255,255,0.02);
     }
 
-    .form-check { color: var(--muted-2); }
+    .form-check { color: var(--muted-2); } { color: var(--muted-2); }
     .form-check-input { width:18px;height:18px; }
 
     .form-row{display:flex;gap:10px}
@@ -492,4 +520,5 @@
   </script>
 </body>
 </html>
+
 
