@@ -1,965 +1,396 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Home Cleaning</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: #f5f5f5;
-            color: #333;
-        }
-        
-        .app-container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        
-        .app-bar {
-            background: white;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid #e0e0e0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-        
-        .app-bar-left {
-            display: flex;
-            align-items: center;
-        }
-        
-        .back-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            margin-right: 12px;
-            cursor: pointer;
-            color: #333;
-        }
-        
-        .app-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .app-bar-right {
-            display: flex;
-            gap: 16px;
-        }
-        
-        .icon-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            color: #333;
-        }
-        
-        .header-section {
-            background: white;
-            padding: 16px;
-            margin-bottom: 8px;
-        }
-        
-        .service-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        
-        .rating-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        
-        .rating {
-            display: flex;
-            align-items: center;
-            font-size: 14px;
-        }
-        
-        .star {
-            color: #ffa726;
-            margin-right: 4px;
-        }
-        
-        .free-badge {
-            background: #e8f5e8;
-            color: #2e7d32;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .service-icons {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .service-icon {
-            width: 60px;
-            height: 60px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #666;
-        }
-        
-        .add-more {
-            color: #1976d2;
-            font-weight: 500;
-            margin-left: auto;
-            cursor: pointer;
-        }
-        
-        .service-section {
-            background: white;
-            margin-bottom: 8px;
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: bold;
-            padding: 16px;
-        }
-        
-        .service-item {
-            padding: 12px 16px;
-            border-top: 1px solid #e0e0e0;
-        }
-        
-        .service-content {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .service-image {
-            width: 50px;
-            height: 50px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: #666;
-        }
-        
-        .service-details {
-            flex: 1;
-        }
-        
-        .service-name {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .service-duration {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-        
-        .service-description {
-            font-size: 13px;
-            color: #555;
-            line-height: 1.4;
-        }
-        
-        .service-actions {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-        }
-        
-        .add-btn {
-            background: #e3f2fd;
-            color: #1976d2;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-        }
-        
-        .add-btn:hover {
-            background: #bbdefb;
-        }
-        
-        .service-price {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .service-time {
-            font-size: 12px;
-            color: #666;
-        }
-        
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            padding: 16px;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .next-btn {
-            width: 100%;
-            background: #333;
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .next-btn:hover {
-            background: #555;
-        }
-        
-        .content-wrapper {
-            padding-bottom: 80px;
-        }
-        
-        @media (max-width: 480px) {
-            .app-container {
-                max-width: 100%;
-                box-shadow: none;
-            }
-            
-            .bottom-nav {
-                max-width: 100%;
-            }
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sachin — Urban Company style</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#0f6fff" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root{ --uc-blue:#0f6fff; --muted:#6b7280; --accent:#ff9800; --success:#22c55e; }
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f5f6f8; color:#111; margin:0;}
+
+    /* App container (Urban Company card) */
+    .app-shell{width:100%;max-width:420px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(12,20,30,0.08);overflow:hidden;min-height:92vh;position:relative}
+
+    /* App bar */
+    .app-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f6;background:#fff;position:sticky;top:0;z-index:40}
+    .app-title{font-weight:700;color:#0b254a}
+    .icon-btn{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer}
+
+    /* header */
+    .hero{padding:18px;background:linear-gradient(180deg,rgba(15,111,255,0.08),rgba(15,111,255,0.02));}
+    .hero h1{font-size:20px;margin-bottom:6px;color:#07203a}
+    .hero p{margin:0;color:var(--muted);font-size:14px}
+
+    .rating-row{display:flex;align-items:center;gap:8px;margin-top:10px}
+    .rating .star{color:#ffb74d}
+    .free-badge{background:#f0faf4;color:var(--success);padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px}
+
+    /* service list */
+    .section{Padding:10px 12px;border-bottom:1px solid #f0f2f5;background:#fff}
+    .section-title{font-weight:700;color:#0b254a;margin-bottom:6px}
+    .service-item{display:flex;gap:12px;align-items:flex-start;padding:12px 6px;border-top:1px solid #f3f5f7}
+    .service-left{width:56px;height:56px;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#0b254a;font-size:20px}
+    .service-body{flex:1}
+    .service-name{font-weight:700;color:#07203a;font-size:15px}
+    .service-desc{color:var(--muted);font-size:13px;margin-top:6px}
+    .service-meta{color:var(--muted);font-size:12px;margin-top:6px}
+    .service-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+
+    .btn-add{background:#e8f3ff;border:1px solid rgba(15,111,255,0.12);color:var(--uc-blue);padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer}
+    .btn-add.added{background:var(--success);color:#fff;border:none}
+    .price{font-weight:800;color:#07203a}
+    .time{font-size:12px;color:var(--muted)}
+
+    /* bottom sticky action like Urban Company */
+    .bottom-bar{position:sticky;bottom:0;background:#fff;padding:12px;border-top:1px solid #eef2f6;display:flex;gap:12px;align-items:center;justify-content:space-between}
+    .cta{background:var(--uc-blue);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;border:none;cursor:pointer}
+    .cta-secondary{background:#fff;border:1px solid #e6eefc;color:var(--uc-blue);padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+
+    /* booking modal (desktop centered & mobile sheet) */
+    .modal-wrap{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);z-index:120}
+    /* center modal in the middle of the viewport */
+    .modal-wrap.show{display:flex;align-items:center;justify-content:center;padding:20px}
+    .modal-card{background:#fff;width:100%;max-width:520px;border-radius:12px;padding:20px;box-shadow:0 14px 50px rgba(2,6,23,0.25);max-height:90vh;overflow:auto}
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+
+    .form-row{display:flex;gap:10px}
+    .form-row .form-control{flex:1}
+
+    /* compact reviews */
+    .reviews{padding:10px 12px;background:#fff}
+    .review-chip{background:#f8fafc;border-radius:10px;padding:10px;min-width:120px;box-shadow:0 8px 20px rgba(2,6,23,0.04)}
+
+    /* responsive */
+    @media(min-width:900px){body{background:#f3f6fb}} /* subtle desktop bg */
+  </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- App Bar -->
-        <div class="app-bar">
-            <div class="app-bar-left">
-                <button class="back-btn"><i class="fas fa-arrow-left"></i></button>
-                <span class="app-title">Full Home Cleaning</span>
-            </div>
-            <div class="app-bar-right">
-                <button class="icon-btn"><i class="fas fa-search"></i></button>
-                <button class="icon-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-        </div>
-        
-        <div class="content-wrapper">
-            <!-- Header Section -->
-            <div class="header-section">
-                <h1 class="service-title">Full Home Cleaning</h1>
-                <div class="rating-row">
-                    <div class="rating">
-                        <i class="fas fa-star star"></i>
-                        <span>4.82 (1.2k reviews)</span>
-                    </div>
-                    <div class="free-badge">Free First Go</div>
-                </div>
-                <div class="service-icons">
-                    <div class="service-icon">
-                        <i class="fas fa-spray-can"></i>
-                    </div>
-                    <div class="service-icon">
-                        <i class="fas fa-home"></i>
-                    </div>
-                    <div class="service-icon">
-                        <i class="fas fa-tools"></i>
-                    </div>
-                    <div class="add-more">Add more →</div>
-                </div>
-            </div>
-            
-            <!-- Apartment Services -->
-            <div class="service-section">
-                <div class="section-title">Apartment</div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-broom"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Furnished apartment</div>
-                            <div class="service-duration">(2 BHK) • 1 hr 45 mins</div>
-                            <div class="service-description">• Start from the deep cleaning, dusting and vacuuming all surfaces</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹1,849</div>
-                            <div class="service-time">3 hrs 40 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-broom"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Unfurnished apartment</div>
-                            <div class="service-duration">(2 BHK) • 1 hr 50 mins</div>
-                            <div class="service-description">• Dusting & deep cleaning of all surfaces<br>• Mopping & vacuuming floors<br>• Cleaning bathrooms & kitchen</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹999</div>
-                            <div class="service-time">1 hr 45 mins</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Bungalows/Duplex -->
-            <div class="service-section">
-                <div class="section-title">Bungalows/Duplex</div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Furnished Bungalows</div>
-                            <div class="service-duration">(3 BHK) • 2 hrs 15 mins</div>
-                            <div class="service-description">• Experience of: Dusting, Mopping, Vacuuming<br>• Deep cleaning of all rooms, kitchen & bathrooms<br>• Window & door cleaning</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹2,499</div>
-                            <div class="service-time">4 hrs 30 mins</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Unfurnished bungalow -->
-            <div class="service-section">
-                <div class="section-title">Unfurnished bungalow</div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Unfurnished bungalow</div>
-                            <div class="service-duration">(3 BHK) • 1 hr 30 mins</div>
-                            <div class="service-description">• Basic cleaning of empty rooms<br>• Floor mopping and vacuuming<br>• Basic dusting of surfaces</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹1,699</div>
-                            <div class="service-time">3 hrs 15 mins</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Book by room -->
-            <div class="service-section">
-                <div class="section-title">Book by room</div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-bed"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Bedroom cleaning</div>
-                            <div class="service-duration">1 room • 30 mins</div>
-                            <div class="service-description">• Dusting of all surfaces & furniture<br>• Bed making and organizing<br>• Vacuuming and mopping</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹399</div>
-                            <div class="service-time">45 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-couch"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Living room cleaning</div>
-                            <div class="service-duration">1 room • 45 mins</div>
-                            <div class="service-description">• Dusting furniture<br>• Organizing items & magazines<br>• Vacuum cleaning of carpets<br>• Cleaning of decorative items</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹599</div>
-                            <div class="service-time">1 hr 15 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-utensils"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Kitchen cleaning</div>
-                            <div class="service-duration">1 kitchen • 1 hr</div>
-                            <div class="service-description">• Deep cleaning of kitchen platform<br>• Cleaning of gas stove & chimney exterior<br>• Organization of kitchen items</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹799</div>
-                            <div class="service-time">1 hr 30 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-shower"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Bathroom cleaning</div>
-                            <div class="service-duration">1 bathroom • 30 mins</div>
-                            <div class="service-description">• Sanitization of bathroom<br>• Cleaning of tiles and fixtures<br>• Floor and mirror cleaning</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹399</div>
-                            <div class="service-time">45 mins</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Misc services -->
-            <div class="service-section">
-                <div class="section-title">Misc services</div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-blender"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Kitchen appliances cleaning</div>
-                            <div class="service-duration">2-4 appliances • 45 mins</div>
-                            <div class="service-description">• Deep cleaning of refrigerator, microwave<br>• Cleaning of mixer, toaster & other appliances<br>• Interior and exterior cleaning</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹699</div>
-                            <div class="service-time">1 hr</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-couch"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Sofa & upholstery wet shampooing</div>
-                            <div class="service-duration">2-3 seater • 1 hr</div>
-                            <div class="service-description">• Wet shampooing of fabric upholstery<br>• Stain removal treatment<br>• Professional cleaning solutions</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹1,299</div>
-                            <div class="service-time">2 hrs</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-spray-can"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">General cleaning & deodorizing</div>
-                            <div class="service-duration">2 BHK • 2 hrs</div>
-                            <div class="service-description">• Overall house cleaning<br>• Air freshening & deodorizing<br>• Light dusting and organizing</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹899</div>
-                            <div class="service-time">2 hrs 30 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-archive"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Cabinet cleaning (upto 3)</div>
-                            <div class="service-duration">All cabinets • 1 hr 15 mins</div>
-                            <div class="service-description">• Interior and exterior cleaning of cabinets<br>• Organization of items<br>• Deep cleaning of shelves</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹649</div>
-                            <div class="service-time">1 hr 30 mins</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-chair"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Furniture care waxing and polishing</div>
-                            <div class="service-duration">All furniture • 1 hr 30 mins</div>
-                            <div class="service-description">• Professional waxing of wooden furniture<br>• Polishing of all surfaces<br>• Protection and shine enhancement</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹1,199</div>
-                            <div class="service-time">2 hrs</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="service-item">
-                    <div class="service-content">
-                        <div class="service-image">
-                            <i class="fas fa-fan"></i>
-                        </div>
-                        <div class="service-details">
-                            <div class="service-name">Ceiling dusting & cobweb cleaning</div>
-                            <div class="service-duration">Full house • 45 mins</div>
-                            <div class="service-description">• Ceiling fan cleaning<br>• Removal of cobwebs<br>• High-reach dusting</div>
-                        </div>
-                        <div class="service-actions">
-                            <button class="add-btn">Add</button>
-                            <div class="service-price">Starts at ₹799</div>
-                            <div class="service-time">1 hr</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <button class="next-btn">Next</button>
-        </div>
-    </div>
-    
-    <!-- Service Details Modal -->
-    <div id="serviceModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button class="back-btn" onclick="closeModal()"><i class="fas fa-arrow-left"></i></button>
-                <span class="modal-title">Furnished apartment</span>
-                <button class="icon-btn"><i class="fas fa-ellipsis-v"></i></button>
-            </div>
-            
-            <div class="modal-body">
-                <div class="service-info">
-                    <h2>Furnished apartment</h2>
-                    <p>Starts at ₹3,499 • 1 hr 45 mins</p>
-                </div>
-                
-                <div class="requirements-section">
-                    <h3>Select requirements</h3>
-                    
-                    <div class="size-selector">
-                        <label>Size of home*</label>
-                        <div class="size-options">
-                            <div class="size-option selected">
-                                <div class="size-label">1 BHK</div>
-                                <div class="size-price">₹2,599</div>
-                            </div>
-                            <div class="size-option">
-                                <div class="size-label">2 BHK</div>
-                                <div class="size-price">₹3,499</div>
-                            </div>
-                            <div class="size-option">
-                                <div class="size-label">3 BHK</div>
-                                <div class="size-price">₹4,799</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="included-section">
-                        <h4>What is included in my service?</h4>
-                        <div class="included-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Kitchen cabinets & appliances</span>
-                        </div>
-                        <div class="included-item">
-                            <i class="fas fa-check-circle"></i>
-                            <span>Sofa & mattress</span>
-                        </div>
-                    </div>
-                    
-                    <div class="addons-section">
-                        <h4>Kitchen cabinets & appliances</h4>
-                        <div class="addon-options">
-                            <div class="addon-option">
-                                <div class="addon-details">
-                                    <div class="addon-label">Cabinet interior & base</div>
-                                    <div class="addon-sublabel">+₹0</div>
-                                </div>
-                            </div>
-                            <div class="addon-option">
-                                <div class="addon-details">
-                                    <div class="addon-label">Cabinet interior with shelves</div>
-                                    <div class="addon-sublabel">+₹499</div>
-                                </div>
-                            </div>
-                            <div class="addon-option">
-                                <div class="addon-details">
-                                    <div class="addon-label">Cabinet interior with shelves + deep cleaning</div>
-                                    <div class="addon-sublabel">+₹999</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="modal-footer">
-                <div class="total-price">₹3,499</div>
-                <button class="done-btn">Done</button>
-            </div>
-        </div>
-    </div>
-    
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 400px;
-            height: 100vh;
-            background: white;
-            z-index: 1000;
-            overflow-y: auto;
-        }
-        
-        .modal.show {
-            display: block;
-        }
-        
-        .modal-content {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .modal-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            border-bottom: 1px solid #e0e0e0;
-            background: white;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
-        
-        .modal-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: #333;
-        }
-        
-        .modal-body {
-            flex: 1;
-            padding: 16px;
-            overflow-y: auto;
-        }
-        
-        .service-info h2 {
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-        
-        .service-info p {
-            color: #666;
-            margin-bottom: 24px;
-        }
-        
-        .requirements-section h3 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-        
-        .size-selector {
-            margin-bottom: 24px;
-        }
-        
-        .size-selector label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 12px;
-        }
-        
-        .size-options {
-            display: flex;
-            gap: 12px;
-        }
-        
-        .size-option {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .size-option.selected {
-            border-color: #1976d2;
-            background: #e3f2fd;
-        }
-        
-        .size-label {
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-        
-        .size-price {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .included-section h4, .addons-section h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 24px 0 12px 0;
-        }
-        
-        .included-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 0;
-        }
-        
-        .included-item i {
-            color: #4caf50;
-        }
-        
-        .addon-options {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        
-        .addon-option {
-            padding: 12px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        
-        .addon-option:hover {
-            background: #f5f5f5;
-        }
-        
-        .addon-label {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-        
-        .addon-sublabel {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .modal-footer {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            border-top: 1px solid #e0e0e0;
-            background: white;
-            position: sticky;
-            bottom: 0;
-        }
-        
-        .total-price {
-            font-size: 20px;
-            font-weight: bold;
-        }
-        
-        .done-btn {
-            background: #1976d2;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        
-        .done-btn:hover {
-            background: #1565c0;
-        }
-        
-        @media (max-width: 480px) {
-            .modal {
-                max-width: 100%;
-            }
-            
-            .size-options {
-                flex-direction: column;
-            }
-        }
-    </style>
 
-    <script>
-        let addedServices = [];
-        let totalPrice = 0;
-        
-        // Add click handlers for interactive elements
-        document.querySelectorAll('.add-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const serviceItem = this.closest('.service-item');
-                const serviceName = serviceItem.querySelector('.service-name').textContent;
-                
-                if (this.textContent === 'Add') {
-                    // Show service details modal for the first "Furnished apartment" service
-                    if (serviceName === 'Furnished apartment') {
-                        showServiceModal();
-                        return;
-                    }
-                    
-                    this.textContent = 'Added';
-                    this.style.backgroundColor = '#4caf50';
-                    this.style.color = 'white';
-                    addedServices.push(serviceName);
-                } else {
-                    this.textContent = 'Add';
-                    this.style.backgroundColor = '#e3f2fd';
-                    this.style.color = '#1976d2';
-                    addedServices = addedServices.filter(s => s !== serviceName);
+  <div class="app-shell" role="application">
+    <header class="app-bar">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="icon-btn" id="backBtn" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
+        <div style="display:flex;flex-direction:column">
+          <span class="app-title">Sachin Deep Cleaning</span>
+          <small style="color:var(--muted);font-size:12px">Gurgaon • Trusted pros</small>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="icon-btn" id="searchBtn" aria-label="Search"><i class="fas fa-search"></i></button>
+        <button class="icon-btn" id="menuBtn" aria-label="Menu"><i class="fas fa-ellipsis-v"></i></button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>Full Home Cleaning</h1>
+        <p>Deep cleaning, sofa & carpet shampooing, kitchen & appliance care</p>
+        <div class="rating-row">
+          <div style="display:flex;align-items:center;gap:8px"><span class="badge bg-white text-dark"><i class="fas fa-star star"></i> 4.82</span><small style="color:var(--muted)"> (1.2k reviews)</small></div>
+          <div class="free-badge">Free First Go</div>
+        </div>
+      </section>
+
+      <!-- Services: replicate original services but in UC style -->
+      <section class="section">
+        <div class="section-title">Apartment</div>
+        <!-- Only two options shown as requested -->
+        <div class="service-item">
+          <div class="service-left"><i class="fas fa-broom"></i></div>
+          <div class="service-body">
+            <div class="service-name">Furnished apartment</div>
+            <div class="service-desc">Deep cleaning, dusting & vacuuming of all surfaces. Kitchen, bathrooms & living area.</div>
+            <div class="service-meta">Choose size after tapping Add</div>
+          </div>
+          <div class="service-actions">
+            <button class="btn-add" data-name="Furnished apartment" data-furn="Furnished" data-price="0">Add</button>
+            <div class="price">Select size</div>
+          </div>
+        </div>
+
+        <div class="service-item">
+          <div class="service-left"><i class="fas fa-house-damage"></i></div>
+          <div class="service-body">
+            <div class="service-name">Unfurnished apartment</div>
+            <div class="service-desc">Dusting, vacuuming & mopping. Bathrooms and kitchen cleaning.</div>
+            <div class="service-meta">Choose size after tapping Add</div>
+          </div>
+          <div class="service-actions">
+            <button class="btn-add" data-name="Unfurnished apartment" data-furn="Non-Furnished" data-price="0">Add</button>
+            <div class="price">Select size</div>
+          </div>
+        </div>
+      </section>
+
+      
+
+      
+
+      <!-- Compact reviews -->
+      <section class="reviews" aria-label="Customer reviews">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><strong style="color:#07203a">Customer Reviews</strong><small style="color:var(--muted)">Latest</small></div>
+        <div style="display:flex;gap:10px;overflow:auto;padding-bottom:8px">
+          <div class="review-chip">"Amazing cleaning"<br><small style="color:var(--muted)">— Amit</small></div>
+          <div class="review-chip">"Very professional"<br><small style="color:var(--muted)">— Priya</small></div>
+          <div class="review-chip">"Spotless work"<br><small style="color:var(--muted)">— Rohit</small></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- bottom actions -->
+    <div class="bottom-bar">
+      <div style="display:flex;flex-direction:column">
+        <small style="color:var(--muted)">Selected</small>
+        <strong id="selectedCount">0 services</strong>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="cta-secondary" id="viewCart">View</button>
+        <button class="cta" id="openBookingBtn">Book Now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Booking Modal / sheet -->
+  <div id="bookingModal" class="modal-wrap" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <strong>Book Services</strong>
+        <button class="icon-btn" id="closeModal" aria-label="Close"><i class="fas fa-times"></i></button>
+      </div>
+      <form id="bookingForm" style="display:grid;gap:10px">
+        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+        <input type="tel" name="phone" class="form-control" placeholder="Phone number" required>
+
+        <div style="display:flex;gap:10px">
+          <input id="address" name="address" class="form-control" placeholder="Address (optional)">
+          <button type="button" id="getLocation" class="btn btn-outline-secondary" title="Use current location">📍</button>
+        </div>
+
+        <div style="display:flex;gap:10px">
+          <select name="bhk" class="form-select" required>
+            <option value="" disabled selected>Select BHK</option>
+            <option value="1RK">1RK</option>
+            <option value="1BHK">1BHK</option>
+            <option value="2BHK">2BHK</option>
+            <option value="3BHK">3BHK</option>
+            <option value="4BHK">4BHK</option>
+            <option value="5BHK">5BHK</option>
+          </select>
+          <select name="furnished" class="form-select" required>
+            <option value="" disabled selected>Furnishing</option>
+            <option value="Furnished">Furnished</option>
+            <option value="Non-Furnished">Non-Furnished</option>
+          </select>
+        </div>
+
+        <!-- addons (kept minimal) -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <label class="form-check">
+            <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500"> Carpet (+₹500)
+          </label>
+          <label class="form-check">
+            <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300"> Fridge (+₹300)
+          </label>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
+          <div>
+            <div style="font-size:13px;color:var(--muted)">Estimated total</div>
+            <div style="font-weight:800;font-size:18px" id="estimatedPrice">₹0</div>
+          </div>
+          <div>
+            <input type="hidden" name="price">
+            <input type="hidden" name="addons">
+            <button type="submit" class="cta">Confirm</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Floating actions (call/wa/notify/install) -->
+  <a href="tel:+919267905943" title="Call" style="position:fixed;right:18px;bottom:96px;background:var(--uc-blue);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(12,20,30,0.12)"><i class="fas fa-phone"></i></a>
+  <a href="https://wa.me/919267905943" target="_blank" title="WhatsApp" style="position:fixed;right:18px;bottom:18px;background:#25d366;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(12,20,30,0.12)"><i class="fab fa-whatsapp"></i></a>
+
+  <button id="installBtn" title="Install" style="position:fixed;left:18px;bottom:96px;background:var(--uc-blue);width:52px;height:52px;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;z-index:140;border:none"><i class="fas fa-download"></i></button>
+  <button id="notifyBtn" title="Notify" style="position:fixed;left:18px;bottom:18px;background:var(--accent);width:52px;height:52px;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;z-index:140;border:none"><i class="fas fa-bell"></i></button>
+
+  <script>
+    // load OneSignal dynamically (avoids environments that override document.write)
+    (function loadOneSignal(){
+      try{
+        var s = document.createElement('script');
+        s.src = 'https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js';
+        s.async = true;
+        s.onload = function(){
+          try{
+            if (!window.OneSignal) return;
+            OneSignal.init({
+              appId: 'ed4eb090-75aa-4d2c-b321-183eb734f389',
+              safari_web_id: 'web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672',
+              notifyButton: { enable: true, position: 'bottom-left' },
+              serviceWorkerParam: { scope: '/onesignal/' },
+              serviceWorkerPath: 'OneSignalSDKWorker.js'
+            }).then(function(){
+              var btn = document.getElementById('notifyBtn'); if (btn) btn.style.display = 'none';
+            }).catch(function(e){ console.warn('OneSignal init error', e); var btn = document.getElementById('notifyBtn'); if (btn) btn.style.display = 'flex'; });
+          }catch(e){ console.warn('OneSignal load handler error', e); }
+        };
+        document.head.appendChild(s);
+      }catch(e){ console.warn('Unable to append OneSignal', e); }
+    })();
+
+    // pricing map
+    var pricing = {
+      "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+      "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+      "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+      "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+      "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+      "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+    };
+
+    var selected = new Map();
+    var modalSelectedService = '';
+    var modalOriginButton = null;
+
+    function updateSelectedUI(){
+      var count = selected.size;
+      var el = document.getElementById('selectedCount'); if (el) el.textContent = count ? (count + ' services') : '0 services';
+    }
+
+    document.addEventListener('DOMContentLoaded', function(){
+      // wire add buttons: open modal and prefill furnishing
+      var addButtons = document.querySelectorAll('.btn-add');
+      addButtons.forEach(function(btn){
+        btn.addEventListener('click', function(){
+          modalSelectedService = btn.getAttribute('data-name') || '';
+          modalOriginButton = btn;
+          var furn = btn.getAttribute('data-furn') || '';
+          var furnEl = document.querySelector('[name="furnished"]');
+          if (furnEl && furn) {
+            furnEl.value = furn;
+          }
+          var bhkEl = document.querySelector('[name="bhk"]'); if (bhkEl) bhkEl.value = '';
+
+          var bookingModal = document.getElementById('bookingModal');
+          if (bookingModal){ bookingModal.classList.add('show'); bookingModal.setAttribute('aria-hidden','false'); }
+          calculateModalTotal();
+
+          setTimeout(function(){ var focusEl = document.querySelector('#bookingForm [name="bhk"]'); if (focusEl) focusEl.focus(); }, 150);
+        });
+      });
+
+      // open/close modal buttons
+      var bookingModal = document.getElementById('bookingModal');
+      var openBookingBtn = document.getElementById('openBookingBtn');
+      var closeModalBtn = document.getElementById('closeModal');
+      if (openBookingBtn) openBookingBtn.addEventListener('click', function(){ if (bookingModal){ bookingModal.classList.add('show'); bookingModal.setAttribute('aria-hidden','false'); } calculateModalTotal(); });
+      if (closeModalBtn) closeModalBtn.addEventListener('click', function(){ if (bookingModal){ bookingModal.classList.remove('show'); bookingModal.setAttribute('aria-hidden','true'); } });
+
+      // price calculation
+      function pricingFromSelected(){ var sum=0; selected.forEach(function(v){ sum += v; }); return sum; }
+      function calculateModalTotal(){
+        var total = 0;
+        if (selected.size > 0) {
+          selected.forEach(function(v){ total += v; });
+        } else {
+          var bhkEl = document.querySelector('[name="bhk"]');
+          var furnEl = document.querySelector('[name="furnished"]');
+          var bhk = bhkEl ? bhkEl.value : '';
+          var furn = furnEl ? furnEl.value : '';
+          if (bhk && furn && pricing[bhk] && typeof pricing[bhk][furn] === 'number') {
+            total += pricing[bhk][furn];
+          }
+        }
+        var addons = [];
+        var addonChecked = document.querySelectorAll('.addon:checked');
+        for (var i=0;i<addonChecked.length;i++){ var a = addonChecked[i]; var p = parseInt(a.getAttribute('data-price'))||0; total += p; addons.push(a.value + ': ₹' + p); }
+        var est = document.getElementById('estimatedPrice'); if (est) est.textContent = '₹' + total;
+        var priceInput = document.querySelector('[name="price"]'); if (priceInput) priceInput.value = total;
+        var addonsInput = document.querySelector('[name="addons"]'); if (addonsInput) addonsInput.value = addons.join(', ');
+      }
+
+      var addonEls = document.querySelectorAll('.addon'); for (var i=0;i<addonEls.length;i++){ addonEls[i].addEventListener('change', calculateModalTotal); }
+      var bhkSelect = document.querySelector('[name="bhk"]'); if (bhkSelect) bhkSelect.addEventListener('change', calculateModalTotal);
+      var furnSelect = document.querySelector('[name="furnished"]'); if (furnSelect) furnSelect.addEventListener('change', calculateModalTotal);
+
+      // geolocation button
+      var lat='', lon='', address='';
+      var getLocationBtn = document.getElementById('getLocation');
+      if (getLocationBtn){
+        getLocationBtn.addEventListener('click', function(){
+          if (!navigator.geolocation){ alert('Geolocation not supported'); return; }
+          var btn = this; btn.disabled = true; btn.textContent = 'Locating…';
+          navigator.geolocation.getCurrentPosition(function(pos){
+            lat = pos.coords.latitude; lon = pos.coords.longitude;
+            fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat + '&lon=' + lon, { headers: { 'Accept-Language':'en','User-Agent':'SachinDeepCleaning/1.0' } })
+              .then(function(r){ return r.json(); })
+              .then(function(data){ if (data && data.display_name){ address = data.display_name; var addrEl = document.getElementById('address'); if (addrEl) addrEl.value = address; } else { throw new Error('no address'); } })
+              .catch(function(e){ console.warn('reverse geo failed', e); alert('Unable to resolve address'); })
+              .finally(function(){ btn.disabled = false; btn.textContent = '📍'; calculateModalTotal(); });
+          }, function(err){ btn.disabled = false; btn.textContent = '📍'; alert('Location failed: ' + (err.message || err.code)); }, { enableHighAccuracy:true, timeout:10000 });
+        });
+      }
+
+      // booking submit
+      var bookingForm = document.getElementById('bookingForm');
+      if (bookingForm){
+        bookingForm.addEventListener('submit', function(e){
+          e.preventDefault(); calculateModalTotal();
+          var fd = new FormData(bookingForm); var obj = {};
+          fd.forEach(function(v,k){ obj[k]=v; });
+          obj.services = modalSelectedService ? modalSelectedService : Array.from(selected.keys()).join(', ');
+          obj.latitude = lat || '';
+          obj.longitude = lon || '';
+
+          var spinner = document.createElement('div'); spinner.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:6px solid #f3f3f3;border-top:6px solid var(--uc-blue);animation:spin 1s linear infinite;z-index:200'; document.body.appendChild(spinner);
+
+          fetch('https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec', { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: new URLSearchParams(obj) })
+            .then(function(resp){ return resp.text().then(function(text){ return { ok: resp.ok, text: text }; }); })
+            .then(function(result){
+              if (result.ok && result.text.trim() === 'Success'){
+                alert('Booking submitted — we will contact you');
+                bookingForm.reset();
+                var priceVal = parseInt(obj.price) || parseInt((document.querySelector('[name="price"]')||{value:0}).value) || 0;
+                if (modalSelectedService){
+                  selected.set(modalSelectedService, priceVal);
+                  if (modalOriginButton){ modalOriginButton.classList.add('added'); modalOriginButton.textContent = 'Added'; }
                 }
-                
-                updateNextButton();
-            });
+                updateSelectedUI();
+                if (bookingModal){ bookingModal.classList.remove('show'); bookingModal.setAttribute('aria-hidden','true'); }
+              } else {
+                alert('Submission failed — try again');
+                console.error('resp', result.text);
+              }
+            })
+            .catch(function(err){ alert('Error: '+err.message); console.error(err); })
+            .finally(function(){ if (spinner && spinner.parentNode) spinner.parentNode.removeChild(spinner); });
         });
-        
-        function updateNextButton() {
-            const nextBtn = document.querySelector('.next-btn');
-            if (addedServices.length > 0) {
-                nextBtn.textContent = `Next (${addedServices.length} services selected)`;
-                nextBtn.style.backgroundColor = '#1976d2';
-            } else {
-                nextBtn.textContent = 'Next';
-                nextBtn.style.backgroundColor = '#333';
-            }
-        }
-        
-        function showServiceModal() {
-            document.getElementById('serviceModal').classList.add('show');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal() {
-            document.getElementById('serviceModal').classList.remove('show');
-            document.body.style.overflow = 'auto';
-        }
-        
-        // Size option selection
-        document.querySelectorAll('.size-option').forEach(option => {
-            option.addEventListener('click', function() {
-                document.querySelectorAll('.size-option').forEach(opt => opt.classList.remove('selected'));
-                this.classList.add('selected');
-                
-                const price = this.querySelector('.size-price').textContent;
-                document.querySelector('.total-price').textContent = price;
-            });
-        });
-        
-        // Done button functionality
-        document.querySelector('.done-btn').addEventListener('click', function() {
-            // Mark the service as added
-            const furnishedAptBtn = Array.from(document.querySelectorAll('.service-name'))
-                .find(el => el.textContent === 'Furnished apartment')
-                .closest('.service-item')
-                .querySelector('.add-btn');
-                
-            furnishedAptBtn.textContent = 'Added';
-            furnishedAptBtn.style.backgroundColor = '#4caf50';
-            furnishedAptBtn.style.color = 'white';
-            
-            addedServices.push('Furnished apartment');
-            updateNextButton();
-            closeModal();
-        });
-        
-        document.querySelector('.next-btn').addEventListener('click', function() {
-            if (addedServices.length > 0) {
-                alert(`Proceeding with ${addedServices.length} selected services: ${addedServices.join(', ')}`);
-            } else {
-                alert('Please select at least one service to continue.');
-            }
-        });
-        
-        document.querySelector('.back-btn').addEventListener('click', function() {
-            alert('Going back...');
-        });
-        
-        // Close modal when clicking outside
-        document.getElementById('serviceModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-        
-        // Add scroll effect to app bar
-        let lastScrollY = window.scrollY;
-        window.addEventListener('scroll', () => {
-            const appBar = document.querySelector('.app-bar');
-            if (window.scrollY > lastScrollY && window.scrollY > 100) {
-                appBar.style.transform = 'translateY(-100%)';
-            } else {
-                appBar.style.transform = 'translateY(0)';
-            }
-            lastScrollY = window.scrollY;
-        });
-    </script>
+      }
+
+      // keyboard escape to close
+      document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && bookingModal && bookingModal.classList.contains('show')) bookingModal.classList.remove('show'); });
+
+      // install prompt helper
+      var deferredPrompt; var installBtn = document.getElementById('installBtn');
+      window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt = e; if (installBtn) installBtn.style.display = 'flex'; });
+      if (installBtn) installBtn.addEventListener('click', function(){ if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; });
+
+      // append spin keyframes
+      var s = document.createElement('style'); s.textContent = '@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}'; document.head.appendChild(s);
+
+    }); // end DOMContentLoaded
+  </script>
 </body>
 </html>
