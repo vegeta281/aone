@@ -3,74 +3,179 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sachin — Urban Company style</title>
+  <title>Sachin — Urban Company style (Dark)</title>
 
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#0f6fff" />
+  <meta name="theme-color" content="#071025" />
   <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    :root{ --uc-blue:#0f6fff; --muted:#6b7280; --accent:#ff9800; --success:#22c55e; }
+    :root{
+      --uc-blue:#0f6fff;
+      --muted:#9aa4b2; /* for descriptions */
+      --accent:#ff9800;
+      --success:#22c55e;
+      --bg:#071025;
+      --card:#0d1320;
+      --card-2:#0b1624;
+      --muted-2:rgba(255,255,255,0.6);
+      --border:rgba(255,255,255,0.06);
+      --glass: rgba(255,255,255,0.02);
+    }
+
     *{box-sizing:border-box}
-    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background:#f5f6f8; color:#111; margin:0;}
+    body{
+      font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: var(--bg);
+      color: #fff;
+      margin:0;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
 
     /* App container (Urban Company card) */
-    .app-shell{width:100%;max-width:420px;margin:18px auto;background:#fff;border-radius:14px;box-shadow:0 10px 30px rgba(12,20,30,0.08);overflow:hidden;min-height:92vh;position:relative}
+    .app-shell{
+      width:100%;
+      max-width:420px;
+      margin:18px auto;
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      border-radius:14px;
+      box-shadow: 0 12px 40px rgba(2,6,23,0.7);
+      overflow:hidden;
+      min-height:92vh;
+      position:relative;
+      border: 1px solid var(--border);
+    }
 
     /* App bar */
-    .app-bar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid #eef2f6;background:#fff;position:sticky;top:0;z-index:40}
-    .app-title{font-weight:700;color:#0b254a}
-    .icon-btn{background:none;border:none;font-size:18px;color:var(--muted);cursor:pointer}
+    .app-bar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:12px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      position:sticky;
+      top:0;
+      z-index:40;
+      backdrop-filter: blur(6px);
+    }
+    .app-title{font-weight:700;color:#fff}
+    .icon-btn{
+      background:none;border:none;font-size:18px;color:var(--muted-2);cursor:pointer;
+    }
 
     /* header */
-    .hero{padding:18px;background:linear-gradient(180deg,rgba(15,111,255,0.08),rgba(15,111,255,0.02));}
-    .hero h1{font-size:20px;margin-bottom:6px;color:#07203a}
-    .hero p{margin:0;color:var(--muted);font-size:14px}
+    .hero{
+      padding:18px;
+      background: linear-gradient(180deg, rgba(15,111,255,0.06), rgba(255,255,255,0.01));
+    }
+    .hero h1{font-size:20px;margin-bottom:6px;color:#fff}
+    .hero p{margin:0;color:var(--muted-2);font-size:14px}
 
     .rating-row{display:flex;align-items:center;gap:8px;margin-top:10px}
     .rating .star{color:#ffb74d}
-    .free-badge{background:#f0faf4;color:var(--success);padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px}
+    .free-badge{background:rgba(34,197,94,0.12);color:var(--success);padding:6px 10px;border-radius:12px;font-weight:600;font-size:13px}
 
     /* service list */
-    .section{Padding:10px 12px;border-bottom:1px solid #f0f2f5;background:#fff}
-    .section-title{font-weight:700;color:#0b254a;margin-bottom:6px}
-    .service-item{display:flex;gap:12px;align-items:flex-start;padding:12px 6px;border-top:1px solid #f3f5f7}
-    .service-left{width:56px;height:56px;border-radius:10px;background:#f8fafc;display:flex;align-items:center;justify-content:center;color:#0b254a;font-size:20px}
+    .section{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.03);background:transparent}
+    .section-title{font-weight:700;color:#fff;margin-bottom:6px}
+    .service-item{display:flex;gap:12px;align-items:flex-start;padding:12px 6px;border-top:1px solid rgba(255,255,255,0.02)}
+    .service-left{
+      width:56px;height:56px;border-radius:10px;
+      background: rgba(255,255,255,0.03);
+      display:flex;align-items:center;justify-content:center;color:#fff;font-size:20px
+    }
     .service-body{flex:1}
-    .service-name{font-weight:700;color:#07203a;font-size:15px}
-    .service-desc{color:var(--muted);font-size:13px;margin-top:6px}
-    .service-meta{color:var(--muted);font-size:12px;margin-top:6px}
+    .service-name{font-weight:700;color:#fff;font-size:15px}
+    .service-desc{color:var(--muted-2);font-size:13px;margin-top:6px}
+    .service-meta{color:var(--muted-2);font-size:12px;margin-top:6px}
     .service-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
 
-    .btn-add{background:#e8f3ff;border:1px solid rgba(15,111,255,0.12);color:var(--uc-blue);padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer}
-    .btn-add.added{background:var(--success);color:#fff;border:none}
-    .price{font-weight:800;color:#07203a}
-    .time{font-size:12px;color:var(--muted)}
+    .btn-add{
+      background: rgba(15,111,255,0.12);
+      border: 1px solid rgba(15,111,255,0.18);
+      color: #fff;
+      padding:8px 10px;border-radius:8px;font-weight:600;cursor:pointer;
+      backdrop-filter: blur(4px);
+    }
+    .btn-add.added{
+      background:var(--success);color:#fff;border:none
+    }
+    .price{font-weight:800;color:#fff}
+    .time{font-size:12px;color:var(--muted-2)}
 
     /* bottom sticky action like Urban Company */
-    .bottom-bar{position:sticky;bottom:0;background:#fff;padding:12px;border-top:1px solid #eef2f6;display:flex;gap:12px;align-items:center;justify-content:space-between}
-    .cta{background:var(--uc-blue);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;border:none;cursor:pointer}
-    .cta-secondary{background:#fff;border:1px solid #e6eefc;color:var(--uc-blue);padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+    .bottom-bar{
+      position:sticky;bottom:0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      padding:12px;border-top:1px solid rgba(255,255,255,0.03);
+      display:flex;gap:12px;align-items:center;justify-content:space-between;
+      backdrop-filter: blur(6px);
+    }
+    .cta{
+      background:var(--uc-blue);color:#fff;padding:12px 16px;border-radius:10px;font-weight:800;border:none;cursor:pointer;
+      box-shadow: 0 8px 20px rgba(15,111,255,0.12);
+    }
+    .cta-secondary{
+      background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:10px 12px;border-radius:10px;font-weight:700;cursor:pointer;
+    }
 
     /* booking modal (desktop centered & mobile sheet) */
-    .modal-wrap{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.6);z-index:120}
-    /* center modal in the middle of the viewport */
+    .modal-wrap{display:none;position:fixed;inset:0;background:rgba(2,6,23,0.7);z-index:120}
     .modal-wrap.show{display:flex;align-items:center;justify-content:center;padding:20px}
-    .modal-card{background:#fff;width:100%;max-width:520px;border-radius:12px;padding:20px;box-shadow:0 14px 50px rgba(2,6,23,0.25);max-height:90vh;overflow:auto}
-    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+    .modal-card{
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      width:100%;max-width:520px;border-radius:12px;padding:20px;box-shadow:0 14px 50px rgba(2,6,23,0.6);max-height:90vh;overflow:auto;border:1px solid rgba(255,255,255,0.03)
+    }
+    .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#fff}
+
+    /* form controls - dark styles */
+    .form-control, .form-select {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.04);
+      color: #fff;
+      padding:10px;
+      border-radius:8px;
+      box-shadow: none;
+    }
+    .form-control::placeholder { color: rgba(255,255,255,0.45); }
+    .btn.btn-outline-secondary {
+      color: #fff;
+      border-color: rgba(255,255,255,0.06);
+      background: rgba(255,255,255,0.02);
+    }
+
+    .form-check { color: var(--muted-2); }
+    .form-check-input { width:18px;height:18px; }
 
     .form-row{display:flex;gap:10px}
     .form-row .form-control{flex:1}
 
     /* compact reviews */
-    .reviews{padding:10px 12px;background:#fff}
-    .review-chip{background:#f8fafc;border-radius:10px;padding:10px;min-width:120px;box-shadow:0 8px 20px rgba(2,6,23,0.04)}
+    .reviews{padding:10px 12px;background:transparent}
+    .review-chip{
+      background: rgba(255,255,255,0.02);
+      border-radius:10px;padding:10px;min-width:120px;
+      box-shadow:0 8px 20px rgba(2,6,23,0.4);
+      color:var(--muted-2);
+    }
+
+    /* small helper overrides for bootstrap badges used above */
+    .badge.bg-white { background: rgba(255,255,255,0.06) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.03); }
+
+    /* floating actions */
+    a[title="Call"] { box-shadow: 0 10px 30px rgba(2,6,23,0.6); }
+    a[title="WhatsApp"] { box-shadow: 0 10px 30px rgba(2,6,23,0.6); }
 
     /* responsive */
-    @media(min-width:900px){body{background:#f3f6fb}} /* subtle desktop bg */
+    @media(min-width:900px){ body{ background: linear-gradient(180deg, #05121f, var(--bg)); } }
+
+    /* keyframes for spinner */
+    @keyframes spin{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}
   </style>
 </head>
 <body>
@@ -81,7 +186,7 @@
         <button class="icon-btn" id="backBtn" aria-label="Back"><i class="fas fa-arrow-left"></i></button>
         <div style="display:flex;flex-direction:column">
           <span class="app-title">Sachin Deep Cleaning</span>
-          <small style="color:var(--muted);font-size:12px">Gurgaon • Trusted pros</small>
+          <small style="color:var(--muted-2);font-size:12px">Gurgaon • Trusted pros</small>
         </div>
       </div>
       <div style="display:flex;gap:8px;align-items:center">
@@ -95,7 +200,7 @@
         <h1>Full Home Cleaning</h1>
         <p>Deep cleaning, sofa & carpet shampooing, kitchen & appliance care</p>
         <div class="rating-row">
-          <div style="display:flex;align-items:center;gap:8px"><span class="badge bg-white text-dark"><i class="fas fa-star star"></i> 4.82</span><small style="color:var(--muted)"> (1.2k reviews)</small></div>
+          <div style="display:flex;align-items:center;gap:8px"><span class="badge bg-white text-dark"><i class="fas fa-star star"></i> 4.82</span><small style="color:var(--muted-2)"> (1.2k reviews)</small></div>
           <div class="free-badge">Free First Go</div>
         </div>
       </section>
@@ -131,17 +236,13 @@
         </div>
       </section>
 
-      
-
-      
-
       <!-- Compact reviews -->
       <section class="reviews" aria-label="Customer reviews">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><strong style="color:#07203a">Customer Reviews</strong><small style="color:var(--muted)">Latest</small></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><strong style="color:#fff">Customer Reviews</strong><small style="color:var(--muted-2)">Latest</small></div>
         <div style="display:flex;gap:10px;overflow:auto;padding-bottom:8px">
-          <div class="review-chip">"Amazing cleaning"<br><small style="color:var(--muted)">— Amit</small></div>
-          <div class="review-chip">"Very professional"<br><small style="color:var(--muted)">— Priya</small></div>
-          <div class="review-chip">"Spotless work"<br><small style="color:var(--muted)">— Rohit</small></div>
+          <div class="review-chip">"Amazing cleaning"<br><small style="color:var(--muted-2)">— Amit</small></div>
+          <div class="review-chip">"Very professional"<br><small style="color:var(--muted-2)">— Priya</small></div>
+          <div class="review-chip">"Spotless work"<br><small style="color:var(--muted-2)">— Rohit</small></div>
         </div>
       </section>
 
@@ -150,7 +251,7 @@
     <!-- bottom actions -->
     <div class="bottom-bar">
       <div style="display:flex;flex-direction:column">
-        <small style="color:var(--muted)">Selected</small>
+        <small style="color:var(--muted-2)">Selected</small>
         <strong id="selectedCount">0 services</strong>
       </div>
       <div style="display:flex;gap:8px">
@@ -205,7 +306,7 @@
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px">
           <div>
-            <div style="font-size:13px;color:var(--muted)">Estimated total</div>
+            <div style="font-size:13px;color:var(--muted-2)">Estimated total</div>
             <div style="font-weight:800;font-size:18px" id="estimatedPrice">₹0</div>
           </div>
           <div>
@@ -219,8 +320,8 @@
   </div>
 
   <!-- Floating actions (call/wa/notify/install) -->
-  <a href="tel:+919267905943" title="Call" style="position:fixed;right:18px;bottom:96px;background:var(--uc-blue);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(12,20,30,0.12)"><i class="fas fa-phone"></i></a>
-  <a href="https://wa.me/919267905943" target="_blank" title="WhatsApp" style="position:fixed;right:18px;bottom:18px;background:#25d366;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(12,20,30,0.12)"><i class="fab fa-whatsapp"></i></a>
+  <a href="tel:+919267905943" title="Call" style="position:fixed;right:18px;bottom:96px;background:var(--uc-blue);width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(2,6,23,0.6)"><i class="fas fa-phone"></i></a>
+  <a href="https://wa.me/919267905943" target="_blank" title="WhatsApp" style="position:fixed;right:18px;bottom:18px;background:#25d366;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;z-index:140;box-shadow:0 10px 30px rgba(2,6,23,0.6)"><i class="fab fa-whatsapp"></i></a>
 
   <button id="installBtn" title="Install" style="position:fixed;left:18px;bottom:96px;background:var(--uc-blue);width:52px;height:52px;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;z-index:140;border:none"><i class="fas fa-download"></i></button>
   <button id="notifyBtn" title="Notify" style="position:fixed;left:18px;bottom:18px;background:var(--accent);width:52px;height:52px;border-radius:50%;display:none;align-items:center;justify-content:center;color:#fff;z-index:140;border:none"><i class="fas fa-bell"></i></button>
@@ -354,7 +455,7 @@
           obj.latitude = lat || '';
           obj.longitude = lon || '';
 
-          var spinner = document.createElement('div'); spinner.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:6px solid #f3f3f3;border-top:6px solid var(--uc-blue);animation:spin 1s linear infinite;z-index:200'; document.body.appendChild(spinner);
+          var spinner = document.createElement('div'); spinner.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);width:48px;height:48px;border-radius:50%;border:6px solid rgba(255,255,255,0.06);border-top:6px solid var(--uc-blue);animation:spin 1s linear infinite;z-index:200'; document.body.appendChild(spinner);
 
           fetch('https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec', { method:'POST', headers:{ 'Content-Type':'application/x-www-form-urlencoded' }, body: new URLSearchParams(obj) })
             .then(function(resp){ return resp.text().then(function(text){ return { ok: resp.ok, text: text }; }); })
@@ -387,10 +488,8 @@
       window.addEventListener('beforeinstallprompt', function(e){ e.preventDefault(); deferredPrompt = e; if (installBtn) installBtn.style.display = 'flex'; });
       if (installBtn) installBtn.addEventListener('click', function(){ if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt = null; installBtn.style.display = 'none'; });
 
-      // append spin keyframes
-      var s = document.createElement('style'); s.textContent = '@keyframes spin{0%{transform:translate(-50%,-50%) rotate(0)}100%{transform:translate(-50%,-50%) rotate(360deg)}}'; document.head.appendChild(s);
-
     }); // end DOMContentLoaded
   </script>
 </body>
 </html>
+
