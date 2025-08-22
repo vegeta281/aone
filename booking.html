@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Book a Cleaning Service</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="mb-4">Book a Deep Cleaning Service</h2>
+    <form id="bookingForm">
+      <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control" id="name" name="name" required>
+      </div>
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="tel" class="form-control" id="phone" name="phone" required>
+      </div>
+      <div class="mb-3">
+        <label for="bhk" class="form-label">Select BHK Type</label>
+        <select class="form-select" id="bhk" name="bhk" required>
+          <option value="">Select</option>
+          <option>1RK</option>
+          <option>1BHK</option>
+          <option>2BHK</option>
+          <option>3BHK</option>
+          <option>4BHK</option>
+          <option>5BHK</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label for="furnished" class="form-label">Furnishing</label>
+        <select class="form-select" id="furnished" name="furnished" required>
+          <option value="">Select</option>
+          <option>Furnished</option>
+          <option>Non-Furnished</option>
+        </select>
+      </div>
+
+      <!-- Add-on Services -->
+      <div class="mb-3">
+        <label class="form-label">Add-on Services</label><br>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500" id="addon1">
+          <label class="form-check-label" for="addon1">Carpet Cleaning (+₹500)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300" id="addon2">
+          <label class="form-check-label" for="addon2">Fridge Cleaning (+₹300)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400" id="addon3">
+          <label class="form-check-label" for="addon3">Balcony Cleaning (+₹400)</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="1000" id="addon4">
+          <label class="form-check-label" for="addon4">Pest Control (+₹1000)</label>
+        </div>
+      </div>
+
+      <!-- Live Price Display -->
+      <div class="mb-4">
+        <h5>Total Price: ₹<span id="priceDisplay">0</span></h5>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Submit Booking</button>
+    </form>
+  </div>
+
+  <script>
+    const pricing = {
+      "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+      "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+      "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+      "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+      "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+      "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+    };
+
+    const form = document.getElementById("bookingForm");
+    const bhk = document.getElementById("bhk");
+    const furnished = document.getElementById("furnished");
+    const addons = document.querySelectorAll(".addon");
+    const priceDisplay = document.getElementById("priceDisplay");
+
+    function calculatePrice() {
+      const base = pricing[bhk.value]?.[furnished.value] || 0;
+      let addonTotal = 0;
+      addons.forEach(addon => {
+        if (addon.checked) {
+          addonTotal += parseInt(addon.dataset.price);
+        }
+      });
+      const total = base + addonTotal;
+      priceDisplay.textContent = total;
+      return total;
+    }
+
+    bhk.addEventListener("change", calculatePrice);
+    furnished.addEventListener("change", calculatePrice);
+    addons.forEach(addon => addon.addEventListener("change", calculatePrice));
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      data.price = calculatePrice();
+      data.payment = "Pay After Work";
+
+      const selectedAddons = Array.from(addons)
+        .filter(addon => addon.checked)
+        .map(addon => addon.value);
+      data.addons = selectedAddons.join(", ");
+
+      fetch("https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec", {
+        method: "POST",
+        body: new URLSearchParams(data),
+      }).then(() => {
+        const queryParams = new URLSearchParams(data).toString();
+        window.location.href = `thankyou.html?${queryParams}`;
+      }).catch(err => {
+        alert("Something went wrong. Please try again.");
+        console.error("Error submitting form", err);
+      });
+    });
+  </script>
+</body>
+</html>
+
