@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -16,6 +16,7 @@
   <!-- OneSignal Push Notification Integration START -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
+  // OneSignal initialization and custom notification button logic
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   OneSignalDeferred.push(async function(OneSignal) {
     try {
@@ -57,14 +58,14 @@
         serviceWorkerParam: { scope: '/onesignal/' },
         serviceWorkerPath: 'OneSignalSDKWorker.js'
       });
-  
+      // OneSignal's native bell is enabled, hide our custom button
       const customNotifyBtn = document.getElementById("notifyBtn");
       if (customNotifyBtn) {
         customNotifyBtn.style.display = 'none';
       }
-  
     } catch (err) {
       console.warn('OneSignal initialization failed:', err);
+      // OneSignal failed, show our custom button
       const customNotifyBtn = document.getElementById("notifyBtn");
       if (customNotifyBtn) {
         customNotifyBtn.style.display = 'flex';
@@ -131,7 +132,7 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-   
+    
     /* Right side buttons */
     .call-button {
       right: 20px;
@@ -826,528 +827,482 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// --- Custom Message Modal ---
-const messageModal = document.getElementById("messageModal");
-const messageText = document.getElementById("messageText");
-const closeBtn = document.querySelector(".close-btn");
-const spinner = document.getElementById('spinner');
+// Wait for the entire document to be loaded before running the script
+document.addEventListener('DOMContentLoaded', function() {
+  
+  // --- Custom Message Modal & Spinner ---
+  const messageModal = document.getElementById("messageModal");
+  const messageText = document.getElementById("messageText");
+  const closeBtn = document.querySelector("#messageModal .close-btn");
+  const spinner = document.getElementById('spinner');
 
-if(closeBtn) {
-  closeBtn.onclick = function() {
-    if(messageModal) messageModal.style.display = "none";
-  }
-}
-
-if(messageModal) {
-  window.onclick = function(event) {
-    if (event.target == messageModal) {
-      messageModal.style.display = "none";
+  if(closeBtn) {
+    closeBtn.onclick = function() {
+      if(messageModal) messageModal.style.display = "none";
     }
   }
-}
 
-function showMessage(message) {
-  if (messageModal && messageText) {
-    messageText.innerText = message;
-    messageModal.style.display = "flex";
-  }
-}
-// --- End Custom Message Modal ---
-
-// --- Core App Logic ---
-const servicesData = [
-  { id: 1, name: 'Standard Home Deep Cleaning', price: 3500, description: 'Thorough cleaning of every corner in your home to ensure a spotless and healthy environment.' },
-  { id: 2, name: 'Office Cleaning', price: 5000, description: 'Professional cleaning services for offices to create a clean and productive workspace.' },
-  { id: 3, name: 'Sofa Cleaning', price: 1000, description: 'Deep cleaning and stain removal for sofas to keep your furniture fresh and hygienic.' },
-  { id: 4, name: 'Kitchen Cleaning', price: 1500, description: 'Comprehensive cleaning of kitchen surfaces, appliances, and sinks for a spotless cooking area.' },
-  { id: 5, name: 'Carpet Shampooing', price: 1800, description: 'Deep shampoo cleaning to remove dirt, dust, and allergens from your carpets.' },
-  { id: 6, name: 'Pest Control', price: 1200, description: 'Effective pest management to keep your premises safe and pest-free.' }
-];
-
-let cart = [];
-
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
-  const pageElement = document.getElementById(pageId);
-  if (pageElement) {
-    pageElement.classList.add('active');
-  } else {
-    console.error(`Page element with ID '${pageId}' not found.`);
-  }
-
-  // Update cart display if navigating to cart page
-  if (pageId === 'cart-page') {
-    renderCart();
-  }
-  // Update checkout page if navigating to it
-  if (pageId === 'checkout-page') {
-    renderCheckout();
-  }
-}
-
-function renderFixedServicesModal() {
-  const container = document.getElementById('services-container');
-  if (!container) {
-    console.error('services-container element not found.');
-    return;
-  }
-  container.innerHTML = '';
-  servicesData.forEach(service => {
-    const cardHtml = `
-      <div class="col-md-4">
-        <div class="card h-100 text-center shadow-sm">
-          <div class="card-body d-flex flex-column justify-content-between">
-            <i class="fas fa-brush fa-3x mb-3 text-primary"></i>
-            <h5 class="card-title">${service.name}</h5>
-            <p class="card-text">${service.description}</p>
-            <h6 class="mt-auto">₹${service.price}</h6>
-            <button class="btn btn-primary mt-2 add-to-cart-btn" data-id="${service.id}" data-type="fixed">Add to Cart</button>
-          </div>
-        </div>
-      </div>
-    `;
-    container.innerHTML += cardHtml;
-  });
-  
-  // Attach event listeners for the fixed services
-  document.querySelectorAll('.add-to-cart-btn[data-type="fixed"]').forEach(button => {
-    button.addEventListener('click', (e) => {
-      const serviceId = parseInt(e.target.dataset.id);
-      const service = servicesData.find(s => s.id === serviceId);
-      if (service) {
-        addItemToCart(service.name, service.price, 'Fixed Service');
-        const servicesModal = bootstrap.Modal.getInstance(document.getElementById('servicesModal'));
-        if (servicesModal) {
-          servicesModal.hide();
-        }
-        showPage('cart-page');
+  if(messageModal) {
+    window.onclick = function(event) {
+      if (event.target == messageModal) {
+        messageModal.style.display = "none";
       }
+    }
+  }
+
+  function showMessage(message) {
+    if (messageModal && messageText) {
+      messageText.innerText = message;
+      messageModal.style.display = "flex";
+    }
+  }
+
+  function showSpinner() {
+    if (spinner) spinner.classList.remove('d-none');
+  }
+
+  function hideSpinner() {
+    if (spinner) spinner.classList.add('d-none');
+  }
+
+  // --- Core App Logic & Data ---
+  const servicesData = [
+    { id: 1, name: 'Standard Home Deep Cleaning', price: 3500, description: 'Thorough cleaning of every corner in your home to ensure a spotless and healthy environment.' },
+    { id: 2, name: 'Office Cleaning', price: 5000, description: 'Professional cleaning services for offices to create a clean and productive workspace.' },
+    { id: 3, name: 'Sofa Cleaning', price: 1000, description: 'Deep cleaning and stain removal for sofas to keep your furniture fresh and hygienic.' },
+    { id: 4, name: 'Kitchen Cleaning', price: 1500, description: 'Comprehensive cleaning of kitchen surfaces, appliances, and sinks for a spotless cooking area.' },
+    { id: 5, name: 'Carpet Shampooing', price: 1800, description: 'Deep shampoo cleaning to remove dirt, dust, and allergens from your carpets.' },
+    { id: 6, name: 'Pest Control', price: 1200, description: 'Effective pest management to keep your premises safe and pest-free.' }
+  ];
+
+  // Base prices for the calculator based on home size
+  const basePrices = {
+    '1RK': 1000,
+    '1BHK': 1500,
+    '2BHK': 2000,
+    '3BHK': 2500,
+    '4BHK': 3000,
+    '5BHK': 3500
+  };
+
+  let cart = [];
+  const cartItemCountEl = document.getElementById('cart-item-count');
+
+  // Page navigation logic
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
     });
-  });
-}
+    const pageElement = document.getElementById(pageId);
+    if (pageElement) {
+      pageElement.classList.add('active');
+    } else {
+      console.error(`Page element with ID '${pageId}' not found.`);
+    }
 
-function addItemToCart(name, price, type, details = {}) {
-  const existingItem = cart.find(item => item.name === name);
-  if (existingItem) {
-    // If the item exists, just update it. For now, we'll replace it.
-    cart = cart.filter(item => item.name !== name);
+    // Update cart display if navigating to cart page
+    if (pageId === 'cart-page') {
+      renderCart();
+    }
+    // Update checkout page if navigating to it
+    if (pageId === 'checkout-page') {
+      renderCheckout();
+    }
   }
-  cart.push({ name, price, type, details });
-  updateCartCount();
-}
+  // Expose showPage to the global scope for onclick attributes in HTML
+  window.showPage = showPage;
 
-function updateCartCount() {
-  const cartItemCount = document.getElementById('cart-item-count');
-  if (cart.length > 0) {
-    cartItemCount.classList.remove('d-none');
-    cartItemCount.textContent = cart.length;
-  } else {
-    cartItemCount.classList.add('d-none');
-  }
-}
-
-function renderCart() {
-  const cartContainer = document.getElementById('cart-container');
-  const cartTotalDisplay = document.getElementById('cart-total-price');
-  let totalPrice = 0;
-  
-  cartContainer.innerHTML = ''; // Clear previous items
-
-  if (cart.length === 0) {
-    cartContainer.innerHTML = '<div class="col-12 text-center"><p class="text-muted">Your cart is empty.</p></div>';
-    document.getElementById('checkout-btn').style.display = 'none';
-  } else {
-    document.getElementById('checkout-btn').style.display = 'inline-block';
-    cart.forEach(item => {
-      totalPrice += item.price;
-      const itemHtml = `
-        <div class="col-md-8 mb-3">
-          <div class="card shadow-sm rounded-3">
-            <div class="card-body d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="card-title mb-1">${item.name}</h5>
-                ${item.type === 'calculator' ? `<small class="text-muted">${item.details.bhk} - ${item.details.furnished}</small>` : ''}
-              </div>
-              <div class="d-flex align-items-center">
-                <span class="fs-5 fw-bold me-3">₹${item.price}</span>
-                <button class="btn btn-danger btn-sm" onclick="removeItemFromCart('${item.name}')">Remove</button>
-              </div>
+  // Render the fixed price services modal
+  function renderFixedServicesModal() {
+    const container = document.getElementById('services-container');
+    if (!container) {
+      console.error('services-container element not found.');
+      return;
+    }
+    container.innerHTML = '';
+    servicesData.forEach(service => {
+      const cardHtml = `
+        <div class="col-md-4">
+          <div class="card h-100 text-center shadow-sm">
+            <div class="card-body d-flex flex-column justify-content-between">
+              <i class="fas fa-brush fa-3x mb-3 text-primary"></i>
+              <h5 class="card-title">${service.name}</h5>
+              <p class="card-text">${service.description}</p>
+              <h6 class="mt-auto">₹${service.price}</h6>
+              <button class="btn btn-primary mt-2 add-to-cart-btn" data-id="${service.id}" data-type="fixed">Add to Cart</button>
             </div>
           </div>
         </div>
       `;
-      cartContainer.innerHTML += itemHtml;
+      container.innerHTML += cardHtml;
+    });
+    
+    // Attach event listeners for the fixed services
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', (e) => {
+        const id = parseInt(e.target.dataset.id);
+        const service = servicesData.find(s => s.id === id);
+        if (service) {
+          cart.push({ ...service, type: 'fixed', quantity: 1 });
+          updateCartBadge();
+          showMessage(`${service.name} added to cart!`);
+          // Close the modal after adding to cart
+          const modalElement = document.getElementById('servicesModal');
+          const modal = bootstrap.Modal.getInstance(modalElement);
+          if (modal) {
+            modal.hide();
+          }
+        }
+      });
     });
   }
-  
-  cartTotalDisplay.textContent = totalPrice;
-}
 
-function removeItemFromCart(itemName) {
-  cart = cart.filter(item => item.name !== itemName);
-  updateCartCount();
-  renderCart();
-  // If we're on the checkout page, re-render it
-  if (document.getElementById('checkout-page').classList.contains('active')) {
-    renderCheckout();
+  // Update the cart item count badge
+  function updateCartBadge() {
+    const count = cart.reduce((total, item) => total + item.quantity, 0);
+    cartItemCountEl.textContent = count;
+    if (count > 0) {
+      cartItemCountEl.classList.remove('d-none');
+    } else {
+      cartItemCountEl.classList.add('d-none');
+    }
   }
-}
 
-function renderCheckout() {
-  const checkoutPriceDisplay = document.getElementById('checkout-price-display');
-  const checkoutItemsInput = document.getElementById('checkout-items');
-  const checkoutTotalPriceInput = document.getElementById('checkout-total-price');
+  // Render the contents of the cart page
+  function renderCart() {
+    const container = document.getElementById('cart-container');
+    const totalPriceEl = document.getElementById('cart-total-price');
+    let total = 0;
+    
+    container.innerHTML = '';
+    if (cart.length === 0) {
+      container.innerHTML = `<p class="text-center">Your cart is empty.</p>`;
+      document.getElementById('checkout-btn').disabled = true;
+    } else {
+      document.getElementById('checkout-btn').disabled = false;
+      cart.forEach((item, index) => {
+        const itemTotal = item.price;
+        total += itemTotal;
+        const itemHtml = `
+          <div class="col-12 col-md-8 mb-3">
+            <div class="card shadow-sm">
+              <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <h5 class="card-title">${item.name}</h5>
+                    ${item.type === 'calculator' ? `
+                      <small class="text-muted">Home Size: ${item.homeSize}</small><br>
+                      ${item.addons && item.addons.length > 0 ? `<small class="text-muted">Addons: ${item.addons.join(', ')}</small>` : ''}
+                    ` : ''}
+                    <p class="mb-0 mt-2 fw-bold">₹${item.price}</p>
+                  </div>
+                  <button class="btn btn-danger btn-sm remove-from-cart-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.innerHTML += itemHtml;
+      });
 
-  const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-  checkoutPriceDisplay.textContent = totalPrice;
-  checkoutTotalPriceInput.value = totalPrice;
-  checkoutItemsInput.value = JSON.stringify(cart);
-}
+      // Attach remove button listeners
+      document.querySelectorAll('.remove-from-cart-btn').forEach(button => {
+        button.addEventListener('click', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          cart.splice(index, 1);
+          updateCartBadge();
+          renderCart(); // Re-render the cart
+        });
+      });
+    }
+    totalPriceEl.textContent = total;
+  }
 
-// --- PWA Installation Logic ---
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
+  // Render the checkout page with cart summary
+  function renderCheckout() {
+    const checkoutPriceDisplay = document.getElementById('checkout-price-display');
+    const checkoutItemsInput = document.getElementById('checkout-items');
+    const checkoutTotalPriceInput = document.getElementById('checkout-total-price');
+    const paymentDetails = document.getElementById('paymentDetails');
+    const upiQrCode = document.getElementById('upi-qr-code');
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  if(installBtn) installBtn.style.display = 'flex';
-});
+    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    checkoutPriceDisplay.textContent = total;
+    checkoutTotalPriceInput.value = total;
+    checkoutItemsInput.value = JSON.stringify(cart);
 
-if(installBtn) {
-  installBtn.addEventListener('click', (e) => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the install prompt');
+    // Show/hide UPI details based on selected payment method
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        if (e.target.value === 'Online Payment') {
+          paymentDetails.style.display = 'block';
         } else {
-          console.log('User dismissed the install prompt');
+          paymentDetails.style.display = 'none';
         }
-        deferredPrompt = null;
-        installBtn.style.display = 'none';
-      });
-    }
-  });
-}
-
-// --- UPI QR Code Generator ---
-function generateUpiQrCode(upiId, amount, name) {
-  const upiUrl = `upi://pay?pa=${upiId}&pn=${encodeURIComponent(name)}&am=${amount}`;
-  // Use a public QR code API
-  const qrCodeApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiUrl)}`;
-  return qrCodeApiUrl;
-}
-
-// --- Location and Booking Form Logic ---
-let lat = "";
-let lon = "";
-let address = "";
-let locationReady = false;
-
-async function fetchLocationOnce() {
-  if (locationReady) return;
-  try {
-    const position = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0
       });
     });
-    lat = position.coords.latitude;
-    lon = position.coords.longitude;
-    
-    // Reverse Geocoding API
-    const geoApiUrl = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
-    const response = await fetch(geoApiUrl);
-    const data = await response.json();
-    address = data.display_name || "Address not found";
-    locationReady = true;
 
-  } catch (err) {
-    console.error("Geolocation or reverse geocoding failed:", err);
-    showMessage("Unable to get your current location. Please enter your address manually.");
+    // Generate UPI QR code based on cart total
+    const upiId = '7042721405@ptyes';
+    const upiLink = `upi://pay?pa=${upiId}&pn=Sachin%20Deep%20Cleaning&am=${total}&cu=INR`;
+    const qrApi = `https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=${encodeURIComponent(upiLink)}`;
+    upiQrCode.src = qrApi;
   }
-}
 
-// Booking form submission handler (waits for location if not ready)
-const checkoutForm = document.getElementById("checkoutForm");
-if (checkoutForm) {
-  checkoutForm.addEventListener("submit", async function(e) {
-    e.preventDefault();
-    
-    const spinner = document.getElementById("spinner");
-    if (spinner) spinner.classList.remove("d-none");
-    document.getElementById("checkout-submit-btn").disabled = true;
+  // --- Event Listeners for Forms and Buttons ---
 
-    // If location not fetched yet, try to get it (won't block forever)
-    if (!locationReady) {
-      await fetchLocationOnce();
-    }
-
-    const formData = new FormData(checkoutForm);
-    const data = {};
-    formData.forEach((value, key) => data[key] = value);
-
-    // Attach coords/address (ensure hidden inputs filled if present)
-    data.latitude = lat;
-    data.longitude = lon;
-    data.address = data.address || address || "";
-
-    try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbxCl4QKzA7cytjsylc821h0DZIATSp4FGD2JQVNDzdOwRK1y8VpvSoxg3Z5g52qp7uA/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams(data).toString()
-        }
-      );
-
-      const text = await response.text();
-      if (response.ok && text.trim() === "Success") {
-        showMessage("Booking submitted successfully! Thank you.");
-        checkoutForm.reset();
-        cart = [];
-        updateCartCount();
-        renderCart();
-        showPage('home-page');
-      } else {
-        showMessage("Failed to submit booking. Please try again.");
-        console.error("Response:", text);
-      }
-    } catch (err) {
-      showMessage("Error submitting booking: " + err.message);
-      console.error(err);
-    } finally {
-      if (spinner) spinner.classList.add("d-none");
-      document.getElementById("checkout-submit-btn").disabled = false;
-    }
-  });
-}
-
-// Service Worker registration
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then(reg => console.log('Service Worker registered:', reg.scope))
-      .catch(err => console.warn('Service Worker registration failed:', err));
-  });
-}
-
-// --- Event Listeners and Initial Page Setup ---
-document.addEventListener('DOMContentLoaded', () => {
-  // Initial page load
-  showPage('home-page');
-  renderFixedServicesModal();
-
-  // Add event listener for the calculator form
+  // Handle price calculation and "Add to Cart" for the calculator form
   const calculatorForm = document.getElementById('calculatorForm');
-  if (calculatorForm) {
-    calculatorForm.addEventListener('change', () => {
-      const bhk = document.getElementById('bhk').value;
-      const furnished = document.getElementById('furnished').value;
-      const addons = Array.from(document.querySelectorAll('.addon:checked')).map(cb => ({
-        name: cb.value,
-        price: parseInt(cb.dataset.price)
-      }));
-      
-      let basePrice = 0;
-      switch(bhk) {
-        case '1RK': basePrice = 1500; break;
-        case '1BHK': basePrice = 2000; break;
-        case '2BHK': basePrice = 2500; break;
-        case '3BHK': basePrice = 3000; break;
-        case '4BHK': basePrice = 4000; break;
-        case '5BHK': basePrice = 5000; break;
-        default: basePrice = 0;
-      }
-      
-      const addonPrice = addons.reduce((sum, addon) => sum + addon.price, 0);
-      const totalPrice = basePrice + addonPrice;
+  const bhkSelect = document.getElementById('bhk');
+  const furnishedSelect = document.getElementById('furnished');
+  const addonCheckboxes = document.querySelectorAll('.addon');
+  const estimatedPriceEl = document.getElementById('estimatedPrice');
 
-      document.getElementById('estimatedPrice').textContent = totalPrice;
-      document.querySelector('#calculatorForm input[name="price"]').value = totalPrice;
-      document.querySelector('#calculatorForm input[name="addons"]').value = addons.map(a => a.name).join(', ');
-    });
-
-    calculatorForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const bhk = document.getElementById('bhk').value;
-      const furnished = document.getElementById('furnished').value;
-      const price = parseInt(document.querySelector('#calculatorForm input[name="price"]').value);
-      const addons = document.querySelector('#calculatorForm input[name="addons"]').value;
-
-      let name = `${bhk} ${furnished} Deep Cleaning`;
-      if (addons) {
-        name += ` with Add-ons (${addons})`;
-      }
-      
-      addItemToCart(name, price, 'calculator', { bhk, furnished });
-      showPage('cart-page');
-    });
-  }
-
-  // Location button click handler
-  const getLocationBtn = document.getElementById("getLocation");
-  if(getLocationBtn) {
-    getLocationBtn.addEventListener("click", async () => {
-      showMessage("Attempting to get your location...");
-      await fetchLocationOnce();
-      if (address) {
-        document.getElementById("address").value = address;
-        showMessage("Location and address filled automatically.");
+  function calculatePrice() {
+    let basePrice = basePrices[bhkSelect.value];
+    let totalPrice = basePrice;
+    
+    // Add-on services
+    addonCheckboxes.forEach(checkbox => {
+      if (checkbox.checked) {
+        totalPrice += parseInt(checkbox.dataset.price);
       }
     });
+
+    // Furnishing factor (optional, can be expanded)
+    if (furnishedSelect.value === 'Furnished') {
+      totalPrice += 500; // Example additional cost for furnished
+    }
+
+    estimatedPriceEl.textContent = totalPrice;
+    return totalPrice;
   }
 
-  // UPI QR and Copy UPI ID logic
-  const upiId = '7042721405@ptyes';
-  const upiName = 'Sachin Deep Cleaning';
-  const qrCodeImg = document.getElementById('upi-qr-code');
-  if (qrCodeImg) {
-    // Generate the QR code for a default amount (e.g., 1 INR for testing)
-    qrCodeImg.src = generateUpiQrCode(upiId, '1', upiName);
-  }
+  // Update price on change
+  bhkSelect.addEventListener('change', calculatePrice);
+  furnishedSelect.addEventListener('change', calculatePrice);
+  addonCheckboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', calculatePrice);
+  });
+  calculatePrice(); // Initial calculation on page load
 
-  const copyUpiIdBtn = document.getElementById('copyUpiIdBtn');
-  if (copyUpiIdBtn) {
-    copyUpiIdBtn.addEventListener('click', () => {
-      const upiIdInput = document.getElementById('upiId');
-      if (upiIdInput) {
-        upiIdInput.select();
-        document.execCommand('copy');
-        showMessage("UPI ID copied to clipboard!");
-      }
-    });
-  }
-  
-  // Update QR code on payment method change (optional, but good practice)
-  const payNowRadio = document.getElementById('payNow');
-  const payAfterWorkRadio = document.getElementById('payAfterWork');
-  const paymentDetailsSection = document.getElementById('paymentDetails');
-  
-  if (payNowRadio && payAfterWorkRadio && paymentDetailsSection) {
-    const updatePaymentDetailsVisibility = () => {
-      if (payNowRadio.checked) {
-        paymentDetailsSection.style.display = 'block';
-        const totalPrice = document.getElementById('checkout-total-price').value;
-        if (qrCodeImg && totalPrice) {
-          qrCodeImg.src = generateUpiQrCode(upiId, totalPrice, upiName);
-        }
-      } else {
-        paymentDetailsSection.style.display = 'none';
-      }
+  // Handle "Add to Cart" for the calculator form
+  calculatorForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const homeSize = bhkSelect.value;
+    const furnishing = furnishedSelect.value;
+    const selectedAddons = Array.from(addonCheckboxes)
+      .filter(cb => cb.checked)
+      .map(cb => cb.value);
+
+    const calculatedPrice = calculatePrice();
+    
+    const cartItem = {
+      name: `Custom Cleaning (${homeSize}, ${furnishing})`,
+      price: calculatedPrice,
+      homeSize: homeSize,
+      furnishing: furnishing,
+      addons: selectedAddons,
+      type: 'calculator',
+      quantity: 1
     };
-    payNowRadio.addEventListener('change', updatePaymentDetailsVisibility);
-    payAfterWorkRadio.addEventListener('change', updatePaymentDetailsVisibility);
-    updatePaymentDetailsVisibility();
+
+    cart.push(cartItem);
+    updateCartBadge();
+    showMessage('Your custom cleaning service has been added to the cart!');
+  });
+  
+  // Handle final checkout form submission
+  const checkoutForm = document.getElementById('checkoutForm');
+  checkoutForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showSpinner();
+    const formData = new FormData(checkoutForm);
+    const data = Object.fromEntries(formData.entries());
+    data.items = JSON.parse(data.items); // Parse the hidden input value back to an object
+
+    // Simulate sending data to a server
+    console.log('Booking submitted:', data);
+
+    // Simulate a successful API response after a delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    hideSpinner();
+
+    // Show success message and clear the cart
+    showMessage('Booking Successful! We will contact you shortly.');
+    cart = [];
+    updateCartBadge();
+    
+    // Reset forms and navigate back to home
+    checkoutForm.reset();
+    calculatorForm.reset();
+    setTimeout(() => {
+      showPage('home-page');
+    }, 2000);
+  });
+
+  // Geolocation for address
+  const getLocationBtn = document.getElementById('getLocation');
+  const addressInput = document.getElementById('address');
+  getLocationBtn.addEventListener('click', () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Reverse geocoding using a public API (Nominatim example)
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await response.json();
+          if (data && data.display_name) {
+            addressInput.value = data.display_name;
+            showMessage('Address filled automatically!');
+          } else {
+            showMessage('Could not retrieve address from coordinates.');
+          }
+        } catch (error) {
+          console.error('Error fetching address:', error);
+          showMessage('Error retrieving address. Please enter it manually.');
+        }
+      }, (error) => {
+        console.error('Geolocation error:', error);
+        let errorMessage = 'Geolocation failed. Please enter your address manually.';
+        if (error.code === error.PERMISSION_DENIED) {
+          errorMessage = 'Please enable location permissions in your browser settings.';
+        }
+        showMessage(errorMessage);
+      });
+    } else {
+      showMessage("Geolocation is not supported by your browser. Please enter your address manually.");
+    }
+  });
+
+  // UPI ID copy functionality
+  const copyUpiIdBtn = document.getElementById('copyUpiIdBtn');
+  copyUpiIdBtn.addEventListener('click', () => {
+    const upiIdInput = document.getElementById('upiId');
+    upiIdInput.select();
+    upiIdInput.setSelectionRange(0, 99999); // For mobile devices
+    try {
+      document.execCommand('copy');
+      showMessage('UPI ID copied to clipboard!');
+    } catch (err) {
+      showMessage('Failed to copy UPI ID. Please copy it manually.');
+    }
+  });
+
+  // --- Reviews Section Logic ---
+  const reviewsData = [
+    { name: "Priya Sharma", location: "Gurgaon, India", rating: 5, text: "Outstanding deep cleaning service! My home has never looked this clean. The team was professional and very thorough. Highly recommended!" },
+    { name: "Amit Kumar", location: "DLF Phase 4", rating: 5, text: "Prompt and efficient. The carpet cleaning service was superb and they managed to remove stains I thought were permanent. Excellent job!" },
+    { name: "Anjali Gupta", location: "Sector 56", rating: 4, text: "Good service, very polite staff. The kitchen cleaning was top-notch. I would use their service again for sure." }
+  ];
+
+  function renderReviews() {
+    const reviewSlider = document.getElementById('reviewSlider');
+    if (!reviewSlider) return;
+
+    reviewSlider.innerHTML = '';
+    reviewsData.forEach(review => {
+      const reviewCard = document.createElement('div');
+      reviewCard.classList.add('review-card');
+      const firstInitial = review.name.split(' ')[0][0].toUpperCase();
+      const secondInitial = review.name.split(' ')[1] ? review.name.split(' ')[1][0].toUpperCase() : '';
+      const initials = `${firstInitial}${secondInitial}`;
+      const starRatingHtml = Array(review.rating).fill('<i class="fas fa-star"></i>').join('') + 
+                             Array(5 - review.rating).fill('<i class="far fa-star"></i>').join('');
+      
+      reviewCard.innerHTML = `
+        <div class="review-header">
+          <div class="avatar-placeholder">${initials}</div>
+          <div>
+            <p class="reviewer-name mb-0">${review.name}</p>
+            <p class="reviewer-location mb-0">${review.location}</p>
+          </div>
+        </div>
+        <div class="review-text">"${review.text}"</div>
+        <div class="star-rating">${starRatingHtml}</div>
+      `;
+      reviewSlider.appendChild(reviewCard);
+    });
   }
 
-  // PWA/iOS Notification Banner & Modal Logic
+  // Initial render calls
+  renderReviews();
+  renderFixedServicesModal();
+  updateCartBadge();
+  
+  // iOS PWA notification banner logic
   const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
   const isPWA = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  const isIOSPWA = isIOS && isPWA;
+  const iOSNotificationBanner = document.getElementById('ios-notification-banner');
+  const iOSModal = document.getElementById('ios-modal');
+  const notifyBtn = document.getElementById('notifyBtn');
 
-  if (isIOS && !isPWA && localStorage.getItem('ios_notification_dismissed') !== 'true') {
-    const banner = document.getElementById('ios-notification-banner');
-    if (banner) {
-      setTimeout(() => banner.classList.add('show'), 3000);
+  // Show the custom notification button if OneSignal fails or if on iOS PWA
+  if (isIOSPWA) {
+    if (localStorage.getItem('ios_notification_dismissed') !== 'true') {
+      if(notifyBtn) notifyBtn.style.display = 'flex';
     }
   }
 
-  const iosBanner = document.getElementById('ios-notification-banner');
-  if (iosBanner) {
-    iosBanner.querySelector('.close-banner').addEventListener('click', () => {
-      iosBanner.classList.remove('show');
-      localStorage.setItem('ios_notification_dismissed', 'true');
-    });
-  }
-
-  // iOS modal logic for manual notification
-  const notifyBtn = document.getElementById('notifyBtn');
-  const iosModal = document.getElementById('ios-modal');
+  // Handle click on custom notification button
   if (notifyBtn) {
     notifyBtn.addEventListener('click', async () => {
-      if (isIOS && !isPWA) {
-        if (iosModal) {
-          document.getElementById('url-display').textContent = window.location.href;
-          iosModal.classList.add('show');
+      if (isIOSPWA) {
+        // Show iOS PWA instructions modal
+        if (iOSModal) {
+          document.getElementById('url-display').innerText = window.location.href;
+          iOSModal.classList.add('show');
         }
         return;
       }
-      if (!('Notification' in window)) { showMessage("This browser doesn't support notifications."); return; }
+      
+      // Standard web notification request
+      if (!('Notification' in window)) {
+        showMessage("This browser doesn't support notifications.");
+        return;
+      }
+      
       try {
-        const permission = await OneSignal.Notifications.requestPermission();
-        if (permission) { showMessage("Notifications enabled!"); notifyBtn.style.display = 'none'; return; }
-      } catch (oneSignalErr) { console.warn('OneSignal permission error:', oneSignalErr); }
-      const permission = await Notification.requestPermission();
-      if (permission === 'granted') {
-        new Notification('Sachin Deep Cleaning', { body: 'Updates enabled!', icon: '/icons/apple-touch-icon-180x180.png', tag: 'cleaning-service', requireInteraction: true });
-        notifyBtn.style.display = 'none';
-      } else {
-        showMessage("Please enable notifications to stay updated with our services.");
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+          showMessage("Notifications enabled!");
+          if (notifyBtn) notifyBtn.style.display = 'none';
+        } else {
+          showMessage("Please enable notifications to stay updated with our services.");
+        }
+      } catch (err) {
+        console.warn('Notification error:', err);
+        showMessage("Unable to enable notifications at this time.");
       }
     });
   }
   
-  // Reviews data (for review slider)
-  const reviews = [
-    { name: 'Rohan P.', location: 'Gurgaon, Haryana', text: "Sachin's team did a fantastic job with my apartment! They were punctual, thorough, and very professional. The place looks brand new!", rating: 5 },
-    { name: 'Ananya S.', location: 'New Delhi', text: 'I hired them for a post-renovation cleaning. They were meticulous and left no stone unturned. Highly recommend their deep cleaning service.', rating: 5 },
-    { name: 'Vikram K.', location: 'Gurgaon, Haryana', text: 'Prompt and reliable service. The cleaners were polite and did an excellent job on my sofa. Will definitely use them again.', rating: 4 },
-    { name: 'Priya L.', location: 'Noida, UP', text: 'My kitchen has never been this clean! They paid attention to every detail and sanitized everything perfectly. Worth every penny.', rating: 5 },
-  ];
+  // iOS modal functions
+  window.copyUrl = function() {
+    const urlInput = document.getElementById('url-display');
+    if (urlInput) {
+      const tempInput = document.createElement('textarea');
+      tempInput.value = urlInput.innerText;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      showMessage('URL copied!');
+    }
+  };
 
-  const reviewContainer = document.getElementById('reviewSlider');
-  if (reviewContainer) {
-    reviewContainer.innerHTML = reviews.map(review => {
-      const avatarInitial = review.name.charAt(0).toUpperCase();
-      const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
-      return `
-        <div class="review-card">
-          <div class="review-header">
-            <div class="avatar-placeholder">${avatarInitial}</div>
-            <div>
-              <p class="reviewer-name">${review.name}</p>
-              <p class="reviewer-location">${review.location}</p>
-            </div>
-          </div>
-          <p class="review-text">"${review.text}"</p>
-          <div class="star-rating">${stars}</div>
-        </div>
-      `;
-    }).join('');
-  }
+  window.closeModal = function() {
+    if (iOSModal) {
+      iOSModal.classList.remove('show');
+    }
+  };
+
+  window.openInNewTab = function() {
+    window.open(window.location.href, '_blank');
+  };
 });
-
-// Modal functions for iOS PWA banner
-function copyUrl() {
-  const urlBox = document.getElementById('url-display');
-  const urlText = urlBox.textContent;
-  navigator.clipboard.writeText(urlText).then(() => {
-    showMessage("URL copied to clipboard!");
-  }).catch(err => {
-    console.error("Failed to copy URL:", err);
-  });
-}
-
-function closeModal() {
-  const iosModal = document.getElementById('ios-modal');
-  if (iosModal) {
-    iosModal.classList.remove('show');
-    localStorage.setItem('ios_notification_dismissed', 'true');
-  }
-}
-
-function openInNewTab() {
-  window.open(window.location.href, '_blank');
-  closeModal();
-}
 </script>
 
 </body>
 </html>
-
