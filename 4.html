@@ -1,0 +1,1268 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sachin Deep Cleaning</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#007bff" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+
+  <!-- OneSignal Push Notification Integration START -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    try {
+      await OneSignal.init({
+        appId: "ed4eb090-75aa-4d2c-b321-183eb734f389",
+        safari_web_id: "web.onesignal.auto.477dedc8-8bcf-40fd-b64c-238033111672",
+        notifyButton: { 
+          enable: true,
+          position: 'bottom-left',
+          theme: 'default',
+          size: 'medium',
+          offset: {
+            bottom: '20px',
+            left: '20px'
+          },
+          colors: {
+            'circle.background': '#ff9800',
+            'circle.foreground': 'white',
+            'badge.background': '#ff9800',
+            'badge.foreground': 'white',
+            'dialog.button.background.hovering': '#ff9800',
+            'dialog.button.background.active': '#ff9800',
+            'dialog.button.foreground': 'white'
+          },
+          text: {
+            'tip.state.unsubscribed': 'Get notified about cleaning offers',
+            'tip.state.subscribed': "You're subscribed to notifications",
+            'tip.state.blocked': "You've blocked notifications",
+            'message.prenotify': 'Click to get notified about cleaning services and offers',
+            'message.action.subscribed': "Thanks! You'll receive notifications about our cleaning services",
+            'message.action.resubscribed': "You're subscribed to our cleaning service notifications",
+            'dialog.main.title': 'Manage Site Notifications',
+            'dialog.main.button.subscribe': 'Allow Notifications',
+            'dialog.main.button.unsubscribe': 'Block Notifications',
+            'dialog.blocked.title': 'Unblock Notifications',
+            'dialog.blocked.message': "Follow these instructions to allow notifications:"
+          }
+        },
+        serviceWorkerParam: { scope: '/onesignal/' },
+        serviceWorkerPath: 'OneSignalSDKWorker.js'
+      });
+  
+      const customNotifyBtn = document.getElementById("notifyBtn");
+      if (customNotifyBtn) {
+        customNotifyBtn.style.display = 'none';
+      }
+  
+    } catch (err) {
+      console.warn('OneSignal initialization failed:', err);
+      const customNotifyBtn = document.getElementById("notifyBtn");
+      if (customNotifyBtn) {
+        customNotifyBtn.style.display = 'flex';
+      }
+    }
+  });
+  </script>
+  <!-- OneSignal Push Notification Integration END -->
+
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .hero {
+      background: url('https://aonedeepcleaning.in/assets/img/cleaning/slide3.jpg') no-repeat center center;
+      background-size: cover;
+      color: white;
+      padding: 100px 0;
+      text-align: center;
+      border-radius: 0 0 25px 25px;
+    }
+    .services .card {
+      transition: all 0.3s ease;
+      border-radius: 15px;
+      overflow: hidden;
+    }
+    .services .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    footer {
+      background: #222;
+      color: #aaa;
+      padding: 20px 0;
+      text-align: center;
+      border-radius: 25px 25px 0 0;
+    }
+    .floating-button {
+      position: fixed;
+      bottom: 20px;
+      z-index: 1000;
+      width: 50px;
+      height: 50px;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      text-decoration: none;
+    }
+    
+    /* Spinner Styling */
+    #spinner {
+      display: none;
+      margin: 20px auto;
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #007bff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+   
+    /* Right side buttons */
+    .call-button {
+      right: 20px;
+      bottom: 90px;
+      background-color: #007bff;
+    }
+    .whatsapp-button {
+      right: 20px;
+      bottom: 20px;
+      background-color: #25d366;
+    }
+
+    /* Left side buttons */
+    #installBtn {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      z-index: 1100;
+      background-color: #007bff;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .notification-button {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background-color: #ff9800;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      color: white;
+      font-size: 22px;
+      cursor: pointer;
+      display: none; /* Hidden by default, shown only if OneSignal fails */
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+    }
+
+    /* Reviews Section */
+    #reviews {
+      background: #f8f9fa;
+      padding: 60px 15px;
+      text-align: center;
+    }
+    #reviews h2 {
+      margin-bottom: 40px;
+      font-weight: 700;
+      color: #007bff;
+    }
+    #reviewSlider {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .review-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      flex: 1 1 calc(33.333% - 20px);
+      min-width: 280px;
+      max-width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: left;
+    }
+    .review-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 15px;
+      width: 100%;
+    }
+    .avatar-placeholder {
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #007bff, #0056b3);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+      border: 2px solid #007bff;
+    }
+    .reviewer-name {
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin-bottom: 0;
+    }
+    .reviewer-location {
+      font-size: 0.9rem;
+      color: #555;
+    }
+    .review-text {
+      font-style: italic;
+      margin-bottom: 15px;
+      flex-grow: 1;
+      color: #333;
+    }
+    .star-rating {
+      color: #f8ce0b;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    @media(max-width: 768px) {
+      .review-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+    }
+
+    /* iOS PWA Notification Banner */
+    #ios-notification-banner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      color: white;
+      padding: 12px 20px;
+      text-align: center;
+      font-size: 14px;
+      z-index: 2000;
+      transform: translateY(-100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    #ios-notification-banner.show {
+      transform: translateY(0);
+    }
+    #ios-notification-banner .close-banner {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #ios-notification-banner a {
+      color: white;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    /* Better mobile experience */
+    @media(max-width: 480px) {
+      #ios-notification-banner {
+        font-size: 13px;
+        padding: 10px 40px 10px 15px;
+      }
+    }
+
+    /* iOS Instructions Modal */
+    #ios-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 3000;
+      align-items: center;
+      justify-content: center;
+    }
+    #ios-modal.show {
+      display: flex;
+    }
+    .ios-modal-content {
+      background: white;
+      border-radius: 15px;
+      padding: 30px 25px;
+      margin: 20px;
+      max-width: 400px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    .ios-modal-content h3 {
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .ios-modal-content .step {
+      background: #f8f9fa;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      text-align: left;
+    }
+    .ios-modal-content .step strong {
+      color: #007bff;
+    }
+    .ios-modal-content .url-box {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      word-break: break-all;
+      margin: 10px 0;
+    }
+
+    /* Custom Message Modal */
+    #messageModal {
+      display: none;
+      position: fixed;
+      z-index: 3000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+    }
+    .message-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 400px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    .close-btn {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    /* Page management */
+    .page {
+      display: none;
+    }
+    .page.active {
+      display: block;
+    }
+    
+    /* Cart badge */
+    .cart-badge {
+      position: absolute;
+      top: 5px;
+      right: -8px;
+      padding: 2px 6px;
+      border-radius: 50%;
+      background: red;
+      color: white;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom Message Modal -->
+<div id="messageModal">
+  <div class="message-content">
+    <span class="close-btn">&times;</span>
+    <p id="messageText"></p>
+  </div>
+</div>
+
+<!-- iOS Instructions Modal -->
+<div id="ios-modal">
+  <div class="ios-modal-content">
+    <h3>🔔 Enable Notifications</h3>
+    <p>iOS home screen apps don't support web notifications yet.</p>
+    
+    <div class="step">
+      <strong>Option 1:</strong> Open this website in Safari browser where notifications work perfectly.
+    </div>
+    
+    <div class="step">
+      <strong>Option 2:</strong> Copy this URL and paste it in Safari:
+      <div class="url-box" id="url-display"></div>
+      <button class="btn btn-sm btn-primary mt-2" onclick="copyUrl()">Copy URL</button>
+    </div>
+    
+    <div class="mt-3">
+      <button class="btn btn-secondary me-2" onclick="closeModal()">Maybe Later</button>
+      <button class="btn btn-primary" onclick="openInNewTab()">Try Opening Safari</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fixed Services Modal (now a modal instead of a full page) -->
+<div class="modal fade" id="servicesModal" tabindex="-1" aria-labelledby="servicesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="servicesModalLabel">Our Fixed-Price Services</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="services-container" class="row g-4">
+          <!-- Fixed service cards will be injected here by JS -->
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="#" onclick="showPage('home-page')">Sachin Deep Cleaning</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <!-- Replaced "Services" with a new "Price Calculator" link -->
+        <li class="nav-item"><a class="nav-link" href="#" onclick="showPage('calculator-page')">Price Calculator</a></li>
+        <!-- Old fixed services moved to a modal -->
+        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#servicesModal">Fixed Services</a></li>
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="#" onclick="showPage('cart-page')">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cart-item-count" class="cart-badge d-none">0</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div id="app">
+
+<!-- Home Page -->
+<div id="home-page" class="page active">
+  <section class="hero">
+    <div class="container">
+      <h1>Residential & Commercial Cleaning Services</h1>
+      <p>Serving Gurgaon with Professional Cleaning Solutions</p>
+      <button class="btn btn-primary mt-3" onclick="showPage('calculator-page')">Get a Quote</button>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-5">
+    <div class="container text-center">
+      <h2>How It Works</h2>
+      <p class="lead text-muted">A simple and hassle-free booking process.</p>
+      <div class="row text-center mt-5">
+        <div class="col-md-4 mb-4">
+          <div class="p-4 rounded shadow-sm h-100">
+            <i class="fas fa-calculator fa-3x text-primary mb-3"></i>
+            <h5 class="fw-bold">1. Get a Quote</h5>
+            <p class="text-muted">Use our smart calculator to get a price for your home cleaning needs.</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="p-4 rounded shadow-sm h-100">
+            <i class="fas fa-user-shield fa-3x text-primary mb-3"></i>
+            <h5 class="fw-bold">2. Get Verified Professional</h5>
+            <p class="text-muted">Our verified and skilled cleaners will arrive at your doorstep on time.</p>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="p-4 rounded shadow-sm h-100">
+            <i class="fas fa-money-check-alt fa-3x text-primary mb-3"></i>
+            <h5 class="fw-bold">3. Easy Payment</h5>
+            <p class="text-muted">Pay securely online after the service is complete.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Us Section -->
+  <section id="why-choose-us" class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2>Why Choose Us?</h2>
+        <p class="lead text-muted">We stand for quality, trust, and professional service.</p>
+      </div>
+      <div class="row text-center g-4">
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow-sm border-0">
+            <div class="card-body">
+              <i class="fas fa-medal fa-3x text-warning mb-3"></i>
+              <h5 class="fw-bold">100% Quality Assurance</h5>
+              <p class="text-muted">We ensure every service is completed to the highest standards.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow-sm border-0">
+            <div class="card-body">
+              <i class="fas fa-users-cog fa-3x text-warning mb-3"></i>
+              <h5 class="fw-bold">Trained Professionals</h5>
+              <p class="text-muted">Our team members are experienced, vetted, and skilled in their craft.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card p-3 h-100 shadow-sm border-0">
+            <div class="card-body">
+              <i class="fas fa-hand-holding-heart fa-3x text-warning mb-3"></i>
+              <h5 class="fw-bold">Customer Care</h5>
+              <p class="text-muted">Dedicated support to assist you with any questions or concerns.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reviews Section (part of home page) -->
+  <section id="reviews">
+    <div class="container">
+      <h2>Customer Reviews</h2>
+      <div id="reviewSlider" class="row g-3">
+        <!-- Reviews will be injected here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-5">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2>Frequently Asked Questions</h2>
+        <p class="lead text-muted">Find answers to common questions about our services.</p>
+      </div>
+      <div class="accordion" id="faqAccordion">
+        <div class="accordion-item shadow-sm rounded mb-3">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+              What areas do you serve?
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              We primarily serve the Gurgaon area, including all major sectors and residential societies. Please contact us to confirm service availability in your specific location.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item shadow-sm rounded mb-3">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Are your cleaning products safe?
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Yes, we use eco-friendly and non-toxic cleaning agents that are safe for children and pets. Your family's health is our top priority.
+            </div>
+          </div>
+        </div>
+        <div class="accordion-item shadow-sm rounded mb-3">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Can I customize my cleaning service?
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Yes, our services are fully customizable. You can add or remove specific tasks to create a package that perfectly suits your needs.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- Price Calculator Page -->
+<div id="calculator-page" class="page">
+  <section class="py-5">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2>Calculate Your Cleaning Price</h2>
+        <p>Select your home size and additional services to get an instant quote.</p>
+      </div>
+      <div class="card p-4 rounded shadow-sm mx-auto" style="max-width: 600px;">
+        <form id="calculatorForm" class="row g-3">
+          <!-- Area/BHK -->
+          <div class="col-md-6">
+            <label for="bhk" class="form-label">Select Home Size</label>
+            <select class="form-select" id="bhk" name="bhk">
+              <option value="1RK">1 Room Kitchen (1RK)</option>
+              <option value="1BHK">1 Bedroom Hall Kitchen (1BHK)</option>
+              <option value="2BHK">2 Bedroom Hall Kitchen (2BHK)</option>
+              <option value="3BHK">3 Bedroom Hall Kitchen (3BHK)</option>
+              <option value="4BHK">4 Bedroom Hall Kitchen (4BHK)</option>
+              <option value="5BHK">5 Bedroom Hall Kitchen (5BHK)</option>
+            </select>
+          </div>
+  
+          <!-- Furnished/Non-Furnished -->
+          <div class="col-md-6">
+            <label for="furnished" class="form-label">Furnishing</label>
+            <select class="form-select" id="furnished" name="furnished">
+              <option value="Furnished">Furnished</option>
+              <option value="Non-Furnished">Non-Furnished</option>
+            </select>
+          </div>
+  
+          <!-- Add-ons -->
+          <div class="col-12">
+            <label class="form-label">Add-on Services (optional)</label><br>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input addon" type="checkbox" value="Carpet Cleaning" data-price="500">
+              <label class="form-check-label">Carpet Cleaning (+₹500)</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input addon" type="checkbox" value="Fridge Cleaning" data-price="300">
+              <label class="form-check-label">Fridge Cleaning (+₹300)</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input addon" type="checkbox" value="Balcony Cleaning" data-price="400">
+              <label class="form-check-label">Balcony Cleaning (+₹400)</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input addon" type="checkbox" value="Pest Control" data-price="600">
+              <label class="form-check-label">Pest Control (+₹600)</label>
+            </div>
+          </div>
+  
+          <!-- Display Price -->
+          <div class="col-12 text-center mt-4">
+            <h4>Estimated Price: ₹<span id="estimatedPrice">0</span></h4>
+          </div>
+  
+          <input type="hidden" name="price">
+          <input type="hidden" name="addons">
+          <input type="hidden" name="payment" value="Pay After Work">
+  
+          <div class="col-12 text-center">
+            <button type="submit" class="btn btn-primary" id="add-to-cart-calculator-btn">Add to Cart</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+  <footer class="mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- Cart Page -->
+<div id="cart-page" class="page">
+  <section class="cart py-5">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2>Your Cart</h2>
+      </div>
+      <div id="cart-container" class="row justify-content-center">
+        <!-- Cart items will be injected here -->
+      </div>
+      <div class="text-center mt-4">
+        <h3 class="mb-3">Total: ₹<span id="cart-total-price">0</span></h3>
+        <button class="btn btn-success" id="checkout-btn" onclick="showPage('checkout-page')">Proceed to Checkout</button>
+        <button class="btn btn-secondary ms-2" onclick="showPage('calculator-page')">Back to Calculator</button>
+      </div>
+    </div>
+  </section>
+  <footer class="mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+<!-- Checkout Page (uses the original booking form) -->
+<div id="checkout-page" class="page">
+  <section class="py-5 bg-light">
+    <div class="container">
+      <div class="text-center mb-4">
+        <h2>Checkout & Pay</h2>
+        <p>Your total is ₹<span id="checkout-price-display">0</span></p>
+      </div>
+      <form id="checkoutForm" class="row g-3">
+        <div class="col-md-6">
+          <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+        </div>
+        <div class="col-md-6">
+          <input type="tel" name="phone" class="form-control" placeholder="Your Phone Number" required>
+        </div>
+        <div class="col-md-12">
+          <label for="address" class="form-label">Address</label>
+          <div class="input-group">
+            <input type="text" id="address" name="address" class="form-control" placeholder="Enter your address" required>
+            <button type="button" id="getLocation" class="btn btn-outline-secondary" title="Use current location">📍</button>
+          </div>
+          <small class="text-muted">Click the 📍 button to auto-fill your address (requires permission).</small>
+        </div>
+        <div class="col-md-12">
+          <label class="form-label">Payment Method</label>
+          <div class="d-flex flex-wrap gap-2">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="payNow" value="Online Payment" checked>
+              <label class="form-check-label" for="payNow">Online Payment</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="paymentMethod" id="payAfterWork" value="Pay After Work">
+              <label class="form-check-label" for="payAfterWork">Pay After Work</label>
+            </div>
+          </div>
+        </div>
+        <div class="col-12" id="paymentDetails">
+          <div class="card p-3 rounded shadow-sm">
+            <h5 class="card-title">Scan to Pay</h5>
+            <div class="text-center my-3">
+              <img id="upi-qr-code" class="img-fluid rounded" alt="UPI QR Code" style="max-width: 200px;">
+            </div>
+            <p class="text-center fw-bold">or Pay to UPI ID:</p>
+            <div class="text-center">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control text-center fw-bold" id="upiId" value="7042721405@ptyes" readonly>
+                <button class="btn btn-outline-primary" type="button" id="copyUpiIdBtn">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <input type="hidden" name="items" id="checkout-items">
+        <input type="hidden" name="total_price" id="checkout-total-price">
+  
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary" id="checkout-submit-btn">Submit Booking</button>
+        </div>
+      </form>
+    </div>
+  </section>
+  <footer class="mt-auto py-3 bg-dark text-white">
+    <div class="container text-center">
+      <p>&copy; 2025 Sachin Deep Cleaning. All rights reserved.</p>
+    </div>
+  </footer>
+</div>
+
+</div> <!-- End of #app -->
+
+<!-- Right side -->
+<a href="tel:+919267905943" class="floating-button call-button" title="Call Now">
+  <i class="fas fa-phone-alt"></i>
+</a>
+<a href="https://wa.me/919267905943?text=Hello%2C%20I%20am%20interested%20in%20Sachin%20Deep%20Cleaning%20Services.%20Please%20get%20in%20touch%E2%80%A6" 
+   class="floating-button whatsapp-button"
+   target="_blank">
+  <i class="fab fa-whatsapp"></i> 
+</a>
+
+<!-- Left side -->
+<button id="installBtn" title="Download App">
+  <i class="fas fa-download"></i>
+</button>
+<button class="notification-button" id="notifyBtn" title="Enable Notifications">
+  <i class="fas fa-bell"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// --- Custom Message Modal ---
+const messageModal = document.getElementById("messageModal");
+const messageText = document.getElementById("messageText");
+const closeBtn = document.querySelector(".close-btn");
+
+if(closeBtn) {
+  closeBtn.onclick = function() {
+    if(messageModal) messageModal.style.display = "none";
+  }
+}
+
+if(messageModal) {
+  window.onclick = function(event) {
+    if (event.target == messageModal) {
+      messageModal.style.display = "none";
+    }
+  }
+}
+
+function showMessage(message) {
+  if (messageModal && messageText) {
+    messageText.innerText = message;
+    messageModal.style.display = "flex";
+  }
+}
+// --- End Custom Message Modal ---
+
+// --- Core App Logic ---
+const servicesData = [
+  { id: 1, name: 'Standard Home Deep Cleaning', price: 3500, description: 'Thorough cleaning of every corner in your home to ensure a spotless and healthy environment.' },
+  { id: 2, name: 'Office Cleaning', price: 5000, description: 'Professional cleaning services for offices to create a clean and productive workspace.' },
+  { id: 3, name: 'Sofa Cleaning', price: 1000, description: 'Deep cleaning and stain removal for sofas to keep your furniture fresh and hygienic.' },
+  { id: 4, name: 'Kitchen Cleaning', price: 1500, description: 'Comprehensive cleaning of kitchen surfaces, appliances, and sinks for a spotless cooking area.' },
+  { id: 5, name: 'Carpet Shampooing', price: 1800, description: 'Deep shampoo cleaning to remove dirt, dust, and allergens from your carpets.' },
+  { id: 6, name: 'Pest Control', price: 1200, description: 'Effective pest management to keep your premises safe and pest-free.' }
+];
+
+let cart = [];
+
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  const pageElement = document.getElementById(pageId);
+  if (pageElement) {
+    pageElement.classList.add('active');
+  } else {
+    console.error(`Page element with ID '${pageId}' not found.`);
+  }
+
+  // Update cart display if navigating to cart page
+  if (pageId === 'cart-page') {
+    renderCart();
+  }
+  // Update checkout page if navigating to it
+  if (pageId === 'checkout-page') {
+    renderCheckout();
+  }
+}
+
+function renderFixedServicesModal() {
+  const container = document.getElementById('services-container');
+  if (!container) {
+    console.error('services-container element not found.');
+    return;
+  }
+  container.innerHTML = '';
+  servicesData.forEach(service => {
+    const cardHtml = `
+      <div class="col-md-4">
+        <div class="card h-100 text-center shadow-sm">
+          <div class="card-body d-flex flex-column justify-content-between">
+            <i class="fas fa-brush fa-3x mb-3 text-primary"></i>
+            <h5 class="card-title">${service.name}</h5>
+            <p class="card-text">${service.description}</p>
+            <h6 class="mt-auto">₹${service.price}</h6>
+            <button class="btn btn-primary mt-2 add-to-cart-btn" data-id="${service.id}" data-type="fixed">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.innerHTML += cardHtml;
+  });
+  
+  // Attach event listeners for the fixed services
+  document.querySelectorAll('.add-to-cart-btn[data-type="fixed"]').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const serviceId = parseInt(e.target.dataset.id);
+      const serviceToAdd = servicesData.find(s => s.id === serviceId);
+      if (serviceToAdd) {
+        cart.push({ ...serviceToAdd, cartItemId: Date.now() }); // Use a unique ID for cart items
+        updateCartCount();
+        showMessage(`${serviceToAdd.name} added to cart!`);
+        // Close the modal after adding to cart
+        const servicesModal = bootstrap.Modal.getInstance(document.getElementById('servicesModal'));
+        if (servicesModal) {
+          servicesModal.hide();
+        }
+      }
+    });
+  });
+}
+
+function updateCartCount() {
+  const count = cart.length;
+  const badge = document.getElementById('cart-item-count');
+  if (badge) {
+    badge.innerText = count;
+    if (count > 0) {
+      badge.classList.remove('d-none');
+    } else {
+      badge.classList.add('d-none');
+    }
+  }
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-container');
+  const totalPriceEl = document.getElementById('cart-total-price');
+  const checkoutBtn = document.getElementById('checkout-btn');
+
+  if (!container || !totalPriceEl || !checkoutBtn) return;
+  
+  if (cart.length === 0) {
+    container.innerHTML = '<p class="text-center">Your cart is empty.</p>';
+    totalPriceEl.innerText = '0';
+    checkoutBtn.disabled = true;
+    return;
+  }
+  
+  checkoutBtn.disabled = false;
+  container.innerHTML = '';
+  let total = 0;
+  
+  cart.forEach(item => {
+    total += item.price;
+    const itemHtml = `
+      <div class="col-12 mb-3">
+        <div class="d-flex justify-content-between align-items-center p-3 border rounded shadow-sm bg-white">
+          <span>${item.name}</span>
+          <div class="d-flex align-items-center">
+            <span class="me-3">₹${item.price}</span>
+            <button class="btn btn-danger btn-sm remove-item-btn" data-id="${item.cartItemId}"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.innerHTML += itemHtml;
+  });
+  
+  totalPriceEl.innerText = total;
+  
+  document.querySelectorAll('.remove-item-btn').forEach(button => {
+    button.addEventListener('click', (e) => {
+      const cartItemId = parseInt(e.target.closest('button').dataset.id);
+      cart = cart.filter(item => item.cartItemId !== cartItemId);
+      updateCartCount();
+      renderCart();
+    });
+  });
+}
+
+function renderCheckout() {
+  const total = cart.reduce((sum, item) => sum + item.price, 0);
+  const checkoutPriceEl = document.getElementById('checkout-price-display');
+  const checkoutTotalEl = document.getElementById('checkout-total-price');
+  const checkoutItemsEl = document.getElementById('checkout-items');
+  const upiQrCode = document.getElementById('upi-qr-code');
+  const upiId = document.getElementById('upiId');
+
+  if (checkoutPriceEl) {
+    checkoutPriceEl.innerText = total;
+  }
+  if (checkoutTotalEl) {
+    checkoutTotalEl.value = total;
+  }
+  if (checkoutItemsEl) {
+    checkoutItemsEl.value = cart.map(item => item.name).join(', ');
+  }
+  if (upiQrCode) {
+    const upiLink = `upi://pay?pa=${upiId.value}&pn=Sachin%20Deep%20Cleaning&am=${total}&cu=INR`;
+    upiQrCode.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upiLink)}`;
+  }
+
+}
+
+// --- Dynamic Price Calculator Logic (from user) ---
+const pricing = {
+  "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+  "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+  "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+  "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+  "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+  "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+};
+
+function calculateTotal() {
+  const bhk = document.querySelector('[name="bhk"]').value;
+  const furnished = document.querySelector('[name="furnished"]').value;
+
+  let total = pricing[bhk]?.[furnished] || 0;
+  const addonsDetails = [];
+
+  document.querySelectorAll('.addon:checked').forEach(addon => {
+    const price = parseInt(addon.dataset.price);
+    total += price;
+    addonsDetails.push(`${addon.value}: ₹${price}`);
+  });
+
+  document.getElementById("estimatedPrice").innerText = total;
+  document.querySelector('[name="price"]').value = total;
+  document.querySelector('[name="addons"]').value = addonsDetails.join(", ");
+}
+
+// --- Add to Cart for Calculator Page ---
+const calculatorForm = document.getElementById("calculatorForm");
+if(calculatorForm) {
+  calculatorForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const bhk = document.querySelector('[name="bhk"]').value;
+    const furnished = document.querySelector('[name="furnished"]').value;
+    const price = document.querySelector('[name="price"]').value;
+    const addons = document.querySelector('[name="addons"]').value;
+
+    const itemName = `Deep Cleaning (${bhk}, ${furnished})`;
+    const itemDetails = addons ? ` (+ Add-ons: ${addons})` : '';
+
+    const itemToAdd = {
+      id: `calc-${Date.now()}`,
+      name: `${itemName}${itemDetails}`,
+      price: parseInt(price)
+    };
+    
+    // Clear the cart and add the new item. A user can only calculate one quote at a time.
+    cart = [itemToAdd];
+    updateCartCount();
+    showMessage(`${itemToAdd.name} added to cart!`);
+  });
+}
+
+// --- Booking Form Submission (now Checkout Form) ---
+const checkoutForm = document.getElementById("checkoutForm");
+if (checkoutForm) {
+  checkoutForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const formData = new FormData(checkoutForm);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+    
+    // Simulate a payment process
+    showMessage("Processing your booking...");
+    
+    // In a real app, you would send this data to a server.
+    setTimeout(() => {
+      showMessage("Booking successful! Your professional will be in touch shortly.");
+      checkoutForm.reset();
+      cart = [];
+      updateCartCount();
+      showPage('home-page');
+    }, 2000);
+  });
+}
+
+// --- Geolocation Logic (adapted from original) ---
+const getLocationBtn = document.getElementById("getLocation");
+if (getLocationBtn) {
+  getLocationBtn.addEventListener("click", async function () {
+    if (!navigator.geolocation) {
+      showMessage("Geolocation not supported by your browser.");
+      return;
+    }
+    const btn = getLocationBtn;
+    btn.disabled = true;
+    const origHTML = btn.innerHTML;
+    btn.innerHTML = "Locating…";
+
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const lat = pos.coords.latitude;
+      const lon = pos.coords.longitude;
+      
+      try {
+        const nomUrl = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+        const resp = await fetch(nomUrl, {
+          headers: { 'Accept-Language': 'en', 'User-Agent': 'SachinDeepCleaning/1.0' }
+        });
+        const data = await resp.json();
+        if (data && data.display_name) {
+          const addressEl = document.getElementById("address");
+          if (addressEl) addressEl.value = data.display_name;
+        } else {
+          showMessage("Unable to convert location to address. Please enter address manually.");
+        }
+      } catch (err) {
+        console.error(err);
+        showMessage("Unable to convert location to address. Please enter address manually.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = origHTML;
+      }
+    }, (err) => {
+      btn.disabled = false;
+      btn.innerHTML = origHTML;
+      switch (err.code) {
+        case err.PERMISSION_DENIED:
+          showMessage("Location permission denied. Please allow location access or enter address manually.");
+          break;
+        case err.POSITION_UNAVAILABLE:
+          showMessage("Location unavailable. Try again.");
+          break;
+        case err.TIMEOUT:
+          showMessage("Location timed out. Try again.");
+          break;
+        default:
+          showMessage("Unable to get location.");
+          break;
+      }
+    }, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+  });
+}
+
+// --- Payment Method Toggle ---
+const paymentDetails = document.getElementById("paymentDetails");
+const payNowRadio = document.getElementById("payNow");
+const payAfterWorkRadio = document.getElementById("payAfterWork");
+const checkoutSubmitBtn = document.getElementById("checkout-submit-btn");
+
+function updatePaymentVisibility() {
+  if (payNowRadio.checked) {
+    paymentDetails.style.display = 'block';
+    checkoutSubmitBtn.innerText = "Pay Now & Submit Booking";
+  } else {
+    paymentDetails.style.display = 'none';
+    checkoutSubmitBtn.innerText = "Submit Booking";
+  }
+}
+
+if (payNowRadio && payAfterWorkRadio) {
+  payNowRadio.addEventListener('change', updatePaymentVisibility);
+  payAfterWorkRadio.addEventListener('change', updatePaymentVisibility);
+}
+
+// Copy UPI ID button
+const copyUpiIdBtn = document.getElementById("copyUpiIdBtn");
+if (copyUpiIdBtn) {
+  copyUpiIdBtn.addEventListener('click', () => {
+    const upiIdInput = document.getElementById("upiId");
+    if (upiIdInput) {
+      upiIdInput.select();
+      document.execCommand('copy');
+      showMessage("UPI ID copied to clipboard!");
+    }
+  });
+}
+
+// --- Original Review Slider Logic ---
+const reviewsData = [
+  {name: "Amit Sharma", gender: "male", location: "South City 1", text: "Amazing cleaning service. Highly recommended!"},
+  {name: "Priya Verma", gender: "female", location: "Sushant Lok", text: "Very professional and punctual team."},
+  {name: "Rohit Kumar", gender: "male", location: "Sector 14", text: "My home looks spotless after their cleaning."},
+  {name: "Neha Singh", gender: "female", location: "Sector 49", text: "Friendly staff and thorough cleaning."},
+  {name: "Vikram Patel", gender: "male", location: "Golf Course Road", text: "Affordable and reliable service."},
+  {name: "Simran Kaur", gender: "female", location: "Palam Vihar", text: "Great attention to detail."},
+  {name: "Rahul Mehta", gender: "male", location: "Sector 56", text: "They transformed my office space."},
+  {name: "Pooja Gupta", gender: "female", location: "DLF Phase 1", text: "Excellent customer support."},
+  {name: "Sandeep Singh", gender: "male", location: "Sector 45", text: "Very satisfied with the results."},
+  {name: "Anjali Joshi", gender: "female", location: "Sector 22", text: "Will definitely book again."}
+];
+
+function getInitials(name) {
+  return name.split(' ').map(n => n[0]).join('').toUpperCase();
+}
+function createStarRatingHTML() { return '<i class="fas fa-star"></i>'.repeat(5); }
+function createReviewCard(review) {
+  return `
+    <div class="col-md-4 mb-4">
+      <div class="review-card p-3 border rounded shadow-sm bg-white">
+        <div class="review-header d-flex align-items-center mb-3">
+          <div class="avatar-placeholder me-3">${getInitials(review.name)}</div>
+          <div>
+            <p class="reviewer-name mb-0 fw-bold">${review.name}</p>
+            <small class="reviewer-location text-muted">${review.location}</small>
+          </div>
+        </div>
+        <p class="review-text fst-italic">"${review.text}"</p>
+        <div class="star-rating text-warning">${createStarRatingHTML()}</div>
+      </div>
+    </div>
+  `;
+}
+
+let currentIndex = 0;
+const reviewsPerSlide = 3;
+function renderReviews() {
+  const reviewContainer = document.getElementById('reviewSlider');
+  if (!reviewContainer) {
+    console.error('reviewSlider element not found.');
+    return;
+  }
+  reviewContainer.innerHTML = '';
+  for(let i = 0; i < reviewsPerSlide; i++) {
+    const idx = (currentIndex + i) % reviewsData.length;
+    reviewContainer.innerHTML += createReviewCard(reviewsData[idx]);
+  }
+}
+function slideReviews() {
+  currentIndex = (currentIndex + reviewsPerSlide) % reviewsData.length;
+  renderReviews();
+}
+
+// --- Main DOM Ready Listener ---
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    // Initial render of services and reviews
+    renderFixedServicesModal(); // Render fixed services in the modal
+    renderReviews();
+    setInterval(slideReviews, 3000);
+    
+    // Attach listeners for the new calculator form
+    const bhkSelect = document.querySelector('[name="bhk"]');
+    const furnishedSelect = document.querySelector('[name="furnished"]');
+    const addonCheckboxes = document.querySelectorAll('.addon');
+
+    if (bhkSelect) bhkSelect.addEventListener("change", calculateTotal);
+    if (furnishedSelect) furnishedSelect.addEventListener("change", calculateTotal);
+    if (addonCheckboxes) addonCheckboxes.forEach(el => el.addEventListener("change", calculateTotal));
+
+    // Initialize price calculation on load
+    calculateTotal();
+    updatePaymentVisibility();
+
+    // Show the home page initially
+    showPage('home-page');
+  } catch (error) {
+    console.error('Initialization error:', error);
+    showMessage('An error occurred while loading the page. Please try again or contact support.');
+  }
+});
+</script>
+
+</body>
+</html>
