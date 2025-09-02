@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CleanHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    const mockServices = [
+      { id: 1, name: "Sparkle Clean Pro", service: "Full Home Cleaning", rating: 4.8, description: "Professional deep cleaning for your entire home.", image: "https://placehold.co/400x400/4F46E5/FFF?text=Deep+Clean" },
+      { id: 2, name: "Fresh Home Services", service: "Kitchen Deep Clean", rating: 4.6, description: "Specialized kitchen deep cleaning service.", image: "https://placehold.co/400x400/22C55E/FFF?text=Kitchen+Clean" },
+      { id: 3, name: "Aqua Wash Masters", service: "Bathroom Cleaning", rating: 4.9, description: "Expert cleaning and sanitization for your bathrooms.", image: "https://placehold.co/400x400/EF4444/FFF?text=Bathroom+Clean" },
+      { id: 4, name: "Carpet & Upholstery Care", service: "Carpet Cleaning", rating: 4.7, description: "Deep steam cleaning for carpets and rugs.", image: "https://placehold.co/400x400/F97316/FFF?text=Carpet+Clean" }
+    ];
+
+    const servicePricing = {
+      fullHomeCleaning: {
+        type: "tiered",
+        prices: {
+          "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+          "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+          "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+          "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+          "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+          "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+        }
+      },
+      kitchen: {
+        type: "tiered",
+        prices: {
+          "1BHK": 1500,
+          "2BHK": 2000,
+          "3BHK": 2500,
+          "4BHK": 3000,
+          "5BHK": 3500
+        }
+      },
+      bathroom: {
+        type: "perUnit",
+        pricePerUnit: 500,
+        minUnits: 3
+      },
+      carpet: {
+        type: "perSqft",
+        pricePerSqft: 4
+      }
+    };
+
+    function calculateServicePrice(serviceType, config) {
+      const rule = servicePricing[serviceType];
+      if (!rule) return 0;
+    
+      switch (rule.type) {
+        case "tiered":
+          if (serviceType === 'fullHomeCleaning' && config.bhkSize && config.isFurnished) {
+            return rule.prices[config.bhkSize]?.[config.isFurnished] || 0;
+          }
+          return rule.prices[config.bhk] || 0;
+
+        case "perUnit":
+          const units = Math.max(config.units || 0, rule.minUnits);
+          return units * rule.pricePerUnit;
+
+        case "perSqft":
+          return (config.sqft || 0) * rule.pricePerSqft;
+
+        default:
+          return 0;
+      }
+    }
+
+    const Button = ({ children, onClick, className, disabled }) => (
+      <button
+        onClick={onClick}
+        className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 ease-in-out transform hover:scale-105 shadow-md ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        disabled={disabled}
+      >
+        {children}
+      </button>
+    );
+
+    const Nav = ({ onNavigate, isLoggedIn, onLogout, cartItemCount, userRole }) => (
+      <nav className="bg-white shadow-lg sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-blue-600 cursor-pointer" onClick={() => onNavigate('home')}>CleanHub</h1>
+          </div>
+          <div className="flex items-center space-x-4">
+            {userRole === 'customer' && (
+              <button onClick={() => onNavigate('cart')} className="relative text-gray-600 hover:text-blue-600 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.705.707 1.705H17m0-13a2 2 0 110 4 2 2 0 010-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+            )}
+            {isLoggedIn ? (
+              <>
+                <Button onClick={() => onNavigate('profile')} className="bg-gray-200 text-gray-800 hover:bg-gray-300">
+                  Dashboard
+                </Button>
+                <Button onClick={onLogout} className="bg-red-500 text-white hover:bg-red-600">
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button onClick={() => onNavigate('roleSelection')} className="bg-blue-600 text-white hover:bg-blue-700">
+                Login
+              </Button>
+            )}
+          </div>
+        </div>
+      </nav>
+    );
+
+    const HomePage = ({ onNavigate }) => (
+      <div className="text-center py-20">
+        <h1 className="text-5xl font-extrabold text-gray-900 mb-4">CleanHub</h1>
+        <p className="text-lg text-gray-600 mb-8">Your trusted partner for professional cleaning and home services.</p>
+        <Button onClick={() => onNavigate('services')} className="bg-blue-600 text-white hover:bg-blue-700">
+          Explore Services
+        </Button>
+      </div>
+    );
+
+    const ServicesPage = ({ services, onNavigate }) => (
+      <div className="py-12">
+        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Services</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {services.map(service => (
+            <div
+              key={service.id}
+              className="bg-white rounded-xl shadow-lg overflow-hidden transition-transform duration-300 ease-in-out hover:scale-105 cursor-pointer"
+              onClick={() => onNavigate('serviceDetail', service)}
+            >
+              <img src={service.image} alt={service.name} className="w-full h-48 object-cover"/>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{service.service}</h3>
+                <p className="text-gray-600 mb-4">{service.description}</p>
+                <div className="flex items-center justify-between text-sm text-gray-500">
+                  <div className="flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-400 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z" />
+                    </svg>
+                    <span>{service.rating}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+
+    const ServiceDetailPage = ({ service, onAddToCart, onNavigate }) => {
+      const [bhkSize, setBhkSize] = useState("");
+      const [isFurnished, setIsFurnished] = useState("");
+      const [units, setUnits] = useState(0);
+      const [sqft, setSqft] = useState(0);
+      const [addons, setAddons] = useState({});
+
+      const getBasePrice = () => {
+        if (service.service.toLowerCase().includes("full home cleaning")) {
+            return calculateServicePrice("fullHomeCleaning", { bhkSize, isFurnished });
+        } else if (service.service.toLowerCase().includes("kitchen")) {
+          return calculateServicePrice("kitchen", { bhk: bhkSize });
+        } else if (service.service.toLowerCase().includes("bathroom")) {
+          return calculateServicePrice("bathroom", { units });
+        } else if (service.service.toLowerCase().includes("carpet")) {
+          return calculateServicePrice("carpet", { sqft });
+        }
+        return 0;
+      };
+
+      const getAddonsPrice = () => {
+          let addonsTotal = 0;
+          for (const addon in addons) {
+              if (addons[addon].selected) {
+                  addonsTotal += addons[addon].price * (addons[addon].quantity || 1);
+              }
+          }
+          return addonsTotal;
+      };
+
+      const price = getBasePrice() + getAddonsPrice();
+
+      const handleAddToCart = () => {
+        const selectedAddons = Object.keys(addons)
+            .filter(key => addons[key].selected)
+            .map(key => ({
+                name: key,
+                price: addons[key].price,
+                quantity: addons[key].quantity || 1
+            }));
+
+        const item = {
+          id: Date.now(),
+          serviceId: service.id,
+          serviceName: service.name,
+          serviceType: service.service,
+          totalPrice: price,
+          details: { bhkSize, isFurnished, units, sqft, addons: selectedAddons }
+        };
+        onAddToCart(item);
+      };
+
+      const handleAddonChange = (e) => {
+          const { value, checked, dataset } = e.target;
+          const price = parseInt(dataset.price);
+          const unit = dataset.unit;
+
+          setAddons(prevAddons => {
+              const newAddons = { ...prevAddons };
+              if (checked) {
+                  newAddons[value] = { price, unit, selected: true, quantity: 1 };
+              } else {
+                  delete newAddons[value];
+              }
+              return newAddons;
+          });
+      };
+
+      const handleAddonQuantityChange = (e) => {
+          const { value, dataset } = e.target;
+          const name = dataset.for;
+          setAddons(prevAddons => ({
+              ...prevAddons,
+              [name]: {
+                  ...prevAddons[name],
+                  quantity: parseInt(value) || 0
+              }
+          }));
+      };
+
+      return (
+        <div className="py-12">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <Button onClick={() => onNavigate('services')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">
+              ← Back to Services
+            </Button>
+
+            <h2 className="text-3xl font-bold mb-4">{service.name}</h2>
+            <p className="text-gray-600 mb-6">{service.description}</p>
+
+            {/* Inputs depending on service type */}
+            {service.service.toLowerCase().includes("full home cleaning") && (
+              <div className="space-y-4">
+                <div>
+                  <label className="block mb-2 font-semibold">Select Apartment Size</label>
+                  <select
+                    value={bhkSize}
+                    onChange={e => setBhkSize(e.target.value)}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="">Select</option>
+                    <option value="1RK">1RK</option>
+                    <option value="1BHK">1BHK</option>
+                    <option value="2BHK">2BHK</option>
+                    <option value="3BHK">3BHK</option>
+                    <option value="4BHK">4BHK</option>
+                    <option value="5BHK">5BHK</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block mb-2 font-semibold">Is your home furnished?</label>
+                  <select
+                    value={isFurnished}
+                    onChange={e => setIsFurnished(e.target.value)}
+                    className="w-full p-3 border rounded-lg"
+                  >
+                    <option value="">Select</option>
+                    <option value="Furnished">Furnished</option>
+                    <option value="Non-Furnished">Non-Furnished</option>
+                  </select>
+                </div>
+              </div>
+            )}
+
+            {service.service.toLowerCase().includes("kitchen") && (
+              <div>
+                <label className="block mb-2 font-semibold">Select Apartment Size</label>
+                <select
+                  value={bhkSize}
+                  onChange={e => setBhkSize(e.target.value)}
+                  className="w-full p-3 border rounded-lg"
+                >
+                  <option value="">Select</option>
+                  <option value="1BHK">1BHK</option>
+                  <option value="2BHK">2BHK</option>
+                  <option value="3BHK">3BHK</option>
+                  <option value="4BHK">4BHK</option>
+                  <option value="5BHK">5BHK</option>
+                </select>
+              </div>
+            )}
+
+            {service.service.toLowerCase().includes("bathroom") && (
+              <div className="mt-4">
+                <label className="block mb-2 font-semibold">Number of Bathrooms</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={units}
+                  onChange={e => setUnits(parseInt(e.target.value))}
+                  className="w-full p-3 border rounded-lg"
+                />
+                <p className="text-sm text-gray-500 mt-1">Min 3 bathrooms will be billed</p>
+              </div>
+            )}
+
+            {service.service.toLowerCase().includes("carpet") && (
+              <div className="mt-4">
+                <label className="block mb-2 font-semibold">Carpet Area (sqft)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={sqft}
+                  onChange={e => setSqft(parseInt(e.target.value))}
+                  className="w-full p-3 border rounded-lg"
+                />
+              </div>
+            )}
+
+            {/* Addons Section */}
+            <div className="mt-8">
+              <h3 className="font-bold text-lg mb-4">Add-ons</h3>
+              <div className="flex flex-col space-y-4">
+                {/* Addon: Carpet Shampoo */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-gray-700 font-medium">
+                    <input
+                      type="checkbox"
+                      value="Carpet Shampoo"
+                      data-price="600"
+                      data-unit="per_carpet"
+                      onChange={handleAddonChange}
+                      className="form-checkbox h-5 w-5 text-blue-600 rounded-md"
+                    />
+                    Carpet Shampoo (per carpet) +₹600
+                  </label>
+                  {addons['Carpet Shampoo']?.selected && (
+                      <input
+                          type="number"
+                          min="1"
+                          value={addons['Carpet Shampoo']?.quantity || 1}
+                          data-for="Carpet Shampoo"
+                          onChange={handleAddonQuantityChange}
+                          className="w-20 p-2 border rounded-lg"
+                      />
+                  )}
+                </div>
+                {/* Addon: Fridge Cleaning */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-gray-700 font-medium">
+                    <input
+                      type="checkbox"
+                      value="Fridge Cleaning"
+                      data-price="400"
+                      data-unit="flat"
+                      onChange={handleAddonChange}
+                      className="form-checkbox h-5 w-5 text-blue-600 rounded-md"
+                    />
+                    Fridge Cleaning +₹400
+                  </label>
+                </div>
+                {/* Addon: Sofa Shampoo */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-gray-700 font-medium">
+                    <input
+                      type="checkbox"
+                      value="Sofa Shampoo"
+                      data-price="150"
+                      data-unit="per_seat"
+                      onChange={handleAddonChange}
+                      className="form-checkbox h-5 w-5 text-blue-600 rounded-md"
+                    />
+                    Sofa Shampoo (per seat) +₹150
+                  </label>
+                  {addons['Sofa Shampoo']?.selected && (
+                      <input
+                          type="number"
+                          min="1"
+                          value={addons['Sofa Shampoo']?.quantity || 1}
+                          data-for="Sofa Shampoo"
+                          onChange={handleAddonQuantityChange}
+                          className="w-20 p-2 border rounded-lg"
+                      />
+                  )}
+                </div>
+                {/* Addon: Microwave Cleaning */}
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 text-gray-700 font-medium">
+                    <input
+                      type="checkbox"
+                      value="Microwave Cleaning"
+                      data-price="200"
+                      data-unit="flat"
+                      onChange={handleAddonChange}
+                      className="form-checkbox h-5 w-5 text-blue-600 rounded-md"
+                    />
+                    Microwave Cleaning +₹200
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Show Price */}
+            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+              <h4 className="font-semibold text-blue-800">Price</h4>
+              <p className="text-2xl font-bold text-blue-600">₹{price}</p>
+            </div>
+
+            <Button
+              onClick={handleAddToCart}
+              disabled={price === 0}
+              className="w-full bg-green-500 text-white hover:bg-green-600 mt-6"
+            >
+              Add to Cart
+            </Button>
+          </div>
+        </div>
+      );
+    };
+
+    const CartPage = ({ cart, onNavigate, onCheckout, onRemoveFromCart }) => {
+      const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+
+      return (
+        <div className="py-12">
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <Button onClick={() => onNavigate('services')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">
+              ← Continue Shopping
+            </Button>
+            <h2 className="text-3xl font-bold mb-6">Your Cart</h2>
+            {cart.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">Your cart is empty.</p>
+              </div>
+            ) : (
+              <>
+                <ul className="space-y-4 mb-6">
+                  {cart.map((item, index) => (
+                    <li key={index} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
+                      <div>
+                        <h4 className="font-semibold">{item.serviceType}</h4>
+                        <p className="text-gray-600 text-sm">{item.serviceName}</p>
+                        <p className="text-gray-500 text-sm">
+                           Details: {item.details.bhkSize && item.details.isFurnished ? `${item.details.bhkSize}, ${item.details.isFurnished}` : ''} {item.details.bhk ? item.details.bhk : ''} {item.details.units > 0 ? `${item.details.units} units` : ''} {item.details.sqft > 0 ? `${item.details.sqft} sqft` : ''}
+                        </p>
+                        {item.details.addons && item.details.addons.length > 0 && (
+                            <div className="mt-2 text-xs text-gray-500">
+                                <span className="font-semibold">Add-ons:</span>
+                                {item.details.addons.map(addon => (
+                                    <span key={addon.name} className="ml-1">{addon.name} ({addon.quantity})</span>
+                                ))}
+                            </div>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className="font-bold text-lg">₹{item.totalPrice}</span>
+                        <button onClick={() => onRemoveFromCart(index)} className="text-red-500 hover:text-red-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="flex justify-between items-center text-xl font-bold mb-6 pt-4 border-t-2 border-dashed">
+                  <span>Total:</span>
+                  <span>₹{total}</span>
+                </div>
+                <Button onClick={onCheckout} className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                  Checkout
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const OrderConfirmedPage = ({ onNavigate }) => (
+      <div className="text-center py-20">
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 text-green-500 mx-auto mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">Order Confirmed!</h2>
+        <p className="text-lg text-gray-600 mb-8">Your cleaning service has been booked. We'll be in touch shortly!</p>
+        <Button onClick={() => onNavigate('home')} className="bg-blue-600 text-white hover:bg-blue-700">
+          Return to Home
+        </Button>
+      </div>
+    );
+
+    const UserMessage = ({ message, type, onClose }) => {
+        const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+        return (
+            <div className={`fixed top-4 left-1/2 -translate-x-1/2 text-white p-4 rounded-xl shadow-lg z-[100] ${bgColor} transition-transform duration-300 ease-out transform`}>
+                <div className="flex justify-between items-center">
+                    <span>{message}</span>
+                    <button onClick={onClose} className="ml-4 font-bold">
+                        &times;
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    const RoleSelectionPage = ({ onSelectRole, onNavigate }) => (
+      <div className="text-center py-20">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Select Your Role</h2>
+          <div className="flex justify-center space-x-6">
+              <Button onClick={() => onSelectRole('customer')} className="bg-blue-600 text-white hover:bg-blue-700">
+                  I'm a Customer
+              </Button>
+              <Button onClick={() => onSelectRole('professional')} className="bg-yellow-500 text-white hover:bg-yellow-600">
+                  I'm a Professional
+              </Button>
+              <Button onClick={() => onSelectRole('admin')} className="bg-purple-600 text-white hover:bg-purple-700">
+                  I'm an Admin
+              </Button>
+          </div>
+      </div>
+    );
+
+    const ProfessionalDashboard = ({ onNavigate }) => {
+      const [bookings, setBookings] = useState([
+        { id: 1, customerName: "John Doe", service: "Full Home Cleaning", status: "New", price: 4500, scheduledTime: "2024-10-25 10:00 AM" },
+        { id: 2, customerName: "Jane Smith", service: "Kitchen Deep Clean", status: "In Progress", price: 2000, scheduledTime: "2024-10-25 11:30 AM" },
+      ]);
+      const [selectedBooking, setSelectedBooking] = useState(null);
+
+      const handleUpdateStatus = (id, newStatus) => {
+        setBookings(bookings.map(booking =>
+          booking.id === id ? { ...booking, status: newStatus } : booking
+        ));
+        setSelectedBooking(null);
+      };
+
+      const statusColors = {
+        "New": "bg-blue-100 text-blue-800",
+        "In Progress": "bg-yellow-100 text-yellow-800",
+        "Completed": "bg-green-100 text-green-800",
+        "Canceled": "bg-red-100 text-red-800"
+      };
+
+      return (
+        <div className="py-12">
+          <Button onClick={() => onNavigate('home')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">
+            ← Back to Home
+          </Button>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Professional Dashboard</h2>
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <h3 className="text-xl font-bold mb-4">My Bookings</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Scheduled Time</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {bookings.map(booking => (
+                    <tr key={booking.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{booking.id}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.customerName}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.service}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{booking.price}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{booking.scheduledTime}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[booking.status]}`}>
+                          {booking.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button onClick={() => setSelectedBooking(booking)} className="text-blue-600 hover:text-blue-900">
+                          Update Status
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {selectedBooking && (
+              <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
+                <div className="relative bg-white rounded-lg p-8 shadow-xl w-96">
+                  <h3 className="text-xl font-bold mb-4">Update Status for Order #{selectedBooking.id}</h3>
+                  <div className="space-y-4">
+                    {["New", "In Progress", "Completed", "Canceled"].map(status => (
+                      <Button
+                        key={status}
+                        onClick={() => handleUpdateStatus(selectedBooking.id, status)}
+                        className={`w-full ${statusColors[status]} hover:opacity-80`}
+                      >
+                        {status}
+                      </Button>
+                    ))}
+                  </div>
+                  <Button onClick={() => setSelectedBooking(null)} className="mt-4 w-full bg-gray-200 text-gray-800 hover:bg-gray-300">
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    };
+
+    const AdminDashboard = ({ onNavigate }) => {
+      const [activeTab, setActiveTab] = useState('services');
+      const [newService, setNewService] = useState({ id: null, name: "", service: "", rating: 0, description: "", image: "" });
+      const [services, setServices] = useState(mockServices);
+      const [orders, setOrders] = useState([
+        { id: 1, customerName: "John Doe", service: "Full Home Cleaning", status: "Confirmed", price: 4500, details: { bhkSize: "2BHK", isFurnished: "Furnished", addons: [] } },
+        { id: 2, customerName: "Jane Smith", service: "Kitchen Deep Clean", status: "Pending", price: 2000, details: { bhk: "2BHK", addons: [{ name: "Fridge Cleaning", price: 400, quantity: 1 }] } },
+      ]);
+      const [editingService, setEditingService] = useState(null);
+
+      const handleAddService = () => {
+        setServices([...services, { ...newService, id: services.length + 1 }]);
+        setNewService({ id: null, name: "", service: "", rating: 0, description: "", image: "" });
+      };
+
+      const handleEditService = (service) => {
+        setEditingService(service.id);
+        setNewService(service);
+      };
+
+      const handleUpdateService = () => {
+        setServices(services.map(s => s.id === newService.id ? newService : s));
+        setEditingService(null);
+        setNewService({ id: null, name: "", service: "", rating: 0, description: "", image: "" });
+      };
+
+      const handleDeleteService = (id) => {
+        setServices(services.filter(s => s.id !== id));
+      };
+      
+      const statusColors = {
+          "Confirmed": "bg-green-100 text-green-800",
+          "Pending": "bg-yellow-100 text-yellow-800",
+          "Canceled": "bg-red-100 text-red-800"
+      };
+
+      const renderServicesTab = () => (
+        <div className="space-y-6">
+          <h3 className="text-2xl font-bold">Manage Services</h3>
+          <div className="bg-gray-50 p-6 rounded-xl shadow-inner space-y-4">
+            <h4 className="font-semibold text-lg">{editingService ? "Edit Service" : "Add New Service"}</h4>
+            <input
+              type="text"
+              placeholder="Name (e.g., Sparkle Clean Pro)"
+              value={newService.name}
+              onChange={e => setNewService({ ...newService, name: e.target.value })}
+              className="w-full p-3 border rounded-lg"
+            />
+            <input
+              type="text"
+              placeholder="Service Type (e.g., Full Home Cleaning)"
+              value={newService.service}
+              onChange={e => setNewService({ ...newService, service: e.target.value })}
+              className="w-full p-3 border rounded-lg"
+            />
+            <textarea
+              placeholder="Description"
+              value={newService.description}
+              onChange={e => setNewService({ ...newService, description: e.target.value })}
+              className="w-full p-3 border rounded-lg"
+            ></textarea>
+            <input
+              type="text"
+              placeholder="Image URL"
+              value={newService.image}
+              onChange={e => setNewService({ ...newService, image: e.target.value })}
+              className="w-full p-3 border rounded-lg"
+            />
+            {editingService ? (
+              <Button onClick={handleUpdateService} className="bg-purple-600 text-white hover:bg-purple-700 w-full">
+                Update Service
+              </Button>
+            ) : (
+              <Button onClick={handleAddService} className="bg-blue-600 text-white hover:bg-blue-700 w-full">
+                Add Service
+              </Button>
+            )}
+          </div>
+          <div className="space-y-4">
+            {services.map(service => (
+              <div key={service.id} className="bg-white p-4 rounded-xl shadow flex items-center justify-between">
+                <div className="flex items-center">
+                  <img src={service.image} alt={service.name} className="w-12 h-12 rounded-full object-cover mr-4"/>
+                  <div>
+                    <div className="font-semibold">{service.name}</div>
+                    <div className="text-gray-600 text-sm">{service.service}</div>
+                  </div>
+                </div>
+                <div className="space-x-2">
+                  <Button onClick={() => handleEditService(service)} className="bg-yellow-400 text-white hover:bg-yellow-500 px-4 py-2 text-sm">
+                    Edit
+                  </Button>
+                  <Button onClick={() => handleDeleteService(service.id)} className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 text-sm">
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+
+      const renderOrdersTab = () => (
+        <div className="space-y-6">
+          <h3 className="text-2xl font-bold">View Orders</h3>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order ID</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Service</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {orders.map(order => (
+                  <tr key={order.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order.id}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.customerName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.service}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">₹{order.price}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColors[order.status]}`}>
+                        {order.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {JSON.stringify(order.details, null, 2)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+
+      return (
+        <div className="py-12">
+          <Button onClick={() => onNavigate('home')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">
+            ← Back to Home
+          </Button>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h2>
+          <div className="bg-white rounded-xl shadow-lg p-8">
+            <div className="flex mb-4 border-b border-gray-200">
+              <button
+                className={`flex-1 py-2 px-4 text-center font-medium transition-colors duration-200 ${activeTab === 'services' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                onClick={() => setActiveTab('services')}
+              >
+                Services
+              </button>
+              <button
+                className={`flex-1 py-2 px-4 text-center font-medium transition-colors duration-200 ${activeTab === 'orders' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                onClick={() => setActiveTab('orders')}
+              >
+                Orders
+              </button>
+            </div>
+            {activeTab === 'services' && renderServicesTab()}
+            {activeTab === 'orders' && renderOrdersTab()}
+          </div>
+        </div>
+      );
+    };
+
+    const App = () => {
+      const [isLoggedIn, setIsLoggedIn] = useState(false);
+      const [userRole, setUserRole] = useState(null);
+      const [currentPage, setCurrentPage] = useState('roleSelection');
+      const [cart, setCart] = useState([]);
+      const [orderHistory, setOrderHistory] = useState([]);
+      const [userMessage, setUserMessage] = useState(null);
+
+      const handleLogin = () => setIsLoggedIn(true);
+      const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUserRole(null);
+        setCurrentPage('roleSelection');
+        setCart([]);
+        setOrderHistory([]);
+      };
+
+      const handleSelectRole = (role) => {
+          setUserRole(role);
+          setIsLoggedIn(true);
+          setCurrentPage('home'); // or 'profile' for non-customer roles
+      };
+      
+      const renderContent = () => {
+        if (!isLoggedIn && currentPage !== 'roleSelection') {
+          return (
+              <div className="text-center py-20">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h2>
+                  <p className="mb-6 text-gray-600">You need to be logged in to access this page.</p>
+                  <Button onClick={() => setCurrentPage('roleSelection')} className="bg-blue-600 text-white hover:bg-blue-700">
+                      Login Now
+                  </Button>
+              </div>
+          );
+        }
+
+        if (currentPage === 'roleSelection') {
+            return <RoleSelectionPage onSelectRole={handleSelectRole} onNavigate={setCurrentPage} />;
+        }
+
+        switch (userRole) {
+          case 'customer':
+            return <CustomerApp onNavigate={setCurrentPage} isLoggedIn={isLoggedIn} onLogin={handleLogin} onLogout={handleLogout} cart={cart} setCart={setCart} orderHistory={orderHistory} setOrderHistory={setOrderHistory} setUserMessage={setUserMessage} />;
+          case 'professional':
+            return <ProfessionalDashboard onNavigate={setCurrentPage} />;
+          case 'admin':
+            return <AdminDashboard onNavigate={setCurrentPage} />;
+          default:
+            return null;
+        }
+      };
+      
+      const CustomerApp = ({ onNavigate, isLoggedIn, onLogin, onLogout, cart, setCart, orderHistory, setOrderHistory, setUserMessage }) => {
+        const [currentPage, setCurrentPage] = useState('home');
+        const [selectedService, setSelectedService] = useState(null);
+
+        const handleNavigate = (page, data) => {
+          setCurrentPage(page);
+          if (page === 'serviceDetail') {
+            setSelectedService(data);
+          }
+        };
+
+        const handleAddToCart = (item) => {
+          setCart(prevCart => [...prevCart, item]);
+          setUserMessage({ text: "Item added to cart!", type: 'success' });
+          setTimeout(() => setUserMessage(null), 3000);
+        };
+
+        const handleRemoveFromCart = (indexToRemove) => {
+          setCart(prevCart => prevCart.filter((_, index) => index !== indexToRemove));
+          setUserMessage({ text: "Item removed from cart.", type: 'success' });
+          setTimeout(() => setUserMessage(null), 3000);
+        };
+
+        const handleCheckout = () => {
+          setOrderHistory(prevHistory => [...prevHistory, ...cart]);
+          setCart([]);
+          setCurrentPage('orderConfirmed');
+        };
+
+        const renderContent = () => {
+          switch (currentPage) {
+            case 'home':
+              return <HomePage onNavigate={handleNavigate} />;
+            case 'services':
+              return <ServicesPage services={mockServices} onNavigate={handleNavigate} />;
+            case 'serviceDetail':
+              return <ServiceDetailPage service={selectedService} onAddToCart={handleAddToCart} onNavigate={handleNavigate} />;
+            case 'cart':
+              return <CartPage cart={cart} onNavigate={handleNavigate} onCheckout={handleCheckout} onRemoveFromCart={handleRemoveFromCart} />;
+            case 'orderConfirmed':
+              return <OrderConfirmedPage onNavigate={handleNavigate} />;
+            default:
+              return <HomePage onNavigate={handleNavigate} />;
+          }
+        };
+
+        return (
+          <div className="min-h-screen bg-gray-100">
+            <main className="container mx-auto p-4">
+              {renderContent()}
+            </main>
+          </div>
+        );
+      };
+
+      return (
+        <div className="bg-gray-100 min-h-screen">
+          {currentPage !== 'roleSelection' && <Nav onNavigate={setCurrentPage} isLoggedIn={isLoggedIn} onLogout={handleLogout} cartItemCount={cart.length} userRole={userRole} />}
+          <main className="container mx-auto p-4">
+            {userMessage && <UserMessage message={userMessage.text} type={userMessage.type} onClose={() => setUserMessage(null)} />}
+            {renderContent()}
+          </main>
+        </div>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
