@@ -1,1 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StyleHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-gray-100">
+  <div id="root"></div>
 
+  <script type="text/babel">
+    const mockStores = [
+      { id: 1, name: "Trendsetter Boutique", style: "Casual Wear", rating: 4.5, deliveryTime: "30 min", description: "Your daily dose of fashion and comfort.", image: "https://placehold.co/400x400/FFF/000?text=Fashion" },
+      { id: 2, name: "Urban Threads", style: "Streetwear", rating: 4.8, deliveryTime: "45 min", description: "Bold and unique styles for the urban explorer.", image: "https://placehold.co/400x400/FFF/000?text=Streetwear" },
+      { id: 3, name: "Chic & Co.", style: "Formal Attire", rating: 4.2, deliveryTime: "25 min", description: "Elegant outfits for every special occasion.", image: "https://placehold.co/400x400/FFF/000?text=Formal+Wear" },
+      { id: 4, name: "Sporty Style", style: "Activewear", rating: 4.6, deliveryTime: "35 min", description: "High-performance gear for your active life.", image: "https://placehold.co/400x400/FFF/000?text=Activewear" },
+      { id: 5, name: "Vintage Vault", style: "Retro Fashion", rating: 4.9, deliveryTime: "50 min", description: "Timeless pieces for a classic look.", image: "https://placehold.co/400x400/FFF/000?text=Vintage" },
+    ];
+    const mockClothingItems = [
+      { id: 101, storeId: 1, name: "Graphic T-shirt", price: 29.99 },
+      { id: 102, storeId: 1, name: "Distressed Jeans", price: 45.50 },
+      { id: 103, storeId: 2, name: "Oversized Hoodie", price: 55.00 },
+      { id: 104, storeId: 3, name: "Cocktail Dress", price: 75.00 },
+      { id: 105, storeId: 4, name: "Running Shorts", price: 30.00 },
+      { id: 106, storeId: 5, name: "Floral Skirt", price: 41.25 },
+    ];
+
+    const mockReviews = {
+      1: [{ rating: 5, comment: "Amazing quality and style!" }, { rating: 4, comment: "Quick delivery and the fit is perfect." }],
+      2: [{ rating: 5, comment: "Best hoodie I've ever owned!" }],
+    };
+
+    const mockCollections = [
+      { id: 1, name: "Everyday Essentials", description: "A selection of top-rated casual wear and accessories.", stores: [1] },
+      { id: 2, name: "Top-Rated Global Styles", description: "Explore the highest-rated international fashion stores.", stores: [2, 5] },
+      { id: 3, name: "Quick & Stylish", description: "Trendy spots for when you're in a hurry.", stores: [3, 4] },
+    ];
+    const mockDeliveryPartners = [
+      { id: 'dp1', name: 'Alex Johnson', status: 'online', earnings: 150.75, deliveries: 12 },
+      { id: 'dp2', name: 'Maria Rodriguez', status: 'offline', earnings: 0, deliveries: 0 },
+      { id: 'dp3', name: 'Ben Carter', status: 'online', earnings: 95.50, deliveries: 7 },
+      { id: 'dp4', name: 'Samantha Lee', status: 'offline', earnings: 210.00, deliveries: 18 },
+    ];
+    const mockUsers = [
+        { id: 'u1', name: 'Alice', email: 'alice@example.com', orders: 15, totalSpent: 250.75 },
+        { id: 'u2', name: 'Bob', email: 'bob@example.com', orders: 8, totalSpent: 110.20 },
+        { id: 'u3', name: 'Charlie', email: 'charlie@example.com', orders: 2, totalSpent: 35.50 },
+        { id: 'u4', name: 'David', email: 'david@example.com', orders: 22, totalSpent: 415.90 },
+    ];
+    const mockOrders = [
+        { id: 1001, customerName: 'Alice', store: 'Trendsetter Boutique', items: 'Graphic T-shirt', status: 'Delivered', revenue: 29.99, payout: 6.50 },
+        { id: 1002, customerName: 'Bob', store: 'Urban Threads', items: 'Oversized Hoodie', status: 'Out for Delivery', revenue: 55.00, payout: 8.00 },
+        { id: 1003, customerName: 'Charlie', store: 'Chic & Co.', items: 'Cocktail Dress', status: 'Order Placed', revenue: 75.00, payout: 5.00 },
+        { id: 1004, customerName: 'David', store: 'Sporty Style', items: 'Running Shorts', status: 'Delivered', revenue: 30.00, payout: 9.75 },
+        { id: 1005, customerName: 'Alice', store: 'Urban Threads', items: 'Bomber Jacket', status: 'Delivered', revenue: 80.50, payout: 7.00 },
+        { id: 1006, customerName: 'Bob', store: 'Vintage Vault', items: 'Floral Skirt', status: 'Out for Delivery', revenue: 41.25, payout: 12.00 },
+    ];
+    const Button = ({ children, onClick, className = '', type = 'button', disabled = false }) => (
+      <button
+        type={type}
+        onClick={onClick}
+        disabled={disabled}
+        className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 transform shadow-md ${disabled ? 'bg-gray-400 cursor-not-allowed' : 'hover:scale-105'} ${className}`}
+      >
+        {children}
+      </button>
+    );
+    const Nav = ({ onNavigate, isLoggedIn, onLogout, cartItemCount, userRole }) => {
+      const navItems = userRole === 'customer'
+        ? [
+            { name: 'Home', path: 'home' },
+            { name: 'Stores', path: 'stores' },
+            { name: 'Search', path: 'search' },
+            { name: 'Orders', path: 'orderHistory' },
+            { name: 'Collections', path: 'collections' },
+            { name: 'Profile', path: 'profile' },
+          ]
+        : userRole === 'delivery_partner'
+        ? [
+            { name: 'Dashboard', path: 'dashboard' },
+            { name: 'My Deliveries', path: 'myDeliveries' },
+            { name: 'Earnings', path: 'earnings' },
+            { name: 'Settings', path: 'settings' },
+          ]
+        : [
+            { name: 'Dashboard', path: 'adminDashboard' },
+            { name: 'Stores', path: 'adminStores' },
+            { name: 'Delivery Partners', path: 'adminDeliveryPartners' },
+          ];
+      return (
+        <nav className="bg-white p-4 shadow-md rounded-b-xl flex justify-between items-center sticky top-0 z-50">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-gray-900 cursor-pointer" onClick={() => onNavigate(userRole === 'customer' ? 'home' : userRole === 'delivery_partner' ? 'dashboard' : 'adminDashboard')}>StyleHub</h1>
+            <div className="hidden md:flex space-x-4 ml-8">
+              {navItems.map(item => (
+                <a key={item.path} onClick={() => onNavigate(item.path)} className="text-gray-600 hover:text-blue-600 font-medium transition-colors duration-200 cursor-pointer">
+                  {item.name}
+                </a>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            {userRole === 'customer' && (
+              <Button onClick={() => onNavigate('cart')} className="bg-orange-500 text-white hover:bg-orange-600 relative">
+                Cart
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Button>
+            )}
+            {isLoggedIn ? (
+              <Button onClick={onLogout} className="bg-red-500 text-white hover:bg-red-600">
+                Logout
+              </Button>
+            ) : (
+              <Button onClick={() => onNavigate('login')} className="bg-blue-600 text-white hover:bg-blue-700">
+                Login
+              </Button>
+            )}
+          </div>
+        </nav>
+      );
+    };
+
+    const RoleSelectionPage = ({ onSelectRole }) => (
+      <div className="min-h-screen flex flex-col justify-center items-center text-center p-4 bg-gray-100">
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-8">
+          Welcome to StyleHub
+        </h1>
+        <p className="text-lg sm:text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+          Please select your role to continue.
+        </p>
+        <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-8">
+          <Button onClick={() => onSelectRole('customer')} className="bg-blue-600 text-white hover:bg-blue-700 w-64 h-20 text-xl">
+            I am a Customer
+          </Button>
+          <Button onClick={() => onSelectRole('delivery_partner')} className="bg-green-600 text-white hover:bg-green-700 w-64 h-20 text-xl">
+            I am a Delivery Partner
+          </Button>
+          <Button onClick={() => onSelectRole('admin')} className="bg-purple-600 text-white hover:bg-purple-700 w-64 h-20 text-xl">
+            I am an Admin
+          </Button>
+        </div>
+      </div>
+    );
+    const CustomerApp = ({ onNavigate, isLoggedIn, onLogin, onLogout, cart, setCart, orderHistory, setOrderHistory }) => {
+      const [selectedStoreId, setSelectedStoreId] = React.useState(null);
+      const [currentPage, setCurrentPage] = React.useState('home');
+
+      const handleNavigate = (page, id = null) => {
+        setCurrentPage(page);
+        setSelectedStoreId(id);
+      };
+
+      const handleAddToCart = (item) => {
+        setCart([...cart, item]);
+        console.log("Added to cart:", item);
+      };
+
+      const handleProceedToPayment = () => {
+        handleNavigate('payment');
+      };
+      const handlePaymentSuccess = (scheduledTime) => {
+        const newOrder = {
+          id: orderHistory.length + 1,
+          items: [...cart],
+          total: cart.reduce((sum, item) => sum + item.price, 0),
+          date: new Date().toLocaleDateString(),
+          scheduledTime: scheduledTime || 'ASAP',
+          status: 'Order Placed'
+        };
+        setOrderHistory([...orderHistory, newOrder]);
+        setCart([]);
+        handleNavigate('orderTracking');
+      };
+      
+      const handleReviewSubmit = (storeId, rating, comment) => {
+        mockReviews[storeId] = mockReviews[storeId] || [];
+        mockReviews[storeId].push({ rating, comment });
+        console.log("Review submitted successfully:", { storeId, rating, comment });
+      };
+      const HomePage = ({ onNavigate, isLoggedIn }) => {
+        const recommendedStore = mockStores[Math.floor(Math.random() * mockStores.length)];
+        return (
+          <div className="py-20 text-center">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4">
+              Find Your Style
+            </h1>
+            <p className="text-lg sm:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+              Browse from a wide range of stores and styles near you.
+            </p>
+            <Button onClick={() => onNavigate('stores')} className="bg-orange-500 text-white hover:bg-orange-600">
+              Find Stores
+            </Button>
+            {isLoggedIn && (
+                <div className="mt-12 p-6 bg-white rounded-xl shadow-lg max-w-md mx-auto">
+                    <h2 className="text-2xl font-bold text-center mb-4">Recommended for You</h2>
+                    <div onClick={() => onNavigate('storeDetail', recommendedStore.id)} className="cursor-pointer">
+                        <img src={recommendedStore.image} alt={recommendedStore.name} className="w-full h-48 object-cover rounded-md mb-4" />
+                        <h3 className="text-xl font-semibold mb-1">{recommendedStore.name}</h3>
+                        <p className="text-gray-500">{recommendedStore.style} | {recommendedStore.rating} ★</p>
+                    </div>
+                </div>
+            )}
+          </div>
+        );
+      };
+
+      const StoresPage = ({ onNavigate }) => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Stores near you</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {mockStores.map(store => (
+              <div key={store.id} onClick={() => onNavigate('storeDetail', store.id)} className="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105 cursor-pointer">
+                <img src={store.image} alt={store.name} className="w-full h-48 object-cover rounded-md mb-4" />
+                <h3 className="text-xl font-semibold mb-2">{store.name}</h3>
+                <div className="flex items-center mb-2">
+                  <span className="text-yellow-400">★</span>
+                  <span className="text-gray-600 ml-1">{store.rating}</span>
+                  <span className="text-gray-400 mx-2">•</span>
+                  <span className="text-gray-600">{store.deliveryTime}</span>
+                </div>
+                <p className="text-gray-500 text-sm mb-2">{store.style}</p>
+                <p className="text-gray-600 mt-2">{store.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+      const CollectionsPage = ({ onNavigate }) => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Curated Collections</h2>
+          <div className="space-y-8">
+            {mockCollections.map(collection => (
+              <div key={collection.id} className="bg-white rounded-lg shadow-md p-6">
+                <h3 className="text-2xl font-bold mb-2">{collection.name}</h3>
+                <p className="text-gray-600 mb-4">{collection.description}</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {collection.stores.map(id => {
+                    const store = mockStores.find(r => r.id === id);
+                    return store ? (
+                      <div key={store.id} onClick={() => onNavigate('storeDetail', store.id)} className="bg-gray-50 rounded-lg p-4 cursor-pointer hover:bg-gray-100 transition-colors">
+                        <p className="font-semibold text-lg">{store.name}</p>
+                        <p className="text-gray-500">{store.rating} ★</p>
+                      </div>
+                    ) : null;
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+      const SearchPage = ({ onNavigate }) => {
+        const [searchQuery, setSearchQuery] = React.useState('');
+        const [ratingFilter, setRatingFilter] = React.useState('');
+        const [styleFilter, setStyleFilter] = React.useState('');
+        const [filteredStores, setFilteredStores] = React.useState(mockStores);
+        const uniqueStyles = [...new Set(mockStores.map(r => r.style))];
+
+        React.useEffect(() => {
+          const results = mockStores.filter(store =>
+            (store.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            store.style.toLowerCase().includes(searchQuery.toLowerCase())) &&
+            (ratingFilter === '' || store.rating >= parseFloat(ratingFilter)) &&
+            (styleFilter === '' || store.style === styleFilter)
+          );
+          setFilteredStores(results);
+        }, [searchQuery, ratingFilter, styleFilter]);
+        return (
+          <div className="py-12">
+            <h2 className="text-3xl font-bold text-center mb-8">Search Stores</h2>
+            <div className="max-w-3xl mx-auto mb-8 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+              <input
+                type="text"
+                placeholder="Search by name or style..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <select
+                value={ratingFilter}
+                onChange={(e) => setRatingFilter(e.target.value)}
+                className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Ratings</option>
+                <option value="4.5">4.5+ ★</option>
+                <option value="4.0">4.0+ ★</option>
+                <option value="3.5">3.5+ ★</option>
+              </select>
+              <select
+                value={styleFilter}
+                onChange={(e) => setStyleFilter(e.target.value)}
+                className="p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">All Styles</option>
+                {uniqueStyles.map(style => (
+                    <option key={style} value={style}>{style}</option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredStores.length > 0 ? (
+                filteredStores.map(store => (
+                  <div key={store.id} onClick={() => onNavigate('storeDetail', store.id)} className="bg-white rounded-lg shadow-md p-6 transform transition-transform duration-300 hover:scale-105 cursor-pointer">
+                    <img src={store.image} alt={store.name} className="w-full h-48 object-cover rounded-md mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">{store.name}</h3>
+                    <div className="flex items-center mb-2">
+                      <span className="text-yellow-400">★</span>
+                      <span className="text-gray-600 ml-1">{store.rating}</span>
+                      <span className="text-gray-400 mx-2">•</span>
+                      <span className="text-gray-600">{store.deliveryTime}</span>
+                    </div>
+                    <p className="text-gray-500 text-sm mb-2">{store.style}</p>
+                    <p className="text-gray-600 mt-2">{store.description}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-gray-500 col-span-full">No stores found. Please adjust your search criteria.</p>
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      const StoreDetailPage = ({ store, onAddToCart, onNavigate, onReviewSubmit }) => {
+        const catalogItems = mockClothingItems.filter(item => item.storeId === store.id);
+        const reviews = mockReviews[store.id] || [];
+
+        const handleReview = (rating, comment) => {
+          onReviewSubmit(store.id, rating, comment);
+        };
+
+        return (
+          <div className="py-12">
+            <div className="bg-white rounded-xl shadow-lg p-8">
+              <Button onClick={() => onNavigate('stores')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">← Back to Stores</Button>
+              <div className="flex flex-col md:flex-row items-center md:items-start mb-6">
+                <img src={store.image} alt={store.name} className="w-32 h-32 rounded-full object-cover mr-6 mb-4 md:mb-0" />
+                <div>
+                  <h2 className="text-4xl font-bold mb-2">{store.name}</h2>
+                  <p className="text-gray-500 mb-1">{store.style} | {store.deliveryTime}</p>
+                  <div className="flex items-center">
+                    <span className="text-yellow-400 text-xl">★</span>
+                    <span className="text-gray-600 text-lg ml-2">{store.rating}</span>
+                  </div>
+                  <p className="text-gray-600 mt-2">{store.description}</p>
+                </div>
+              </div>
+
+              <h3 className="text-2xl font-bold mt-8 mb-4">Catalog</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {catalogItems.map(item => (
+                  <div key={item.id} className="bg-gray-50 rounded-lg p-4 flex justify-between items-center shadow-sm">
+                    <div>
+                      <p className="font-semibold text-lg">{item.name}</p>
+                      <p className="text-gray-500">${item.price.toFixed(2)}</p>
+                    </div>
+                    <Button onClick={() => onAddToCart(item)} className="bg-green-500 text-white px-4 py-2 hover:bg-green-600">
+                      Add to Cart
+                    </Button>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-12">
+                  <h3 className="text-2xl font-bold mb-4">Reviews</h3>
+                  {reviews.length > 0 ? (
+                      <div className="space-y-4">
+                          {reviews.map((review, index) => (
+                              <div key={index} className="bg-gray-50 rounded-lg p-4 shadow-sm">
+                                  <div className="flex items-center mb-1">
+                                      {[...Array(review.rating)].map((_, i) => <span key={i} className="text-yellow-400">★</span>)}
+                                  </div>
+                                  <p className="text-gray-700">{review.comment}</p>
+                              </div>
+                          ))}
+                      </div>
+                  ) : (
+                      <p className="text-gray-500">No reviews yet. Be the first to leave one!</p>
+                  )}
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const CartPage = ({ cart, onNavigate, onProceedToPayment }) => {
+          const total = cart.reduce((sum, item) => sum + item.price, 0);
+          return (
+              <div className="py-12">
+                  <h2 className="text-3xl font-bold text-center mb-8">Your Cart</h2>
+                  {cart.length === 0 ? (
+                      <div className="text-center text-gray-500">
+                          <p>Your cart is empty!</p>
+                          <Button onClick={() => onNavigate('stores')} className="mt-4 bg-orange-500 text-white hover:bg-orange-600">
+                              Start Shopping
+                          </Button>
+                      </div>
+                  ) : (
+                      <div className="max-w-xl mx-auto bg-white rounded-lg shadow-lg p-6">
+                          <ul className="divide-y divide-gray-200">
+                              {cart.map((item, index) => (
+                                  <li key={index} className="py-4 flex justify-between items-center">
+                                      <div>
+                                          <p className="font-semibold">{item.name}</p>
+                                          <p className="text-gray-500 text-sm">from {mockStores.find(r => r.id === item.storeId)?.name}</p>
+                                      </div>
+                                      <p className="font-bold text-gray-700">${item.price.toFixed(2)}</p>
+                                  </li>
+                              ))}
+                          </ul>
+                          <div className="mt-6 pt-6 border-t border-gray-200 flex justify-between items-center font-bold text-xl">
+                              <span>Total:</span>
+                              <span>${total.toFixed(2)}</span>
+                          </div>
+                          <Button onClick={onProceedToPayment} className="w-full mt-6 bg-green-500 text-white hover:bg-green-600">
+                              Proceed to Payment
+                          </Button>
+                      </div>
+                  )}
+              </div>
+          );
+      };
+
+      const PaymentPage = ({ onPaymentSuccess, cart, onNavigate }) => {
+          const [selectedPayment, setSelectedPayment] = React.useState('card');
+          const [scheduledTime, setScheduledTime] = React.useState('');
+          const total = cart.reduce((sum, item) => sum + item.price, 0);
+          const handlePay = () => {
+              onPaymentSuccess(scheduledTime);
+          };
+          
+          return (
+              <div className="py-12 flex justify-center items-center min-h-[60vh]">
+                  <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+                      <h2 className="text-3xl font-bold text-center mb-6">Payment</h2>
+                      <div className="text-center mb-6">
+                          <p className="text-xl font-medium">Total Amount:</p>
+                          <p className="text-4xl font-bold text-green-600">${total.toFixed(2)}</p>
+                      </div>
+                      <h3 className="text-xl font-semibold mb-4">Choose a Payment Method</h3>
+                      <div className="space-y-4 mb-6">
+                          <label className="flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50">
+                              <input
+                                  type="radio"
+                                  name="payment-method"
+                                  value="card"
+                                  checked={selectedPayment === 'card'}
+                                  onChange={() => setSelectedPayment('card')}
+                                  className="mr-3"
+                              />
+                              Credit/Debit Card
+                          </label>
+                          <label className="flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50">
+                              <input
+                                  type="radio"
+                                  name="payment-method"
+                                  value="wallet"
+                                  checked={selectedPayment === 'wallet'}
+                                  onChange={() => setSelectedPayment('wallet')}
+                                  className="mr-3"
+                              />
+                              Digital Wallet / UPI
+                          </label>
+                          <label className="flex items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50">
+                              <input
+                                  type="radio"
+                                  name="payment-method"
+                                  value="cash"
+                                  checked={selectedPayment === 'cash'}
+                                  onChange={() => setSelectedPayment('cash')}
+                                  className="mr-3"
+                              />
+                              Cash on Delivery
+                          </label>
+                      </div>
+                      <div className="mb-6">
+                          <label className="block text-gray-700 font-medium mb-1">Scheduled Delivery Time</label>
+                          <input
+                              type="time"
+                              value={scheduledTime}
+                              onChange={(e) => setScheduledTime(e.target.value)}
+                              className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          />
+                      </div>
+                          <Button onClick={handlePay} className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                          Pay Now
+                      </Button>
+                  </div>
+              </div>
+          );
+      };
+
+      const OrderTrackingPage = ({ onOrderDelivered, onNavigate, orderDetails }) => {
+          const [orderStatus, setOrderStatus] = React.useState('Order Placed');
+          const [showReview, setShowReview] = React.useState(false);
+          
+          const trackingSteps = [
+              { status: 'Order Placed', time: '1 min ago', icon: '✅' },
+              { status: 'Preparing Package', time: '3 min ago', icon: '🛍️' },
+              { status: 'Out for Delivery', time: '8 min ago', icon: '🛵' },
+              { status: 'Delivered', time: '10 min ago', icon: '📦' },
+          ];
+          React.useEffect(() => {
+              const statuses = ['Preparing Package', 'Out for Delivery', 'Delivered'];
+              let currentStatusIndex = 0;
+              const interval = setInterval(() => {
+                  if (currentStatusIndex < statuses.length) {
+                      setOrderStatus(statuses[currentStatusIndex]);
+                      currentStatusIndex++;
+                  } else {
+                      clearInterval(interval);
+                      setShowReview(true);
+                  }
+              }, 3000);
+
+              return () => clearInterval(interval);
+          }, []);
+          const handleReviewSubmit = (rating, comment) => {
+              console.log(`Review submitted with ${rating} stars and comment: "${comment}"`);
+              onNavigate('home');
+          };
+
+          const getStatusIndex = (status) => trackingSteps.findIndex(step => step.status === status);
+          return (
+              <div className="py-12">
+                  <h2 className="text-3xl font-bold text-center mb-8">Order Status</h2>
+                  <div className="max-w-xl mx-auto text-center bg-white rounded-xl shadow-lg p-8">
+                      <div className="relative mb-8 w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                           <img src="https://placehold.co/600x400/87CEEB/000?text=Live+Map+Tracking" alt="Live Map" className="absolute inset-0 w-full h-full object-cover" />
+                          <div className="absolute top-4 left-4 bg-white p-2 rounded-lg shadow-md">
+                              <p className="font-semibold text-gray-800">Delivery Partner is on the way!</p>
+                              <p className="text-sm text-gray-600">ETA: {orderStatus === 'Out for Delivery' ? '5-10 min' : 'calculating...'}</p>
+                          </div>
+                      </div>
+                      <div className="flex justify-between items-center mb-8 relative">
+                          <div className="absolute top-1/2 left-0 right-0 h-1 bg-gray-200"></div>
+                          <div className={`absolute top-1/2 left-0 h-1 transition-all duration-1000 ease-in-out bg-green-500`} style={{ width: `${(getStatusIndex(orderStatus) / (trackingSteps.length - 1)) * 100}%` }}></div>
+                          {trackingSteps.map((step, index) => (
+                              <div key={index} className="flex flex-col items-center z-10">
+                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-white transition-colors duration-500 ${index <= getStatusIndex(orderStatus) ? 'bg-green-500' : 'bg-gray-400'}`}>
+                                      {step.icon}
+                                  </div>
+                                  <span className="text-xs text-center mt-2 font-medium w-20">{step.status}</span>
+                              </div>
+                          ))}
+                      </div>
+                      <p className="text-lg text-gray-600 mb-4">Your order is currently:</p>
+                      <p className={`text-4xl font-bold text-blue-600 mb-6`}>{orderStatus}</p>
+                      
+                      {orderStatus === 'Delivered' && (
+                           <>
+                              <p className="text-xl text-green-600 font-semibold mb-6">Your order has been delivered! Enjoy your new clothes.</p>
+                              <ReviewForm onReviewSubmit={handleReviewSubmit} />
+                          </>
+                      )}
+                      <Button onClick={() => onNavigate('home')} className="mt-6 bg-gray-300 text-gray-800 hover:bg-gray-400">
+                          Back to Home
+                      </Button>
+                  </div>
+              </div>
+          );
+      };
+      
+      const ReviewForm = ({ onReviewSubmit }) => {
+          const [rating, setRating] = React.useState(0);
+          const [hoverRating, setHoverRating] = React.useState(0);
+          const [comment, setComment] = React.useState('');
+          const handleSubmit = (e) => {
+              e.preventDefault();
+              if (rating > 0) {
+                  onReviewSubmit(rating, comment);
+              }
+          };
+          return (
+              <form onSubmit={handleSubmit} className="mt-8">
+                  <h3 className="text-2xl font-bold mb-4">Rate & Review Your Order</h3>
+                  <div className="flex justify-center space-x-2 mb-4">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                          <span 
+                              key={star}
+                              className={`text-4xl cursor-pointer ${star <= (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-400'}`}
+                              onClick={() => setRating(star)}
+                              onMouseEnter={() => setHoverRating(star)}
+                              onMouseLeave={() => setHoverRating(0)}
+                          >
+                              ★
+                          </span>
+                      ))}
+                  </div>
+                  <textarea 
+                      className="w-full p-2 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      rows="4"
+                      placeholder="Write your review here..."
+                      value={comment}
+                      onChange={(e) => setComment(e.target.value)}
+                  ></textarea>
+                  {rating > 0 && (
+                      <Button type="submit" className="w-full mt-4 bg-orange-500 text-white hover:bg-orange-600">
+                          Submit Review
+                      </Button>
+                  )}
+              </form>
+          );
+      };
+      const OrderHistoryPage = ({ orderHistory, onNavigate }) => {
+          return (
+              <div className="py-12">
+                  <h2 className="text-3xl font-bold text-center mb-8">Your Order History</h2>
+                  {orderHistory.length === 0 ? (
+                      <div className="text-center text-gray-500">
+                          <p>You have not placed any orders yet.</p>
+                          <Button onClick={() => onNavigate('stores')} className="mt-4 bg-orange-500 text-white hover:bg-orange-600">
+                              Start Shopping
+                          </Button>
+                      </div>
+                  ) : (
+                      <div className="space-y-6">
+                          {orderHistory.map((order, index) => (
+                              <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                                  <div className="flex justify-between items-center mb-4">
+                                      <h3 className="text-xl font-semibold">Order #{order.id}</h3>
+                                      <span className="text-sm text-gray-500">Placed: {order.date}</span>
+                                  </div>
+                                  <ul className="divide-y divide-gray-200">
+                                      {order.items.map((item, itemIndex) => (
+                                          <li key={itemIndex} className="py-2 flex justify-between">
+                                              <span>{item.name}</span>
+                                              <span className="font-medium">${item.price.toFixed(2)}</span>
+                                          </li>
+                                      ))}
+                                  </ul>
+                                  <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center font-bold">
+                                      <span>Total:</span>
+                                      <span>${order.total.toFixed(2)}</span>
+                                  </div>
+                              </div>
+                          ))}
+                      </div>
+                  )}
+              </div>
+          );
+      };
+      const ProfilePage = ({ isLoggedIn, onNavigate }) => {
+          if (!isLoggedIn) {
+              return (
+                  <div className="py-12 text-center">
+                      <h2 className="text-3xl font-bold mb-4">Login to view your Profile</h2>
+                      <p className="text-gray-600 mb-6">Create a profile to save your favorites, view your orders, and more!</p>
+                      <Button onClick={() => onNavigate('login')} className="bg-blue-600 text-white hover:bg-blue-700">
+                          Login
+                      </Button>
+                  </div>
+              );
+          }
+          return (
+              <div className="py-12">
+                  <div className="bg-white rounded-xl shadow-lg p-8">
+                      <div className="flex flex-col items-center text-center">
+                          <div className="w-24 h-24 rounded-full bg-gray-300 flex items-center justify-center text-5xl font-bold text-gray-600 mb-4">U</div>
+                          <h2 className="text-3xl font-bold mb-2">Hello, User!</h2>
+                          <p className="text-gray-600 mb-6">Welcome to your personal dashboard.</p>
+                      </div>
+                      <div className="mt-8">
+                          <h3 className="text-2xl font-bold mb-4">Your Social Feed</h3>
+                          <div className="space-y-4">
+                              <div className="bg-gray-50 p-4 rounded-lg">
+                                  <p className="font-semibold">Jane Doe rated Trendsetter Boutique 5 ★</p>
+                                  <p className="text-sm text-gray-500">"The best T-shirt I've ever bought!"</p>
+                              </div>
+                              <div className="bg-gray-50 p-4 rounded-lg">
+                                  <p className="font-semibold">John Smith checked in at Chic & Co.</p>
+                                  <p className="text-sm text-gray-500">"Great outfits and good vibes."</p>
+                              </div>
+                          </div>
+                      </div>
+                      <div className="mt-8 p-6 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                          <h3 className="text-2xl font-bold text-yellow-800 mb-2">StyleHub Loyalty</h3>
+                          <p className="text-yellow-700">Unlock exclusive discounts and special offers. Subscribe now to save on every order!</p>
+                          <Button className="mt-4 bg-yellow-500 text-white hover:bg-yellow-600">
+                              Learn More
+                          </Button>
+                      </div>
+                  </div>
+              </div>
+          );
+      };
+      const LoginPage = ({ onLogin }) => {
+          const [username, setUsername] = React.useState('');
+          const [password, setPassword] = React.useState('');
+          const [error, setError] = React.useState('');
+          const handleLogin = (e) => {
+              e.preventDefault();
+              if (username === '1' && password === '1') {
+                  onLogin();
+                  setError('');
+              } else {
+                  setError('Invalid username or password. Please try again.');
+              }
+          };
+          return (
+              <div className="py-12 flex justify-center items-center min-h-[60vh]">
+                  <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-sm">
+                      <h2 className="text-3xl font-bold text-center mb-6">Login</h2>
+                      <form onSubmit={handleLogin} className="space-y-4">
+                          {error && <div className="p-3 bg-red-100 text-red-700 rounded-md text-sm">{error}</div>}
+                          <div>
+                              <label className="block text-gray-700 font-medium mb-1" htmlFor="username">Username</label>
+                              <input type="text" id="username" value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter '1'" />
+                          </div>
+                          <div>
+                              <label className="block text-gray-700 font-medium mb-1" htmlFor="password">Password</label>
+                              <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter '1'" />
+                          </div>
+                          <Button type="submit" className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                              Sign In
+                          </Button>
+                      </form>
+                  </div>
+              </div>
+          );
+      };
+      let PageComponent;
+      switch (currentPage) {
+        case 'home':
+          PageComponent = <HomePage onNavigate={handleNavigate} isLoggedIn={isLoggedIn} />;
+          break;
+        case 'stores':
+          PageComponent = <StoresPage onNavigate={handleNavigate} />;
+          break;
+        case 'search':
+          PageComponent = <SearchPage onNavigate={handleNavigate} />;
+          break;
+        case 'collections':
+          PageComponent = <CollectionsPage onNavigate={handleNavigate} />;
+          break;
+        case 'profile':
+          PageComponent = <ProfilePage isLoggedIn={isLoggedIn} onNavigate={handleNavigate} />;
+          break;
+        case 'storeDetail':
+          const store = mockStores.find(r => r.id === selectedStoreId);
+          PageComponent = store ?
+            <StoreDetailPage store={store} onAddToCart={handleAddToCart} onNavigate={handleNavigate} onReviewSubmit={handleReviewSubmit} /> : <p className="text-center">Store not found.</p>;
+          break;
+        case 'cart':
+          PageComponent = <CartPage cart={cart} onNavigate={handleNavigate} onProceedToPayment={handleProceedToPayment} />;
+          break;
+        case 'payment':
+          PageComponent = <PaymentPage onPaymentSuccess={handlePaymentSuccess} cart={cart} onNavigate={handleNavigate} />;
+          break;
+        case 'orderTracking':
+          PageComponent = <OrderTrackingPage onNavigate={handleNavigate} />;
+          break;
+        case 'orderHistory':
+          PageComponent = <OrderHistoryPage orderHistory={orderHistory} onNavigate={handleNavigate} />;
+          break;
+        case 'login':
+          PageComponent = <LoginPage onLogin={onLogin} />;
+          break;
+        default:
+          PageComponent = <HomePage onNavigate={handleNavigate} isLoggedIn={isLoggedIn} />;
+      }
+      return (
+        <>
+          <Nav onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={onLogout} cartItemCount={cart.length} userRole="customer" />
+          <main className="container mx-auto px-4 py-8">
+            {PageComponent}
+          </main>
+        </>
+      );
+    };
+    const DeliveryPartnerApp = ({ onNavigate, isLoggedIn, onLogin, onLogout }) => {
+      const [currentPage, setCurrentPage] = React.useState('dashboard');
+      const [driverStatus, setDriverStatus] = React.useState('offline');
+      const [availableOrders, setAvailableOrders] = React.useState([]);
+      const [currentOrder, setCurrentOrder] = React.useState(null);
+      const [earnings, setEarnings] = React.useState(0);
+      const [deliveries, setDeliveries] = React.useState(0);
+      const [completedDeliveries, setCompletedDeliveries] = React.useState([]);
+      const handleNavigate = (page) => {
+        setCurrentPage(page);
+      };
+
+      const generateMockOrder = () => {
+        const stores = mockStores;
+        const randomStore = stores[Math.floor(Math.random() * stores.length)];
+        return {
+          id: Math.floor(Math.random() * 100000) + 1,
+          store: randomStore.name,
+          pickupAddress: `123 Main St, Anytown, USA`,
+          customerAddress: `456 Oak Ave, Anytown, USA`,
+          distance: `${(Math.random() * 5 + 1).toFixed(1)} km`,
+          payout: parseFloat((Math.random() * 5 + 5).toFixed(2))
+        };
+      };
+      const handleToggleStatus = () => {
+        if (driverStatus === 'online') {
+          setDriverStatus('offline');
+          setAvailableOrders([]);
+        } else {
+          setDriverStatus('online');
+          // Simulate new orders coming in every 5 seconds
+          const orderTimer = setInterval(() => {
+            if (!currentOrder) {
+              setAvailableOrders(prevOrders => [...prevOrders, generateMockOrder()]);
+            }
+          }, 5000);
+          return () => clearInterval(orderTimer);
+        }
+      };
+
+      const handleAcceptOrder = (order) => {
+        setCurrentOrder(order);
+        setAvailableOrders([]);
+        console.log(`Order ${order.id} accepted.`);
+      };
+
+      const handlePickupOrder = () => {
+        if (currentOrder) {
+          console.log(`Order ${currentOrder.id} picked up.`);
+          setCurrentPage('myDeliveries');
+        }
+      };
+
+      const handleDeliverOrder = () => {
+        if (currentOrder) {
+          setEarnings(prevEarnings => prevEarnings + currentOrder.payout);
+          setDeliveries(prevDeliveries => prevDeliveries + 1);
+          setCompletedDeliveries(prevCompleted => [...prevCompleted, currentOrder]);
+          setCurrentOrder(null);
+          console.log(`Order ${currentOrder.id} delivered.`);
+          setCurrentPage('dashboard');
+        }
+      };
+
+      const Dashboard = () => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Delivery Partner Dashboard</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <p className="text-lg font-medium text-gray-500">Your Status</p>
+              <p className={`text-4xl font-bold mt-2 ${driverStatus === 'online' ? 'text-green-600' : 'text-red-600'}`}>{driverStatus.toUpperCase()}</p>
+              <Button onClick={handleToggleStatus} className={`mt-4 w-full ${driverStatus === 'online' ? 'bg-red-500 hover:bg-red-600' : 'bg-green-500 hover:bg-green-600'} text-white`}>
+                Go {driverStatus === 'online' ? 'Offline' : 'Online'}
+              </Button>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <p className="text-lg font-medium text-gray-500">Total Earnings</p>
+              <p className="text-4xl font-bold mt-2 text-gray-800">${earnings.toFixed(2)}</p>
+            </div>
+            <div className="bg-white p-6 rounded-lg shadow-lg">
+              <p className="text-lg font-medium text-gray-500">Total Deliveries</p>
+              <p className="text-4xl font-bold mt-2 text-gray-800">{deliveries}</p>
+            </div>
+          </div>
+          {driverStatus === 'online' && (
+            <div className="mt-12">
+              <h3 className="text-2xl font-bold mb-4">Available Orders</h3>
+              {availableOrders.length > 0 ? (
+                <div className="space-y-4">
+                  {availableOrders.map(order => (
+                    <div key={order.id} className="bg-white p-6 rounded-lg shadow-md flex justify-between items-center">
+                      <div>
+                        <p className="font-semibold">Order #{order.id}</p>
+                        <p className="text-sm text-gray-600">From: {order.store}</p>
+                        <p className="text-sm text-gray-600">Distance: {order.distance}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-green-600">${order.payout.toFixed(2)}</p>
+                        <Button onClick={() => handleAcceptOrder(order)} className="mt-2 bg-blue-600 text-white hover:bg-blue-700">
+                          Accept
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center text-gray-500">No new orders available.</p>
+              )}
+            </div>
+          )}
+        </div>
+      );
+
+      const MyDeliveriesPage = () => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">My Deliveries</h2>
+          {currentOrder ? (
+            <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+              <h3 className="text-2xl font-bold mb-4">Current Delivery</h3>
+              <p className="font-semibold text-lg">Order #{currentOrder.id}</p>
+              <p className="text-gray-600">From: {currentOrder.store}</p>
+              <p className="text-gray-600">Customer Address: {currentOrder.customerAddress}</p>
+              <p className="text-gray-600">Payout: ${currentOrder.payout.toFixed(2)}</p>
+              <Button onClick={handleDeliverOrder} className="w-full mt-6 bg-green-500 text-white hover:bg-green-600">
+                Mark as Delivered
+              </Button>
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">You have no active deliveries.</p>
+          )}
+          
+          <h3 className="text-2xl font-bold mt-12 mb-4">Completed Deliveries</h3>
+          {completedDeliveries.length > 0 ? (
+            <div className="space-y-4">
+              {completedDeliveries.map(delivery => (
+                <div key={delivery.id} className="bg-white p-6 rounded-lg shadow-md">
+                  <p className="font-semibold">Order #{delivery.id}</p>
+                  <p className="text-sm text-gray-600">Delivered for {delivery.store}</p>
+                  <p className="text-sm text-gray-600">Payout: ${delivery.payout.toFixed(2)}</p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-gray-500">No completed deliveries yet.</p>
+          )}
+        </div>
+      );
+
+      const EarningsPage = () => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">My Earnings</h2>
+          <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+            <p className="text-lg font-medium text-gray-500">Current Balance</p>
+            <p className="text-6xl font-extrabold text-green-600 mt-2">${earnings.toFixed(2)}</p>
+            <p className="text-sm text-gray-500 mt-2">{deliveries} total deliveries</p>
+            <Button className="w-full mt-6 bg-blue-600 text-white hover:bg-blue-700">
+              Cash Out
+            </Button>
+          </div>
+        </div>
+      );
+
+      const SettingsPage = () => (
+        <div className="py-12">
+          <h2 className="text-3xl font-bold text-center mb-8">Settings</h2>
+          <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg text-center">
+            <p className="text-xl text-gray-600">Settings page content here...</p>
+          </div>
+        </div>
+      );
+
+      let PageComponent;
+      switch (currentPage) {
+        case 'dashboard':
+          PageComponent = <Dashboard />;
+          break;
+        case 'myDeliveries':
+          PageComponent = <MyDeliveriesPage />;
+          break;
+        case 'earnings':
+          PageComponent = <EarningsPage />;
+          break;
+        case 'settings':
+          PageComponent = <SettingsPage />;
+          break;
+        default:
+          PageComponent = <Dashboard />;
+      }
+      
+      return (
+        <>
+          <Nav onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={onLogout} userRole="delivery_partner" />
+          <main className="container mx-auto px-4 py-8">
+            {PageComponent}
+          </main>
+        </>
+      );
+    };
+
+    const AdminApp = ({ onNavigate, isLoggedIn, onLogin, onLogout }) => {
+      const [currentPage, setCurrentPage] = React.useState('adminDashboard');
+      const handleNavigate = (page) => {
+        setCurrentPage(page);
+      };
+
+      const AdminDashboard = () => (
+          <div className="py-12">
+              <h2 className="text-3xl font-bold text-center mb-8">Admin Dashboard</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                      <p className="text-lg font-medium text-gray-500">Total Users</p>
+                      <p className="text-4xl font-bold mt-2 text-blue-600">{mockUsers.length}</p>
+                  </div>
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                      <p className="text-lg font-medium text-gray-500">Total Stores</p>
+                      <p className="text-4xl font-bold mt-2 text-green-600">{mockStores.length}</p>
+                  </div>
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                      <p className="text-lg font-medium text-gray-500">Total Orders</p>
+                      <p className="text-4xl font-bold mt-2 text-orange-600">{mockOrders.length}</p>
+                  </div>
+                  <div className="bg-white p-6 rounded-lg shadow-lg text-center">
+                      <p className="text-lg font-medium text-gray-500">Total Revenue</p>
+                      <p className="text-4xl font-bold mt-2 text-gray-800">${mockOrders.reduce((sum, order) => sum + order.revenue, 0).toFixed(2)}</p>
+                  </div>
+              </div>
+              <div className="mt-12">
+                  <h3 className="text-2xl font-bold mb-4">Recent Orders</h3>
+                  <div className="space-y-4">
+                      {mockOrders.slice(0, 5).map(order => (
+                          <div key={order.id} className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
+                              <div>
+                                  <p className="font-semibold">Order #{order.id}</p>
+                                  <p className="text-sm text-gray-600">{order.items} from {order.store}</p>
+                              </div>
+                              <span className={`px-3 py-1 text-xs rounded-full font-semibold ${order.status === 'Delivered' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                  {order.status}
+                              </span>
+                          </div>
+                      ))}
+                  </div>
+              </div>
+          </div>
+      );
+
+      const AdminStores = () => (
+          <div className="py-12">
+              <h2 className="text-3xl font-bold text-center mb-8">Manage Stores</h2>
+              <div className="space-y-4">
+                  {mockStores.map(store => (
+                      <div key={store.id} className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
+                          <div>
+                              <p className="font-semibold">{store.name}</p>
+                              <p className="text-sm text-gray-600">{store.style}</p>
+                          </div>
+                          <div className="flex space-x-2">
+                              <Button className="bg-blue-500 text-white hover:bg-blue-600 px-3 py-1 text-sm">Edit</Button>
+                              <Button className="bg-red-500 text-white hover:bg-red-600 px-3 py-1 text-sm">Delete</Button>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      );
+
+      const AdminDeliveryPartners = () => (
+          <div className="py-12">
+              <h2 className="text-3xl font-bold text-center mb-8">Manage Delivery Partners</h2>
+              <div className="space-y-4">
+                  {mockDeliveryPartners.map(partner => (
+                      <div key={partner.id} className="bg-white p-4 rounded-lg shadow-md flex justify-between items-center">
+                          <div>
+                              <p className="font-semibold">{partner.name}</p>
+                              <p className={`text-sm font-semibold ${partner.status === 'online' ? 'text-green-600' : 'text-red-600'}`}>{partner.status}</p>
+                          </div>
+                          <div className="flex space-x-2">
+                              <Button className="bg-blue-500 text-white hover:bg-blue-600 px-3 py-1 text-sm">View Profile</Button>
+                              <Button className="bg-red-500 text-white hover:bg-red-600 px-3 py-1 text-sm">Deactivate</Button>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      );
+
+      let PageComponent;
+      switch (currentPage) {
+        case 'adminDashboard':
+          PageComponent = <AdminDashboard />;
+          break;
+        case 'adminStores':
+          PageComponent = <AdminStores />;
+          break;
+        case 'adminDeliveryPartners':
+          PageComponent = <AdminDeliveryPartners />;
+          break;
+        default:
+          PageComponent = <AdminDashboard />;
+      }
+      
+      return (
+        <>
+          <Nav onNavigate={handleNavigate} isLoggedIn={isLoggedIn} onLogout={onLogout} userRole="admin" />
+          <main className="container mx-auto px-4 py-8">
+            {PageComponent}
+          </main>
+        </>
+      );
+    };
+
+    const App = () => {
+      const [userRole, setUserRole] = React.useState(null);
+      const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+      const [cart, setCart] = React.useState([]);
+      const [orderHistory, setOrderHistory] = React.useState([]);
+      
+      const handleSelectRole = (role) => {
+        setUserRole(role);
+      };
+
+      const handleLogin = () => {
+        setIsLoggedIn(true);
+      };
+
+      const handleLogout = () => {
+        setIsLoggedIn(false);
+        setUserRole(null);
+      };
+
+      let AppToRender;
+      if (!userRole) {
+        AppToRender = <RoleSelectionPage onSelectRole={handleSelectRole} />;
+      } else if (userRole === 'customer') {
+        AppToRender = <CustomerApp onNavigate={() => {}} isLoggedIn={isLoggedIn} onLogin={handleLogin} onLogout={handleLogout} cart={cart} setCart={setCart} orderHistory={orderHistory} setOrderHistory={setOrderHistory} />;
+      } else if (userRole === 'delivery_partner') {
+        AppToRender = <DeliveryPartnerApp onNavigate={() => {}} isLoggedIn={isLoggedIn} onLogin={handleLogin} onLogout={handleLogout} />;
+      } else if (userRole === 'admin') {
+        AppToRender = <AdminApp onNavigate={() => {}} isLoggedIn={isLoggedIn} onLogin={handleLogin} onLogout={handleLogout} />;
+      }
+
+      return (
+        <div className="min-h-screen bg-gray-100 font-inter">
+          {AppToRender}
+          {userRole && (
+            <footer className="bg-gray-800 text-white py-8 px-4 md:px-8 lg:px-16 rounded-t-3xl">
+              <div className="max-w-6xl mx-auto text-center">
+                <p>&copy; 2024 StyleHub. All rights reserved.</p>
+              </div>
+            </footer>
+          )}
+        </div>
+      );
+    };
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
