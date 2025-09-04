@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Urban Company-like Service Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-4">
+
+    <!-- Main Container -->
+    <div class="bg-gray-100 rounded-3xl shadow-xl p-6 max-w-2xl w-full space-y-8 md:p-8 mb-24">
+
+        <!-- Header -->
+        <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+            <h1 class="text-3xl font-bold text-gray-800">Book a Service</h1>
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-gray-500">
+                    <path fill-rule="evenodd" d="M11.54 22.351A8.287 8.287 0 0 0 18.287 15.61a.75.75 0 0 0 1.05-.145 7.5 7.5 0 0 0 0-11.205C18.825 2.112 16.891 1.5 15 1.5a8.28 8.28 0 0 0-6.541 3.012.75.75 0 0 0 1.05.145 7.5 7.5 0 0 1 5.691 2.924C16.516 10.668 16.516 13.332 15 15c-1.891 1.89-3.925 2.502-5.691 2.924a7.5 7.5 0 0 1-5.854-.119.75.75 0 0 0-1.05.145A8.287 8.287 0 0 0 11.54 22.351Z" clip-rule="evenodd" />
+                    <path d="m14.544 14.552-.525.525a.75.75 0 0 0 .53 1.282h.001l5.549-.028a.75.75 0 0 0 0-1.5L15.074 14.552a.75.75 0 0 0-.53.119Z" />
+                </svg>
+                <span class="text-gray-700 font-medium">Your Location</span>
+            </div>
+        </div>
+
+        <!-- Service Sections Container -->
+        <div id="services-sections-container" class="w-full space-y-6">
+            <!-- Dynamic service sections will be added here -->
+        </div>
+
+        <!-- Payment Options Section -->
+        <div class="w-full mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Options</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center text-center">
+                    <h3 class="text-lg font-bold text-gray-800">Pay 10% Advance</h3>
+                    <p class="text-sm text-green-600 font-semibold">₹500 OFF</p>
+                    <p class="text-xs text-gray-500 mt-1">Secure your booking with just 10% advance payment and enjoy a discount on your total service cost.</p>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center text-center">
+                    <h3 class="text-lg font-bold text-gray-800">Pay After Service</h3>
+                    <p class="text-sm text-green-600 font-semibold">₹200 OFF</p>
+                    <p class="text-xs text-gray-500 mt-1">Prefer to pay after the service is completed? Get a discount on your total service cost.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testimonials Section -->
+        <div class="w-full mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Testimonials</h2>
+            <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
+                <p class="text-gray-600 italic">"I had booked a deep cleaning service... they were meticulous in cleaning up the house... Really appreciate the quick response time & professionalism of the team."</p>
+                <div class="flex items-center justify-between">
+                    <span class="font-semibold text-sm text-gray-800">— Abhijeet Sharma</span>
+                    <div class="flex text-yellow-400">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="w-full mt-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">FAQs</h2>
+            <div class="space-y-4">
+                <details class="bg-white rounded-xl shadow-md p-4 transition-all duration-300">
+                    <summary class="font-semibold text-gray-700 cursor-pointer">What is included in a professional home deep cleaning service?</summary>
+                    <p class="mt-2 text-gray-500 text-sm">Our deep cleaning includes everything from scrubbing floors and appliances to sanitizing bathrooms and kitchens. It is a thorough process to ensure every corner of your home is spotless.</p>
+                </details>
+                <details class="bg-white rounded-xl shadow-md p-4">
+                    <summary class="font-semibold text-gray-700 cursor-pointer">Are the cleaning chemicals safe for children and pets?</summary>
+                    <p class="mt-2 text-gray-500 text-sm">We use eco-friendly and non-toxic cleaning agents that are safe for everyone in your family, including children and pets.</p>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Summary -->
+    <div id="cart-summary" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl p-4 flex items-center justify-between transition-transform duration-300 transform translate-y-full">
+        <div class="flex items-center space-x-2">
+            <span id="item-count" class="text-xl font-bold text-blue-600">0</span>
+            <span class="text-lg font-medium text-gray-700">items in cart</span>
+        </div>
+        <button id="view-cart-button" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+            <span id="cart-total">₹0</span>
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const servicesData = {
+                'Full Home Cleaning': [
+                    { id: '1rk-furnished', name: '1 RK (Furnished)', description: 'Full Home Cleaning', price: 2000, originalPrice: 2500, icon: '🏠', rating: 4.8, reviews: '55k' },
+                    { id: '1rk-non-furnished', name: '1 RK (Non-Furnished)', description: 'Full Home Cleaning', price: 1500, originalPrice: 2000, icon: '🏠', rating: 4.9, reviews: '42k' },
+                    { id: '1bhk-furnished', name: '1 BHK (Furnished)', description: 'Full Home Cleaning', price: 2500, originalPrice: 3000, icon: '🏡', rating: 4.7, reviews: '78k' },
+                    { id: '1bhk-non-furnished', name: '1 BHK (Non-Furnished)', description: 'Full Home Cleaning', price: 2000, originalPrice: 2500, icon: '🏡', rating: 4.8, reviews: '65k' },
+                    { id: '2bhk-furnished', name: '2 BHK (Furnished)', description: 'Full Home Cleaning', price: 4500, originalPrice: 5000, icon: '🏡', rating: 4.9, reviews: '112k' },
+                    { id: '2bhk-non-furnished', name: '2 BHK (Non-Furnished)', description: 'Full Home Cleaning', price: 4000, originalPrice: 4500, icon: '🏡', rating: 4.8, reviews: '98k' },
+                    { id: '3bhk-furnished', name: '3 BHK (Furnished)', description: 'Full Home Cleaning', price: 5500, originalPrice: 6000, icon: '🏡', rating: 4.9, reviews: '150k' },
+                    { id: '3bhk-non-furnished', name: '3 BHK (Non-Furnished)', description: 'Full Home Cleaning', price: 5000, originalPrice: 5500, icon: '🏡', rating: 4.7, reviews: '130k' },
+                    { id: '4bhk-furnished', name: '4 BHK (Furnished)', description: 'Full Home Cleaning', price: 7000, originalPrice: 7500, icon: '🏡', rating: 4.8, reviews: '88k' },
+                    { id: '4bhk-non-furnished', name: '4 BHK (Non-Furnished)', description: 'Full Home Cleaning', price: 6000, originalPrice: 6500, icon: '🏡', rating: 4.9, reviews: '75k' },
+                    { id: '5bhk-furnished', name: '5 BHK (Furnished)', description: 'Full Home Cleaning', price: 10000, originalPrice: 10500, icon: '🏡', rating: 4.7, reviews: '60k' },
+                    { id: '5bhk-non-furnished', name: '5 BHK (Non-Furnished)', description: 'Full Home Cleaning', price: 8500, originalPrice: 9000, icon: '🏡', rating: 4.8, reviews: '45k' },
+                ],
+                'Kitchen & Bathroom Cleaning': [
+                    { id: 'kitchen-1bhk', name: 'Kitchen Deep Clean', description: '1 BHK Kitchen', price: 1500, originalPrice: 0, icon: '🍳', rating: 4.7, reviews: '32k' },
+                    { id: 'kitchen-2bhk', name: 'Kitchen Deep Clean', description: '2 BHK Kitchen', price: 2000, originalPrice: 0, icon: '🍳', rating: 4.8, reviews: '41k' },
+                    { id: 'kitchen-3bhk', name: 'Kitchen Deep Clean', description: '3 BHK Kitchen', price: 2500, originalPrice: 0, icon: '🍳', rating: 4.9, reviews: '50k' },
+                    { id: 'kitchen-4bhk', name: 'Kitchen Deep Clean', description: '4 BHK Kitchen', price: 3000, originalPrice: 0, icon: '🍳', rating: 4.7, reviews: '25k' },
+                    { id: 'kitchen-5bhk', name: 'Kitchen Deep Clean', description: '5 BHK Kitchen', price: 3500, originalPrice: 0, icon: '🍳', rating: 4.8, reviews: '18k' },
+                    { id: '3-bathrooms-min', name: 'Bathroom Cleaning Package', description: 'Minimum 3 Bathrooms', price: 1500, originalPrice: 0, icon: '🚿', rating: 4.9, reviews: '90k' },
+                ],
+                'Add-on Services': [
+                    { id: 'carpet-shampoo', name: 'Carpet Shampoo', description: 'Deep cleaning per carpet', price: 600, originalPrice: 0, icon: '🛋️', rating: 4.6, reviews: '28k' },
+                    { id: 'fridge-cleaning', name: 'Fridge Cleaning', description: 'Thorough interior and exterior clean', price: 400, originalPrice: 0, icon: '🧊', rating: 4.8, reviews: '38k' },
+                    { id: 'sofa-shampoo', name: 'Sofa Shampoo', description: 'Professional cleaning per seat', price: 150, originalPrice: 0, icon: '🪑', rating: 4.9, reviews: '65k' },
+                    { id: 'microwave-cleaning', name: 'Microwave Cleaning', description: 'Interior, exterior, and turntable', price: 200, originalPrice: 0, icon: '🍽️', rating: 4.7, reviews: '21k' },
+                ],
+                'Office Cleaning': [
+                    { id: 'office-cleaning', name: 'Office Cleaning', description: 'Price is per sqft', price: 5, originalPrice: 0, icon: '🏢', rating: 4.8, reviews: '15k' },
+                    { id: 'office-carpet-shampoo', name: 'Office Carpet Shampoo', description: 'Price is per sqft', price: 3, originalPrice: 0, icon: '🏢', rating: 4.6, reviews: '10k' },
+                ]
+            };
+
+            const sectionsContainer = document.getElementById('services-sections-container');
+            const cartSummary = document.getElementById('cart-summary');
+            const itemCountDisplay = document.getElementById('item-count');
+            const cartTotalDisplay = document.getElementById('cart-total');
+
+            let cart = {};
+
+            // Function to render all service cards by category
+            function renderServices() {
+                sectionsContainer.innerHTML = '';
+                for (const category in servicesData) {
+                    const section = document.createElement('div');
+                    section.className = 'w-full space-y-4';
+                    section.innerHTML = `
+                        <h2 class="text-xl font-semibold text-gray-800">${category}</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="section-${category.replace(/\s/g, '-')}-container">
+                            <!-- Service cards for this category -->
+                        </div>
+                    `;
+                    sectionsContainer.appendChild(section);
+
+                    const serviceContainer = document.getElementById(`section-${category.replace(/\s/g, '-')}-container`);
+                    servicesData[category].forEach(service => {
+                        const card = document.createElement('div');
+                        card.className = 'bg-white rounded-xl shadow-md p-4 flex items-start space-x-4 hover:shadow-lg transition-transform transform hover:scale-105';
+                        
+                        const originalPriceHTML = service.originalPrice > 0 ? `<span class="text-xs text-gray-400 line-through mr-2">₹${service.originalPrice}</span>` : '';
+                        
+                        let actionButtonHTML = '';
+                        if (['sofa-shampoo', 'carpet-shampoo'].includes(service.id)) {
+                            // Render quantity selector for specific services
+                            const quantity = cart[service.id] ? cart[service.id].quantity : 0;
+                            actionButtonHTML = `
+                                <div class="flex items-center space-x-2">
+                                    <button data-service-id="${service.id}" data-action="decrease" class="quantity-btn bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400">-</button>
+                                    <span id="quantity-${service.id}" class="text-lg font-semibold">${quantity}</span>
+                                    <button data-service-id="${service.id}" data-action="increase" class="quantity-btn bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">+</button>
+                                </div>
+                            `;
+                        } else {
+                            // Render standard "Add" button for other services
+                            actionButtonHTML = `
+                                <button data-service-id="${service.id}" class="add-to-cart-btn bg-blue-500 text-white text-sm font-semibold py-1 px-4 rounded-full transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    Add
+                                </button>
+                            `;
+                        }
+
+                        card.innerHTML = `
+                            <div class="text-4xl">
+                                <span>${service.icon}</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2">
+                                    <h3 class="text-lg font-bold text-gray-800">${service.name}</h3>
+                                    <div class="flex items-center">
+                                        <!-- Star icon SVG -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-400">
+                                            <path fill-rule="evenodd" d="M10.788 3.212a.75.75 0 0 1 1.424 0l1.241 2.376a.75.75 0 0 0 .584.423l2.628.381a.75.75 0 0 1 .416 1.28l-1.903 1.854a.75.75 0 0 0-.216.666l.45 2.617a.75.75 0 0 1-1.091.792l-2.353-1.238a.75.75 0 0 0-.7 0l-2.353 1.238a.75.75 0 0 1-1.091-.792l.45-2.617a.75.75 0 0 0-.216-.666L6.51 7.272a.75.75 0 0 1 .416-1.28l2.628-.381a.75.75 0 0 0 .584-.423l1.241-2.376Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="text-sm text-gray-600 font-semibold ml-1">${service.rating}</span>
+                                        <span class="text-sm text-gray-500 ml-1">(${service.reviews})</span>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-500">${service.description}</p>
+                                <div class="flex items-center justify-between mt-2">
+                                    <div class="flex items-baseline">
+                                        ${originalPriceHTML}
+                                        <span class="text-xl font-bold text-blue-600">₹${service.price}</span>
+                                    </div>
+                                    ${actionButtonHTML}
+                                </div>
+                            </div>
+                        `;
+                        serviceContainer.appendChild(card);
+                    });
+                }
+                
+                // Add event listeners after rendering
+                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const serviceId = e.target.dataset.serviceId;
+                        handleQuantityChange(serviceId, 'increase');
+                    });
+                });
+
+                document.querySelectorAll('.quantity-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const serviceId = e.target.dataset.serviceId;
+                        const action = e.target.dataset.action;
+                        handleQuantityChange(serviceId, action);
+                    });
+                });
+            }
+
+            // Function to handle quantity changes for services
+            function handleQuantityChange(serviceId, action) {
+                let service = null;
+                for (const category in servicesData) {
+                    service = servicesData[category].find(s => s.id === serviceId);
+                    if (service) break;
+                }
+
+                if (!service) return;
+
+                if (!cart[serviceId]) {
+                    cart[serviceId] = { ...service, quantity: 0 };
+                }
+
+                if (action === 'increase') {
+                    cart[serviceId].quantity++;
+                } else if (action === 'decrease' && cart[serviceId].quantity > 0) {
+                    cart[serviceId].quantity--;
+                }
+
+                if (cart[serviceId].quantity === 0) {
+                    delete cart[serviceId];
+                }
+
+                updateCartSummary();
+                const quantityEl = document.getElementById(`quantity-${serviceId}`);
+                if (quantityEl) {
+                    quantityEl.textContent = cart[serviceId] ? cart[serviceId].quantity : 0;
+                } else {
+                    renderServices();
+                }
+            }
+
+            // Function to update the cart summary UI
+            function updateCartSummary() {
+                const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
+                const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                
+                if (totalItems > 0) {
+                    cartSummary.classList.remove('translate-y-full');
+                    itemCountDisplay.textContent = totalItems;
+                    cartTotalDisplay.textContent = `View Cart (₹${totalPrice})`;
+                } else {
+                    cartSummary.classList.add('translate-y-full');
+                }
+            }
+
+            renderServices();
+            updateCartSummary();
+        });
+    </script>
+
+</body>
+</html>
