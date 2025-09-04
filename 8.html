@@ -3,101 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Professional home cleaning services with flexible payment options. Book deep cleaning, kitchen & bathroom cleaning, and add-on services.">
+    <meta name="keywords" content="home cleaning, deep cleaning, professional cleaning, kitchen cleaning, bathroom cleaning">
     <title>Urban Company-like Service Booking</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --error-color: #dc2626;
+            --background-color: #f0f4f8;
+            --card-background: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--background-color);
+            line-height: 1.6;
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .focus-visible:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background-color: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn-secondary {
+            background-color: #f1f5f9;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background-color: #e2e8f0;
+        }
+
+        .card {
+            background-color: var(--card-background);
+            border-radius: 0.75rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-start min-h-screen p-4">
+    <!-- Skip to main content link for accessibility -->
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-50">Skip to main content</a>
 
     <!-- Main Container -->
-    <div class="bg-gray-100 rounded-3xl shadow-xl p-6 max-w-2xl w-full space-y-8 md:p-8 mb-24">
+    <main id="main-content" class="bg-gray-100 rounded-3xl shadow-xl p-6 max-w-2xl w-full space-y-8 md:p-8 mb-24" role="main" aria-label="Service booking application">
 
         <!-- Header -->
-        <div class="flex justify-between items-center pb-4 border-b border-gray-200">
+        <header class="flex justify-between items-center pb-4 border-b border-gray-200">
             <h1 class="text-3xl font-bold text-gray-800">Book a Service</h1>
-            <div class="flex items-center space-x-2">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-gray-500">
+            <div class="flex items-center space-x-2" role="region" aria-label="Location information">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-gray-500" aria-hidden="true">
                     <path fill-rule="evenodd" d="M11.54 22.351A8.287 8.287 0 0 0 18.287 15.61a.75.75 0 0 0 1.05-.145 7.5 7.5 0 0 0 0-11.205C18.825 2.112 16.891 1.5 15 1.5a8.28 8.28 0 0 0-6.541 3.012.75.75 0 0 0 1.05.145 7.5 7.5 0 0 1 5.691 2.924C16.516 10.668 16.516 13.332 15 15c-1.891 1.89-3.925 2.502-5.691 2.924a7.5 7.5 0 0 1-5.854-.119.75.75 0 0 0-1.05.145A8.287 8.287 0 0 0 11.54 22.351Z" clip-rule="evenodd" />
                     <path d="m14.544 14.552-.525.525a.75.75 0 0 0 .53 1.282h.001l5.549-.028a.75.75 0 0 0 0-1.5L15.074 14.552a.75.75 0 0 0-.53.119Z" />
                 </svg>
                 <span class="text-gray-700 font-medium">Your Location</span>
             </div>
-        </div>
+        </header>
 
         <!-- Service Sections Container -->
-        <div id="services-sections-container" class="w-full space-y-6">
+        <section id="services-sections-container" class="w-full space-y-6" aria-label="Available services">
             <!-- Dynamic service sections will be added here -->
-        </div>
+        </section>
 
         <!-- Payment Options Section -->
-        <div class="w-full mt-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Payment Options</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center text-center">
+        <section class="w-full mt-8" aria-labelledby="payment-options-heading">
+            <h2 id="payment-options-heading" class="text-xl font-semibold text-gray-800 mb-4">Payment Options</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" role="group" aria-label="Payment method options">
+                <div class="card p-4 flex flex-col items-center text-center" role="option" tabindex="0" aria-describedby="advance-payment-desc">
                     <h3 class="text-lg font-bold text-gray-800">Pay 10% Advance</h3>
-                    <p class="text-sm text-green-600 font-semibold">₹500 OFF</p>
-                    <p class="text-xs text-gray-500 mt-1">Secure your booking with just 10% advance payment and enjoy a discount on your total service cost.</p>
+                    <p class="text-sm text-green-600 font-semibold" aria-label="Discount amount">₹500 OFF</p>
+                    <p id="advance-payment-desc" class="text-xs text-gray-500 mt-1">Secure your booking with just 10% advance payment and enjoy a discount on your total service cost.</p>
                 </div>
-                <div class="bg-white rounded-xl shadow-md p-4 flex flex-col items-center text-center">
+                <div class="card p-4 flex flex-col items-center text-center" role="option" tabindex="0" aria-describedby="post-payment-desc">
                     <h3 class="text-lg font-bold text-gray-800">Pay After Service</h3>
-                    <p class="text-sm text-green-600 font-semibold">₹200 OFF</p>
-                    <p class="text-xs text-gray-500 mt-1">Prefer to pay after the service is completed? Get a discount on your total service cost.</p>
+                    <p class="text-sm text-green-600 font-semibold" aria-label="Discount amount">₹200 OFF</p>
+                    <p id="post-payment-desc" class="text-xs text-gray-500 mt-1">Prefer to pay after the service is completed? Get a discount on your total service cost.</p>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- Testimonials Section -->
-        <div class="w-full mt-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">Top Testimonials</h2>
-            <div class="bg-white rounded-xl shadow-md p-6 space-y-4">
+        <section class="w-full mt-8" aria-labelledby="testimonials-heading">
+            <h2 id="testimonials-heading" class="text-xl font-semibold text-gray-800 mb-4">Top Testimonials</h2>
+            <blockquote class="card p-6 space-y-4">
                 <p class="text-gray-600 italic">"I had booked a deep cleaning service... they were meticulous in cleaning up the house... Really appreciate the quick response time & professionalism of the team."</p>
-                <div class="flex items-center justify-between">
-                    <span class="font-semibold text-sm text-gray-800">— Abhijeet Sharma</span>
-                    <div class="flex text-yellow-400">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                <footer class="flex items-center justify-between">
+                    <cite class="font-semibold text-sm text-gray-800 not-italic">— Abhijeet Sharma</cite>
+                    <div class="flex text-yellow-400" role="img" aria-label="5 star rating">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.786.57-1.833-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.381-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"></path></svg>
                     </div>
-                </div>
-            </div>
-        </div>
+                </footer>
+            </blockquote>
+        </section>
 
         <!-- FAQ Section -->
-        <div class="w-full mt-8">
-            <h2 class="text-xl font-semibold text-gray-800 mb-4">FAQs</h2>
-            <div class="space-y-4">
-                <details class="bg-white rounded-xl shadow-md p-4 transition-all duration-300">
-                    <summary class="font-semibold text-gray-700 cursor-pointer">What is included in a professional home deep cleaning service?</summary>
+        <section class="w-full mt-8" aria-labelledby="faq-heading">
+            <h2 id="faq-heading" class="text-xl font-semibold text-gray-800 mb-4">Frequently Asked Questions</h2>
+            <div class="space-y-4" role="region" aria-label="Frequently asked questions">
+                <details class="card p-4 transition-all duration-300">
+                    <summary class="font-semibold text-gray-700 cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2" role="button" aria-expanded="false">What is included in a professional home deep cleaning service?</summary>
                     <p class="mt-2 text-gray-500 text-sm">Our deep cleaning includes everything from scrubbing floors and appliances to sanitizing bathrooms and kitchens. It is a thorough process to ensure every corner of your home is spotless.</p>
                 </details>
-                <details class="bg-white rounded-xl shadow-md p-4">
-                    <summary class="font-semibold text-gray-700 cursor-pointer">Are the cleaning chemicals safe for children and pets?</summary>
+                <details class="card p-4">
+                    <summary class="font-semibold text-gray-700 cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-2" role="button" aria-expanded="false">Are the cleaning chemicals safe for children and pets?</summary>
                     <p class="mt-2 text-gray-500 text-sm">We use eco-friendly and non-toxic cleaning agents that are safe for everyone in your family, including children and pets.</p>
                 </details>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <!-- Floating Cart Summary -->
-    <div id="cart-summary" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl p-4 flex items-center justify-between transition-transform duration-300 transform translate-y-full">
+    <aside id="cart-summary" class="fixed bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl p-4 flex items-center justify-between transition-transform duration-300 transform translate-y-full slide-up" role="complementary" aria-label="Shopping cart summary" aria-live="polite">
         <div class="flex items-center space-x-2">
-            <span id="item-count" class="text-xl font-bold text-blue-600">0</span>
+            <span id="item-count" class="text-xl font-bold text-blue-600" aria-label="Number of items in cart">0</span>
             <span class="text-lg font-medium text-gray-700">items in cart</span>
         </div>
-        <button id="view-cart-button" class="bg-blue-600 text-white font-semibold py-2 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+        <button id="view-cart-button" class="btn btn-primary py-2 px-6 rounded-full shadow-lg" aria-label="View cart and proceed to checkout">
             <span id="cart-total">₹0</span>
         </button>
-    </div>
+    </aside>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        /**
+         * Service Booking Application
+         * Enhanced with better error handling, accessibility, and performance
+         */
+        (function() {
+            'use strict';
+
+            // Configuration and constants
+            const CONFIG = {
+                CART_STORAGE_KEY: 'service-booking-cart',
+                ANIMATION_DURATION: 300,
+                MAX_QUANTITY: 99,
+                MIN_QUANTITY: 0
+            };
+
+            // Service data structure
             const servicesData = {
                 'Full Home Cleaning': [
                     { id: '1rk-furnished', name: '1 RK (Furnished)', description: 'Full Home Cleaning', price: 2000, originalPrice: 2500, icon: '🏠', rating: 4.8, reviews: '55k' },
@@ -133,151 +281,482 @@
                 ]
             };
 
-            const sectionsContainer = document.getElementById('services-sections-container');
-            const cartSummary = document.getElementById('cart-summary');
-            const itemCountDisplay = document.getElementById('item-count');
-            const cartTotalDisplay = document.getElementById('cart-total');
-
+            // Application state
             let cart = {};
+            let isRendering = false;
 
-            // Function to render all service cards by category
-            function renderServices() {
-                sectionsContainer.innerHTML = '';
-                for (const category in servicesData) {
-                    const section = document.createElement('div');
-                    section.className = 'w-full space-y-4';
-                    section.innerHTML = `
-                        <h2 class="text-xl font-semibold text-gray-800">${category}</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="section-${category.replace(/\s/g, '-')}-container">
-                            <!-- Service cards for this category -->
-                        </div>
-                    `;
-                    sectionsContainer.appendChild(section);
+            // DOM elements cache
+            const elements = {
+                sectionsContainer: null,
+                cartSummary: null,
+                itemCountDisplay: null,
+                cartTotalDisplay: null,
+                viewCartButton: null
+            };
 
-                    const serviceContainer = document.getElementById(`section-${category.replace(/\s/g, '-')}-container`);
-                    servicesData[category].forEach(service => {
-                        const card = document.createElement('div');
-                        card.className = 'bg-white rounded-xl shadow-md p-4 flex items-start space-x-4 hover:shadow-lg transition-transform transform hover:scale-105';
+            // Utility functions
+            const utils = {
+                /**
+                 * Safe DOM element selection with error handling
+                 */
+                getElement(selector) {
+                    const element = document.querySelector(selector);
+                    if (!element) {
+                        console.error(`Element not found: ${selector}`);
+                        return null;
+                    }
+                    return element;
+                },
+
+                /**
+                 * Debounce function to limit function calls
+                 */
+                debounce(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                },
+
+                /**
+                 * Format currency for display
+                 */
+                formatCurrency(amount) {
+                    return `₹${amount.toLocaleString('en-IN')}`;
+                },
+
+                /**
+                 * Validate service data
+                 */
+                validateService(service) {
+                    return service && 
+                           typeof service.id === 'string' && 
+                           typeof service.name === 'string' && 
+                           typeof service.price === 'number' && 
+                           service.price >= 0;
+                },
+
+                /**
+                 * Show user feedback
+                 */
+                showFeedback(message, type = 'info') {
+                    // Create a simple toast notification
+                    const toast = document.createElement('div');
+                    toast.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                        type === 'error' ? 'bg-red-500' : 
+                        type === 'success' ? 'bg-green-500' : 'bg-blue-500'
+                    } text-white`;
+                    toast.textContent = message;
+                    document.body.appendChild(toast);
+                    
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 3000);
+                }
+            };
+
+            // Cart management
+            const cartManager = {
+                /**
+                 * Load cart from localStorage
+                 */
+                load() {
+                    try {
+                        const saved = localStorage.getItem(CONFIG.CART_STORAGE_KEY);
+                        if (saved) {
+                            cart = JSON.parse(saved);
+                        }
+                    } catch (error) {
+                        console.error('Failed to load cart from storage:', error);
+                        cart = {};
+                    }
+                },
+
+                /**
+                 * Save cart to localStorage
+                 */
+                save() {
+                    try {
+                        localStorage.setItem(CONFIG.CART_STORAGE_KEY, JSON.stringify(cart));
+                    } catch (error) {
+                        console.error('Failed to save cart to storage:', error);
+                    }
+                },
+
+                /**
+                 * Add or update item in cart
+                 */
+                addItem(serviceId, quantity = 1) {
+                    const service = this.findService(serviceId);
+                    if (!service || !utils.validateService(service)) {
+                        utils.showFeedback('Invalid service selected', 'error');
+                        return false;
+                    }
+
+                    if (!cart[serviceId]) {
+                        cart[serviceId] = { ...service, quantity: 0 };
+                    }
+
+                    const newQuantity = cart[serviceId].quantity + quantity;
+                    if (newQuantity > CONFIG.MAX_QUANTITY) {
+                        utils.showFeedback(`Maximum quantity is ${CONFIG.MAX_QUANTITY}`, 'error');
+                        return false;
+                    }
+
+                    cart[serviceId].quantity = newQuantity;
+                    this.save();
+                    return true;
+                },
+
+                /**
+                 * Remove item from cart
+                 */
+                removeItem(serviceId, quantity = 1) {
+                    if (!cart[serviceId]) return false;
+
+                    cart[serviceId].quantity = Math.max(0, cart[serviceId].quantity - quantity);
+                    
+                    if (cart[serviceId].quantity === 0) {
+                        delete cart[serviceId];
+                    }
+
+                    this.save();
+                    return true;
+                },
+
+                /**
+                 * Find service by ID
+                 */
+                findService(serviceId) {
+                    for (const category in servicesData) {
+                        const service = servicesData[category].find(s => s.id === serviceId);
+                        if (service) return service;
+                    }
+                    return null;
+                },
+
+                /**
+                 * Get cart totals
+                 */
+                getTotals() {
+                    const items = Object.values(cart);
+                    return {
+                        totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
+                        totalPrice: items.reduce((sum, item) => sum + (item.price * item.quantity), 0)
+                    };
+                },
+
+                /**
+                 * Clear cart
+                 */
+                clear() {
+                    cart = {};
+                    this.save();
+                }
+            };
+
+            // UI rendering
+            const renderer = {
+                /**
+                 * Render all service sections
+                 */
+                renderServices() {
+                    if (isRendering) return;
+                    isRendering = true;
+
+                    try {
+                        elements.sectionsContainer.innerHTML = '';
                         
-                        const originalPriceHTML = service.originalPrice > 0 ? `<span class="text-xs text-gray-400 line-through mr-2">₹${service.originalPrice}</span>` : '';
-                        
-                        let actionButtonHTML = '';
-                        if (['sofa-shampoo', 'carpet-shampoo'].includes(service.id)) {
-                            // Render quantity selector for specific services
-                            const quantity = cart[service.id] ? cart[service.id].quantity : 0;
-                            actionButtonHTML = `
-                                <div class="flex items-center space-x-2">
-                                    <button data-service-id="${service.id}" data-action="decrease" class="quantity-btn bg-gray-200 text-gray-700 w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400">-</button>
-                                    <span id="quantity-${service.id}" class="text-lg font-semibold">${quantity}</span>
-                                    <button data-service-id="${service.id}" data-action="increase" class="quantity-btn bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold text-lg hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500">+</button>
-                                </div>
-                            `;
-                        } else {
-                            // Render standard "Add" button for other services
-                            actionButtonHTML = `
-                                <button data-service-id="${service.id}" class="add-to-cart-btn bg-blue-500 text-white text-sm font-semibold py-1 px-4 rounded-full transition-colors hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                    Add
-                                </button>
-                            `;
+                        for (const [categoryName, services] of Object.entries(servicesData)) {
+                            const section = this.createServiceSection(categoryName, services);
+                            elements.sectionsContainer.appendChild(section);
                         }
 
-                        card.innerHTML = `
-                            <div class="text-4xl">
-                                <span>${service.icon}</span>
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex items-center space-x-2">
-                                    <h3 class="text-lg font-bold text-gray-800">${service.name}</h3>
-                                    <div class="flex items-center">
-                                        <!-- Star icon SVG -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-400">
-                                            <path fill-rule="evenodd" d="M10.788 3.212a.75.75 0 0 1 1.424 0l1.241 2.376a.75.75 0 0 0 .584.423l2.628.381a.75.75 0 0 1 .416 1.28l-1.903 1.854a.75.75 0 0 0-.216.666l.45 2.617a.75.75 0 0 1-1.091.792l-2.353-1.238a.75.75 0 0 0-.7 0l-2.353 1.238a.75.75 0 0 1-1.091-.792l.45-2.617a.75.75 0 0 0-.216-.666L6.51 7.272a.75.75 0 0 1 .416-1.28l2.628-.381a.75.75 0 0 0 .584-.423l1.241-2.376Z" clip-rule="evenodd" />
-                                        </svg>
-                                        <span class="text-sm text-gray-600 font-semibold ml-1">${service.rating}</span>
-                                        <span class="text-sm text-gray-500 ml-1">(${service.reviews})</span>
-                                    </div>
+                        this.attachEventListeners();
+                    } catch (error) {
+                        console.error('Error rendering services:', error);
+                        utils.showFeedback('Failed to load services', 'error');
+                    } finally {
+                        isRendering = false;
+                    }
+                },
+
+                /**
+                 * Create a service section
+                 */
+                createServiceSection(categoryName, services) {
+                    const section = document.createElement('section');
+                    section.className = 'w-full space-y-4';
+                    section.setAttribute('aria-labelledby', `section-${categoryName.replace(/\s/g, '-')}-heading`);
+                    
+                    section.innerHTML = `
+                        <h2 id="section-${categoryName.replace(/\s/g, '-')}-heading" class="text-xl font-semibold text-gray-800">${categoryName}</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="section-${categoryName.replace(/\s/g, '-')}-container">
+                            <!-- Service cards will be inserted here -->
+                        </div>
+                    `;
+
+                    const container = section.querySelector(`#section-${categoryName.replace(/\s/g, '-')}-container`);
+                    services.forEach(service => {
+                        const card = this.createServiceCard(service);
+                        container.appendChild(card);
+                    });
+
+                    return section;
+                },
+
+                /**
+                 * Create individual service card
+                 */
+                createServiceCard(service) {
+                    const card = document.createElement('article');
+                    card.className = 'card p-4 flex items-start space-x-4 fade-in';
+                    card.setAttribute('data-service-id', service.id);
+                    
+                    const originalPriceHTML = service.originalPrice > 0 
+                        ? `<span class="text-xs text-gray-400 line-through mr-2" aria-label="Original price">${utils.formatCurrency(service.originalPrice)}</span>` 
+                        : '';
+
+                    const quantity = cart[service.id]?.quantity || 0;
+                    const isQuantityService = ['sofa-shampoo', 'carpet-shampoo'].includes(service.id);
+                    
+                    const actionButtons = isQuantityService ? this.createQuantityControls(service.id, quantity) : this.createAddButton(service.id);
+
+                    card.innerHTML = `
+                        <div class="text-4xl" role="img" aria-label="${service.name} service">
+                            <span>${service.icon}</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2">
+                                <h3 class="text-lg font-bold text-gray-800">${service.name}</h3>
+                                <div class="flex items-center" role="img" aria-label="Rating: ${service.rating} out of 5 stars">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-yellow-400" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M10.788 3.212a.75.75 0 0 1 1.424 0l1.241 2.376a.75.75 0 0 0 .584.423l2.628.381a.75.75 0 0 1 .416 1.28l-1.903 1.854a.75.75 0 0 0-.216.666l.45 2.617a.75.75 0 0 1-1.091.792l-2.353-1.238a.75.75 0 0 0-.7 0l-2.353 1.238a.75.75 0 0 1-1.091-.792l.45-2.617a.75.75 0 0 0-.216-.666L6.51 7.272a.75.75 0 0 1 .416-1.28l2.628-.381a.75.75 0 0 0 .584-.423l1.241-2.376Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span class="text-sm text-gray-600 font-semibold ml-1">${service.rating}</span>
+                                    <span class="text-sm text-gray-500 ml-1">(${service.reviews})</span>
                                 </div>
-                                <p class="text-sm text-gray-500">${service.description}</p>
-                                <div class="flex items-center justify-between mt-2">
-                                    <div class="flex items-baseline">
-                                        ${originalPriceHTML}
-                                        <span class="text-xl font-bold text-blue-600">₹${service.price}</span>
-                                    </div>
-                                    ${actionButtonHTML}
-                                </div>
                             </div>
-                        `;
-                        serviceContainer.appendChild(card);
-                    });
-                }
-                
-                // Add event listeners after rendering
-                document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const serviceId = e.target.dataset.serviceId;
-                        handleQuantityChange(serviceId, 'increase');
-                    });
-                });
+                            <p class="text-sm text-gray-500">${service.description}</p>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex items-baseline">
+                                    ${originalPriceHTML}
+                                    <span class="text-xl font-bold text-blue-600" aria-label="Price">${utils.formatCurrency(service.price)}</span>
+                                </div>
+                                ${actionButtons}
+                            </div>
+                        </div>
+                    `;
 
-                document.querySelectorAll('.quantity-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const serviceId = e.target.dataset.serviceId;
-                        const action = e.target.dataset.action;
-                        handleQuantityChange(serviceId, action);
+                    return card;
+                },
+
+                /**
+                 * Create quantity controls for services that support it
+                 */
+                createQuantityControls(serviceId, currentQuantity) {
+                    return `
+                        <div class="flex items-center space-x-2" role="group" aria-label="Quantity controls for ${serviceId}">
+                            <button 
+                                data-service-id="${serviceId}" 
+                                data-action="decrease" 
+                                class="btn btn-secondary w-8 h-8 rounded-full text-lg focus-visible"
+                                aria-label="Decrease quantity"
+                                ${currentQuantity <= 0 ? 'disabled' : ''}
+                            >-</button>
+                            <span id="quantity-${serviceId}" class="text-lg font-semibold min-w-[2rem] text-center" aria-live="polite">${currentQuantity}</span>
+                            <button 
+                                data-service-id="${serviceId}" 
+                                data-action="increase" 
+                                class="btn btn-primary w-8 h-8 rounded-full text-lg focus-visible"
+                                aria-label="Increase quantity"
+                                ${currentQuantity >= CONFIG.MAX_QUANTITY ? 'disabled' : ''}
+                            >+</button>
+                        </div>
+                    `;
+                },
+
+                /**
+                 * Create add button for single-use services
+                 */
+                createAddButton(serviceId) {
+                    return `
+                        <button 
+                            data-service-id="${serviceId}" 
+                            class="btn btn-primary text-sm py-1 px-4 rounded-full focus-visible"
+                            aria-label="Add ${serviceId} to cart"
+                        >
+                            Add
+                        </button>
+                    `;
+                },
+
+                /**
+                 * Attach event listeners to service cards
+                 */
+                attachEventListeners() {
+                    // Add to cart buttons
+                    document.querySelectorAll('[data-service-id][class*="btn-primary"]:not([data-action])').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const serviceId = e.target.dataset.serviceId;
+                            this.handleQuantityChange(serviceId, 'increase');
+                        });
                     });
-                });
+
+                    // Quantity control buttons
+                    document.querySelectorAll('[data-action]').forEach(button => {
+                        button.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const serviceId = e.target.dataset.serviceId;
+                            const action = e.target.dataset.action;
+                            this.handleQuantityChange(serviceId, action);
+                        });
+                    });
+                },
+
+                /**
+                 * Handle quantity changes
+                 */
+                handleQuantityChange(serviceId, action) {
+                    if (!serviceId) return;
+
+                    let success = false;
+                    if (action === 'increase') {
+                        success = cartManager.addItem(serviceId, 1);
+                    } else if (action === 'decrease') {
+                        success = cartManager.removeItem(serviceId, 1);
+                    }
+
+                    if (success) {
+                        this.updateCartSummary();
+                        this.updateQuantityDisplay(serviceId);
+                        
+                        if (action === 'increase') {
+                            utils.showFeedback('Item added to cart', 'success');
+                        }
+                    }
+                },
+
+                /**
+                 * Update quantity display for a specific service
+                 */
+                updateQuantityDisplay(serviceId) {
+                    const quantityEl = document.getElementById(`quantity-${serviceId}`);
+                    if (quantityEl) {
+                        const quantity = cart[serviceId]?.quantity || 0;
+                        quantityEl.textContent = quantity;
+                        
+                        // Update button states
+                        const decreaseBtn = document.querySelector(`[data-service-id="${serviceId}"][data-action="decrease"]`);
+                        const increaseBtn = document.querySelector(`[data-service-id="${serviceId}"][data-action="increase"]`);
+                        
+                        if (decreaseBtn) decreaseBtn.disabled = quantity <= 0;
+                        if (increaseBtn) increaseBtn.disabled = quantity >= CONFIG.MAX_QUANTITY;
+                    }
+                },
+
+                /**
+                 * Update cart summary display
+                 */
+                updateCartSummary() {
+                    const { totalItems, totalPrice } = cartManager.getTotals();
+                    
+                    if (totalItems > 0) {
+                        elements.cartSummary.classList.remove('translate-y-full');
+                        elements.itemCountDisplay.textContent = totalItems;
+                        elements.cartTotalDisplay.textContent = `View Cart (${utils.formatCurrency(totalPrice)})`;
+                    } else {
+                        elements.cartSummary.classList.add('translate-y-full');
+                    }
+                }
+            };
+
+            // Event handlers
+            const eventHandlers = {
+                /**
+                 * Handle view cart button click
+                 */
+                handleViewCart() {
+                    const { totalItems, totalPrice } = cartManager.getTotals();
+                    if (totalItems === 0) {
+                        utils.showFeedback('Your cart is empty', 'error');
+                        return;
+                    }
+                    
+                    // In a real application, this would navigate to checkout
+                    utils.showFeedback(`Proceeding to checkout with ${totalItems} items (${utils.formatCurrency(totalPrice)})`, 'success');
+                },
+
+                /**
+                 * Handle keyboard navigation
+                 */
+                handleKeydown(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        const target = e.target;
+                        if (target.matches('[data-service-id]')) {
+                            e.preventDefault();
+                            target.click();
+                        }
+                    }
+                }
+            };
+
+            // Initialize application
+            function init() {
+                try {
+                    // Cache DOM elements
+                    elements.sectionsContainer = utils.getElement('#services-sections-container');
+                    elements.cartSummary = utils.getElement('#cart-summary');
+                    elements.itemCountDisplay = utils.getElement('#item-count');
+                    elements.cartTotalDisplay = utils.getElement('#cart-total');
+                    elements.viewCartButton = utils.getElement('#view-cart-button');
+
+                    // Validate required elements
+                    if (!elements.sectionsContainer || !elements.cartSummary) {
+                        throw new Error('Required DOM elements not found');
+                    }
+
+                    // Load cart from storage
+                    cartManager.load();
+
+                    // Render services
+                    renderer.renderServices();
+
+                    // Update cart summary
+                    renderer.updateCartSummary();
+
+                    // Attach event listeners
+                    elements.viewCartButton.addEventListener('click', eventHandlers.handleViewCart);
+                    document.addEventListener('keydown', eventHandlers.handleKeydown);
+
+                    // Handle page visibility changes to sync cart
+                    document.addEventListener('visibilitychange', () => {
+                        if (!document.hidden) {
+                            cartManager.load();
+                            renderer.updateCartSummary();
+                        }
+                    });
+
+                } catch (error) {
+                    console.error('Failed to initialize application:', error);
+                    utils.showFeedback('Failed to load application', 'error');
+                }
             }
 
-            // Function to handle quantity changes for services
-            function handleQuantityChange(serviceId, action) {
-                let service = null;
-                for (const category in servicesData) {
-                    service = servicesData[category].find(s => s.id === serviceId);
-                    if (service) break;
-                }
-
-                if (!service) return;
-
-                if (!cart[serviceId]) {
-                    cart[serviceId] = { ...service, quantity: 0 };
-                }
-
-                if (action === 'increase') {
-                    cart[serviceId].quantity++;
-                } else if (action === 'decrease' && cart[serviceId].quantity > 0) {
-                    cart[serviceId].quantity--;
-                }
-
-                if (cart[serviceId].quantity === 0) {
-                    delete cart[serviceId];
-                }
-
-                updateCartSummary();
-                const quantityEl = document.getElementById(`quantity-${serviceId}`);
-                if (quantityEl) {
-                    quantityEl.textContent = cart[serviceId] ? cart[serviceId].quantity : 0;
-                } else {
-                    renderServices();
-                }
+            // Start application when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                init();
             }
 
-            // Function to update the cart summary UI
-            function updateCartSummary() {
-                const totalItems = Object.values(cart).reduce((sum, item) => sum + item.quantity, 0);
-                const totalPrice = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                
-                if (totalItems > 0) {
-                    cartSummary.classList.remove('translate-y-full');
-                    itemCountDisplay.textContent = totalItems;
-                    cartTotalDisplay.textContent = `View Cart (₹${totalPrice})`;
-                } else {
-                    cartSummary.classList.add('translate-y-full');
-                }
-            }
-
-            renderServices();
-            updateCartSummary();
-        });
+        })();
     </script>
 
 </body>
