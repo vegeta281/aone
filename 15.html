@@ -1,1 +1,89 @@
-https://deep-cleaning-49627.web.app/
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Open Deep Cleaning Site</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --card: #ffffff;
+      --accent: #0b5fff;
+      --muted: #6b7280;
+    }
+    html,body { height:100%; margin:0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#111827; }
+    .wrap { display:flex; flex-direction:column; height:100%; align-items:center; justify-content:center; padding:24px; box-sizing:border-box; }
+    .card { width:100%; max-width:1100px; background:var(--card); border-radius:12px; box-shadow:0 6px 24px rgba(17,24,39,0.08); overflow:hidden; display:flex; gap:0; height:80vh; }
+    .left { flex:1 1 60%; min-height:0; }
+    iframe { border:0; width:100%; height:100%; display:block; background: #fff; }
+    .right { width:360px; padding:28px; box-sizing:border-box; display:flex; flex-direction:column; gap:14px; align-items:flex-start; }
+    h1 { margin:0; font-size:20px; }
+    p { margin:0; color:var(--muted); line-height:1.45; }
+    .btn {
+      display:inline-block;
+      background:var(--accent);
+      color:white;
+      padding:10px 16px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:600;
+      box-shadow:0 6px 18px rgba(11,95,255,0.18);
+    }
+    .secondary { background:transparent; color:var(--accent); border:1px solid rgba(11,95,255,0.12); padding:8px 12px; border-radius:8px; text-decoration:none; }
+    .muted { color:var(--muted); font-size:13px; }
+    .note { font-size:13px; color:#9aa3b2; margin-top:8px; }
+    @media (max-width:880px) {
+      .card { flex-direction:column; height:88vh; }
+      .right { width:100%; }
+      .left { min-height: 55vh; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="region" aria-label="Embedded site viewer">
+      <div class="left">
+        <!-- The iframe will attempt to embed the site.
+             If embedding is blocked by the remote server, it will show a small message and the right column has a direct link. -->
+        <iframe id="siteFrame" src="https://deep-cleaning-49627.web.app/" title="Deep Cleaning Site">
+          <!-- fallback content for very old browsers -->
+        </iframe>
+      </div>
+
+      <div class="right" aria-hidden="false">
+        <h1>Open “Deep Cleaning - Professional Cleaning Services”</h1>
+        <p class="muted">If the site allows embedding, you’ll see it to the left. If not, use the button below to open it in a new tab.</p>
+
+        <a class="btn" id="openBtn" href="https://deep-cleaning-49627.web.app/" target="_blank" rel="noopener noreferrer">
+          Open site in new tab
+        </a>
+
+        <a class="secondary" id="rawBtn" href="https://deep-cleaning-49627.web.app/" target="_blank" rel="noopener noreferrer">
+          View the original URL
+        </a>
+
+        <div class="note" id="embedNote">Tip: some sites disallow embedding for security. If the frame is blank or shows an error, use the button above.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Detect if iframe loaded content or was blocked by X-Frame-Options / CSP.
+    const frame = document.getElementById('siteFrame');
+    const note = document.getElementById('embedNote');
+
+    // After a short delay, try to access the iframe's document to detect cross-origin/frame blocking.
+    setTimeout(() => {
+      try {
+        // Attempt to read location.href; if cross-origin or blocked this will throw.
+        const href = frame.contentWindow.location.href;
+        // If it succeeded, clear the tip.
+        note.textContent = 'Embedded successfully.';
+      } catch (err) {
+        // Embedding blocked: show clear message.
+        note.textContent = 'Embedding blocked by the remote site (X-Frame-Options or CSP). Click "Open site in new tab".';
+      }
+    }, 800);
+  </script>
+</body>
+</html>
