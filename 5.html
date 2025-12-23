@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CleanHub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    input:disabled, select:disabled { background-color: #f3f4f6; }
+  </style>
+</head>
+<body class="bg-gray-100">
+<div id="root"></div>
+<script type="text/babel">
+
+const { useState, useEffect } = React;
+
+// --- Mock Data & Utilities ---
+
+const defaultServices = [
+  { id: 1, name: "Sparkle Clean Pro", service: "Full Home Cleaning", rating: 4.8, description: "Professional deep cleaning for your entire home.", image: "https://placehold.co/400x400/4F46E5/FFF?text=Full+Home" },
+  { id: 2, name: "Fresh Home Services", service: "Kitchen Deep Clean", rating: 4.6, description: "Specialized kitchen deep cleaning service.", image: "https://placehold.co/400x400/22C55E/FFF?text=Kitchen" },
+  { id: 3, name: "Aqua Wash Masters", service: "Bathroom Cleaning", rating: 4.9, description: "Expert cleaning and sanitization for your bathrooms.", image: "https://placehold.co/400x400/EF4444/FFF?text=Bathroom" },
+  { id: 4, name: "Carpet & Upholstery Care", service: "Carpet Cleaning", rating: 4.7, description: "Deep steam cleaning for carpets and rugs.", image: "https://placehold.co/400x400/F97316/FFF?text=Carpet" },
+];
+
+const servicePricing = {
+  fullHomeCleaning: {
+    type: "tiered",
+    prices: {
+      "1RK": { "Furnished": 2000, "Non-Furnished": 1500 },
+      "1BHK": { "Furnished": 2500, "Non-Furnished": 2000 },
+      "2BHK": { "Furnished": 4500, "Non-Furnished": 4000 },
+      "3BHK": { "Furnished": 5500, "Non-Furnished": 5000 },
+      "4BHK": { "Furnished": 7000, "Non-Furnished": 6000 },
+      "5BHK": { "Furnished": 10000, "Non-Furnished": 8500 }
+    }
+  },
+  kitchen: {
+    type: "tiered",
+    prices: {
+      "1BHK": 1500,
+      "2BHK": 2000,
+      "3BHK": 2500,
+      "4BHK": 3000,
+      "5BHK": 3500
+    }
+  },
+  bathroom: { type: "perUnit", pricePerUnit: 500, minUnits: 3 },
+  carpet: { type: "perSqft", pricePerSqft: 4 }
+};
+
+function calculateServicePrice(serviceType, config) {
+  const rule = servicePricing[serviceType];
+  if (!rule) return 0;
+  switch (rule.type) {
+    case "tiered":
+      if (serviceType === 'fullHomeCleaning' && config.bhkSize && config.isFurnished) {
+        return rule.prices[config.bhkSize]?.[config.isFurnished] || 0;
+      }
+      return rule.prices[config.bhk] || 0;
+    case "perUnit":
+      const units = Math.max(config.units || 0, rule.minUnits);
+      return units * rule.pricePerUnit;
+    case "perSqft":
+      return (config.sqft || 0) * rule.pricePerSqft;
+    default:
+      return 0;
+  }
+}
+
+const statusSteps = ['Booked', 'In Progress', 'Completed'];
+
+// --- Components ---
+
+const Button = ({ children, onClick, className = "", disabled }) => (
+  <button
+    onClick={onClick}
+    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-200 hover:scale-105 shadow-md ${className} ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+    disabled={disabled}
+    type="button"
+  >
+    {children}
+  </button>
+);
+
+const Nav = ({ onNavigate, isLoggedIn, onLogout, cartItemCount, userRole, user }) => (
+  <nav className="bg-white shadow-lg sticky top-0 z-50">
+    <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div className="flex items-center">
+        <h1 className="text-2xl font-bold text-blue-600 cursor-pointer" onClick={() => onNavigate('home')}>CleanHub</h1>
+      </div>
+      <div className="flex items-center space-x-4">
+        {userRole === 'customer' && (
+          <button onClick={() => onNavigate('cart')} className="relative text-gray-600 hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.182 1.705.707 1.705H17m0-13a2 2 0 110 4 2 2 0 010-4z" />
+            </svg>
+            {cartItemCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                {cartItemCount}
+              </span>
+            )}
+          </button>
+        )}
+        {isLoggedIn ? (
+          <>
+            <span className="text-gray-600 font-medium">{user?.name ? `Hi, ${user.name}` : ''}</span>
+            <Button onClick={() => onNavigate('profile')} className="bg-gray-200 text-gray-800 hover:bg-gray-300">Dashboard</Button>
+            <Button onClick={onLogout} className="bg-red-500 text-white hover:bg-red-600">Logout</Button>
+          </>
+        ) : (
+          <Button onClick={() => onNavigate('roleSelection')} className="bg-blue-600 text-white hover:bg-blue-700">Login</Button>
+        )}
+      </div>
+    </div>
+  </nav>
+);
+
+// --- Login/Register ---
+
+function CustomerLogin({ onLogin }) {
+  const [form, setForm] = useState({ name: "", phone: "", address: "" });
+  const [error, setError] = useState(null);
+
+  const handleChange = e => {
+    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = e => {
+    e.preventDefault();
+    if (!form.name || !form.phone || !form.address) {
+      setError("All fields are required.");
+      return;
+    }
+    if (!/^\d{10}$/.test(form.phone)) {
+      setError("Enter a valid 10-digit phone number.");
+      return;
+    }
+    setError(null);
+    onLogin(form);
+  };
+
+  return (
+    <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-lg my-12">
+      <h2 className="text-2xl font-bold mb-4 text-center">Customer Login</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <input name="name" placeholder="Full Name" value={form.name} onChange={handleChange} className="w-full p-3 border rounded-lg" />
+        <input name="phone" placeholder="Phone Number" value={form.phone} onChange={handleChange} className="w-full p-3 border rounded-lg" maxLength={10}/>
+        <textarea name="address" placeholder="Address" value={form.address} onChange={handleChange} className="w-full p-3 border rounded-lg"></textarea>
+        {error && <div className="text-red-600">{error}</div>}
+        <Button className="w-full bg-blue-600 text-white hover:bg-blue-700" type="submit">Continue</Button>
+      </form>
+    </div>
+  );
+}
+
+// --- Home, Services, Details, Add to Cart ---
+
+const HomePage = ({ onNavigate }) => (
+  <div className="text-center py-20">
+    <h1 className="text-5xl font-extrabold text-gray-900 mb-4">CleanHub</h1>
+    <p className="text-lg text-gray-600 mb-8">Your trusted partner for professional cleaning and home services.</p>
+    <Button onClick={() => onNavigate('services')} className="bg-blue-600 text-white hover:bg-blue-700">Explore Services</Button>
+  </div>
+);
+
+const ServicesPage = ({ services, onNavigate }) => (
+  <div className="py-12">
+    <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Services</h2>
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+      {services.map(service => (
+        <div key={service.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition-transform cursor-pointer"
+          onClick={() => onNavigate('serviceDetail', service)}>
+          <img src={service.image} alt={service.name} className="w-full h-48 object-cover"/>
+          <div className="p-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-2">{service.service}</h3>
+            <p className="text-gray-600 mb-4">{service.description}</p>
+            <div className="flex items-center text-sm text-gray-500">
+              <svg className="h-4 w-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118L10 13.347l-2.8 2.034c-.784.57-1.838-.197-1.54-1.118l1.07-3.292a1 1 0 00-.364-1.118L3.566 8.719c-.783-.57-.38-1.81.588-1.81h3.462a1 1 0 00.95-.69l1.07-3.292z"/></svg>
+              <span>{service.rating}</span>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+// --- Service Detail, Add to Cart (with new payment logic) ---
+
+function ServiceDetailPage({ service, onAddToCart, onNavigate }) {
+  const [bhkSize, setBhkSize] = useState("");
+  const [isFurnished, setIsFurnished] = useState("");
+  const [units, setUnits] = useState(0);
+  const [sqft, setSqft] = useState(0);
+  const [addons, setAddons] = useState({});
+  const [error, setError] = useState(null);
+
+  const getBasePrice = () => {
+    if (service.service.toLowerCase().includes("full home cleaning")) {
+      return calculateServicePrice("fullHomeCleaning", { bhkSize, isFurnished });
+    } else if (service.service.toLowerCase().includes("kitchen")) {
+      return calculateServicePrice("kitchen", { bhk: bhkSize });
+    } else if (service.service.toLowerCase().includes("bathroom")) {
+      return calculateServicePrice("bathroom", { units });
+    } else if (service.service.toLowerCase().includes("carpet")) {
+      return calculateServicePrice("carpet", { sqft });
+    }
+    return 0;
+  };
+
+  const getAddonsPrice = () => {
+    let total = 0;
+    for (const k in addons) {
+      if (addons[k].selected) {
+        total += addons[k].price * (addons[k].quantity || 1);
+      }
+    }
+    return total;
+  };
+
+  const price = getBasePrice() + getAddonsPrice();
+
+  const handleAddonChange = e => {
+    const { value, checked, dataset } = e.target;
+    const price = parseInt(dataset.price);
+    setAddons(prev => {
+      const next = { ...prev };
+      if (checked) next[value] = { price, selected: true, quantity: 1 };
+      else delete next[value];
+      return next;
+    });
+  };
+
+  const handleAddonQuantity = e => {
+    const { value, dataset } = e.target;
+    const name = dataset.for;
+    setAddons(prev => ({
+      ...prev,
+      [name]: { ...prev[name], quantity: parseInt(value) || 1 }
+    }));
+  };
+
+  const handleAddToCart = (paymentOption) => {
+    if (service.service.toLowerCase().includes("full home cleaning") && (!bhkSize || !isFurnished)) {
+      setError("Please select apartment size and furnished status.");
+      return;
+    }
+    if (service.service.toLowerCase().includes("kitchen") && !bhkSize) {
+      setError("Please select apartment size.");
+      return;
+    }
+    if (service.service.toLowerCase().includes("bathroom") && (!units || units < 1)) {
+      setError("Enter number of bathrooms.");
+      return;
+    }
+    if (service.service.toLowerCase().includes("carpet") && (!sqft || sqft < 1)) {
+      setError("Enter carpet area.");
+      return;
+    }
+    setError(null);
+
+    const selectedAddons = Object.keys(addons)
+      .filter(key => addons[key].selected)
+      .map(key => ({
+        name: key,
+        price: addons[key].price,
+        quantity: addons[key].quantity || 1
+      }));
+
+    onAddToCart({
+      id: Date.now(),
+      serviceId: service.id,
+      serviceName: service.name,
+      serviceType: service.service,
+      totalPrice: price,
+      details: { bhkSize, isFurnished, units, sqft, addons: selectedAddons },
+      paymentOption
+    });
+  };
+
+  return (
+    <div className="py-12">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-xl mx-auto">
+        <Button onClick={() => onNavigate('services')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">← Back to Services</Button>
+        <h2 className="text-3xl font-bold mb-4">{service.name}</h2>
+        <p className="text-gray-600 mb-6">{service.description}</p>
+        {service.service.toLowerCase().includes("full home cleaning") && (
+          <div className="space-y-4">
+            <div>
+              <label className="block mb-2 font-semibold">Select Apartment Size</label>
+              <select value={bhkSize} onChange={e => setBhkSize(e.target.value)} className="w-full p-3 border rounded-lg">
+                <option value="">Select</option>
+                <option value="1RK">1RK</option>
+                <option value="1BHK">1BHK</option>
+                <option value="2BHK">2BHK</option>
+                <option value="3BHK">3BHK</option>
+                <option value="4BHK">4BHK</option>
+                <option value="5BHK">5BHK</option>
+              </select>
+            </div>
+            <div>
+              <label className="block mb-2 font-semibold">Is your home furnished?</label>
+              <select value={isFurnished} onChange={e => setIsFurnished(e.target.value)} className="w-full p-3 border rounded-lg">
+                <option value="">Select</option>
+                <option value="Furnished">Furnished</option>
+                <option value="Non-Furnished">Non-Furnished</option>
+              </select>
+            </div>
+          </div>
+        )}
+        {service.service.toLowerCase().includes("kitchen") && (
+          <div>
+            <label className="block mb-2 font-semibold">Select Apartment Size</label>
+            <select value={bhkSize} onChange={e => setBhkSize(e.target.value)} className="w-full p-3 border rounded-lg">
+              <option value="">Select</option>
+              <option value="1BHK">1BHK</option>
+              <option value="2BHK">2BHK</option>
+              <option value="3BHK">3BHK</option>
+              <option value="4BHK">4BHK</option>
+              <option value="5BHK">5BHK</option>
+            </select>
+          </div>
+        )}
+        {service.service.toLowerCase().includes("bathroom") && (
+          <div className="mt-4">
+            <label className="block mb-2 font-semibold">Number of Bathrooms</label>
+            <input type="number" min="1" value={units} onChange={e => setUnits(parseInt(e.target.value))} className="w-full p-3 border rounded-lg"/>
+            <p className="text-sm text-gray-500 mt-1">Min 3 bathrooms will be billed</p>
+          </div>
+        )}
+        {service.service.toLowerCase().includes("carpet") && (
+          <div className="mt-4">
+            <label className="block mb-2 font-semibold">Carpet Area (sqft)</label>
+            <input type="number" min="0" value={sqft} onChange={e => setSqft(parseInt(e.target.value))} className="w-full p-3 border rounded-lg"/>
+          </div>
+        )}
+        {/* Addons */}
+        <div className="mt-8">
+          <h3 className="font-bold text-lg mb-4">Add-ons</h3>
+          <div className="flex flex-col space-y-4">
+            {/* Carpet Shampoo */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <input type="checkbox" value="Carpet Shampoo" data-price="600" onChange={handleAddonChange} className="form-checkbox h-5 w-5 text-blue-600 rounded-md"/>
+                Carpet Shampoo (per carpet) +₹600
+              </label>
+              {addons['Carpet Shampoo']?.selected && (
+                <input type="number" min="1" value={addons['Carpet Shampoo']?.quantity || 1} data-for="Carpet Shampoo" onChange={handleAddonQuantity} className="w-20 p-2 border rounded-lg"/>
+              )}
+            </div>
+            {/* Fridge Cleaning */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <input type="checkbox" value="Fridge Cleaning" data-price="400" onChange={handleAddonChange} className="form-checkbox h-5 w-5 text-blue-600 rounded-md"/>
+                Fridge Cleaning +₹400
+              </label>
+            </div>
+            {/* Sofa Shampoo */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <input type="checkbox" value="Sofa Shampoo" data-price="150" onChange={handleAddonChange} className="form-checkbox h-5 w-5 text-blue-600 rounded-md"/>
+                Sofa Shampoo (per seat) +₹150
+              </label>
+              {addons['Sofa Shampoo']?.selected && (
+                <input type="number" min="1" value={addons['Sofa Shampoo']?.quantity || 1} data-for="Sofa Shampoo" onChange={handleAddonQuantity} className="w-20 p-2 border rounded-lg"/>
+              )}
+            </div>
+            {/* Microwave Cleaning */}
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-gray-700 font-medium">
+                <input type="checkbox" value="Microwave Cleaning" data-price="200" onChange={handleAddonChange} className="form-checkbox h-5 w-5 text-blue-600 rounded-md"/>
+                Microwave Cleaning +₹200
+              </label>
+            </div>
+          </div>
+        </div>
+        {/* Error */}
+        {error && <div className="text-red-600 text-sm mt-2">{error}</div>}
+        {/* Price and Payment Options */}
+        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+          <h4 className="font-semibold text-blue-800">Price</h4>
+          <p className="text-2xl font-bold text-blue-600 mb-2">₹{price}</p>
+          <div className="font-medium text-gray-700 mb-2">Choose Payment Option:</div>
+          <div className="flex flex-col gap-3">
+            <Button
+              onClick={() => handleAddToCart("advance")}
+              disabled={price === 0}
+              className="w-full bg-green-500 text-white hover:bg-green-600">
+              Pay 10% Advance <span className="text-sm ml-2 text-white font-normal">(Get ₹500 Discount)</span>
+            </Button>
+            <Button
+              onClick={() => handleAddToCart("post")}
+              disabled={price === 0}
+              className="w-full bg-blue-600 text-white hover:bg-blue-700">
+              Pay After Service <span className="text-sm ml-2 text-white font-normal">(Get ₹200 Discount)</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// --- Cart Page with Payment Option and Discount ---
+
+function CartPage({ cart, customer, onNavigate, onCheckout, onRemoveFromCart }) {
+  if (!cart.length) {
+    return (
+      <div className="py-12">
+        <div className="bg-white rounded-xl shadow-lg p-8 max-w-xl mx-auto">
+          <Button onClick={() => onNavigate('services')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">← Continue Shopping</Button>
+          <div className="text-center py-12 text-lg text-gray-500">Your cart is empty.</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Calculate discount and payment breakdown
+  const getDiscount = (item) =>
+    item.paymentOption === "advance" ? 500 : 200;
+
+  const getFinalPrice = (item) => Math.max(item.totalPrice - getDiscount(item), 0);
+
+  const total = cart.reduce((sum, item) => sum + getFinalPrice(item), 0);
+  const totalAdvance = cart
+    .filter(i => i.paymentOption === "advance")
+    .reduce((sum, item) => sum + Math.ceil(getFinalPrice(item) * 0.10), 0);
+
+  return (
+    <div className="py-12">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-xl mx-auto">
+        <Button onClick={() => onNavigate('services')} className="bg-gray-300 text-gray-800 hover:bg-gray-400 mb-6">← Continue Shopping</Button>
+        <h2 className="text-3xl font-bold mb-6">Your Cart</h2>
+        <ul className="space-y-4 mb-6">
+          {cart.map((item, i) => (
+            <li key={i} className="flex justify-between items-center bg-gray-50 p-4 rounded-lg">
+              <div>
+                <h4 className="font-semibold">{item.serviceType}</h4>
+                <div className="text-xs text-gray-500">{item.serviceName}</div>
+                <div className="text-xs text-gray-500">Payment: <b>{item.paymentOption === "advance" ? "10% Advance" : "After Service"}</b></div>
+                <div className="text-xs text-gray-500">
+                  {item.details.bhkSize && item.details.isFurnished ? `${item.details.bhkSize}, ${item.details.isFurnished}` : ''}
+                  {item.details.bhk ? item.details.bhk : ''} {item.details.units ? `Bathrooms: ${item.details.units}` : ''}
+                  {item.details.sqft ? `Carpet: ${item.details.sqft} sqft` : ''}
+                </div>
+                {item.details.addons && item.details.addons.length > 0 && (
+                  <div className="mt-1 text-xs text-gray-500">
+                    <span className="font-semibold">Add-ons: </span>
+                    {item.details.addons.map(addon => (
+                      <span key={addon.name} className="ml-1">{addon.name} ({addon.quantity})</span>
+                    ))}
+                  </div>
+                )}
+                <div className="text-xs mt-1">
+                  Discount: <span className={item.paymentOption === "advance" ? "text-green-600" : "text-blue-600"}>₹{getDiscount(item)}</span>
+                </div>
+              </div>
+              <div className="flex flex-col items-end">
+                <span className="font-bold text-lg">₹{getFinalPrice(item)}</span>
+                <button onClick={() => onRemoveFromCart(i)} className="text-red-500 hover:text-red-700 mt-2 text-xs">Remove</button>
+              </div>
+            </li>
+          ))}
+        </ul>
+        <div className="flex justify-between items-center text-xl font-bold mb-2 pt-4 border-t-2 border-dashed">
+          <span>Total:</span>
+          <span>₹{total}</span>
+        </div>
+        {totalAdvance > 0 && (
+          <div className="flex justify-between items-center text-gray-700 font-medium mb-4">
+            <span>Total Advance (10%):</span>
+            <span>₹{totalAdvance}</span>
+          </div>
+        )}
+        <Button onClick={() => onCheckout()} className="w-full bg-blue-600 text-white hover:bg-blue-700">Confirm & Book</Button>
+      </div>
+    </div>
+  );
+}
+
+// --- Booking Tracking, Review ---
+
+function BookingTracker({ booking, onRate, showReview }) {
+  const [review, setReview] = useState("");
+  const [rating, setRating] = useState(5);
+  const [submitted, setSubmitted] = useState(false);
+
+  if (!booking) return null;
+
+  const stepIndex = statusSteps.indexOf(booking.status);
+
+  return (
+    <div className="bg-white rounded-xl shadow-lg p-8 max-w-xl mx-auto mt-8">
+      <h2 className="text-xl font-bold mb-2">Booking Status</h2>
+      <div className="flex items-center justify-between mb-4">
+        {statusSteps.map((step, idx) => (
+          <div key={step} className="flex flex-col items-center flex-1">
+            <div className={`rounded-full w-8 h-8 flex items-center justify-center font-bold text-white ${idx <= stepIndex ? "bg-blue-600" : "bg-gray-300"}`}>{idx + 1}</div>
+            <div className={`text-xs mt-1 font-medium ${idx <= stepIndex ? "text-blue-600" : "text-gray-400"}`}>{step}</div>
+          </div>
+        ))}
+      </div>
+      <div className="text-gray-700 mb-2">Service: <b>{booking.serviceType}</b></div>
+      <div className="text-gray-700 mb-2">Booking ID: {booking.bookingId}</div>
+      <div className="text-gray-700 mb-2">Payment: {booking.paymentOption === "advance" ? "10% Advance" : "After Service"}</div>
+      <div className="text-gray-700 mb-2">Final Price: ₹{booking.finalPrice}</div>
+      {booking.status === "Completed" && showReview && !booking.review && (
+        <div className="mt-6">
+          <div className="mb-2 font-medium">Rate Our Service:</div>
+          <div className="flex space-x-1 mb-2">
+            {[1,2,3,4,5].map(star => (
+              <button key={star} onClick={() => setRating(star)} className={star <= rating ? "text-yellow-500" : "text-gray-300"}>★</button>
+            ))}
+          </div>
+          <textarea value={review} onChange={e => setReview(e.target.value)} placeholder="Your feedback..." className="w-full p-2 border rounded mb-2"/>
+          <Button className="bg-green-600 text-white w-full" onClick={() => { onRate(review, rating); setSubmitted(true); }}>Submit Review</Button>
+          {submitted && <div className="text-green-600 text-sm mt-2">Thank you for your feedback!</div>}
+        </div>
+      )}
+      {booking.review && (
+        <div className="mt-2 bg-gray-50 text-sm p-3 rounded">
+          <div><b>Rating:</b> {"★".repeat(booking.rating)}<span className="text-gray-400">{ "★".repeat(5 - booking.rating) }</span></div>
+          <div><b>Review:</b> {booking.review}</div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Main Customer App ---
+
+function CustomerApp({ services, bookings, setBookings, user, setUserMessage }) {
+  const [currentPage, setCurrentPage] = useState('home');
+  const [selectedService, setSelectedService] = useState(null);
+  const [cart, setCart] = useState([]);
+  const [trackBookingId, setTrackBookingId] = useState(null);
+
+  // Bookings: [{...cartItem, bookingId, status, review, rating}]
+  const latestBooking = bookings.length > 0 ? bookings[bookings.length-1] : null;
+
+  const handleAddToCart = (item) => {
+    setCart(prev => [...prev, item]);
+    setUserMessage({ text: "Item added to cart!", type: 'success' });
+    setTimeout(() => setUserMessage(null), 2000);
+  };
+
+  const handleRemoveFromCart = idx => {
+    setCart(prev => prev.filter((_, i) => i !== idx));
+    setUserMessage({ text: "Item removed from cart.", type: 'success' });
+    setTimeout(() => setUserMessage(null), 2000);
+  };
+
+  // When checkout, create bookings
+  const handleCheckout = () => {
+    const newBookings = cart.map((item, i) => {
+      const base = {
+        ...item,
+        bookingId: String(Date.now()) + i,
+        status: 'Booked',
+        customer: {...user},
+        finalPrice: Math.max(item.totalPrice - (item.paymentOption === "advance" ? 500 : 200), 0),
+        review: null, rating: null
+      };
+      return base;
+    });
+    setBookings(prev => [...prev, ...newBookings]);
+    setTrackBookingId(newBookings[0].bookingId);
+    setCart([]);
+    setCurrentPage('track');
+    setUserMessage({ text: "Booking confirmed! Track your order.", type: 'success' });
+    setTimeout(() => setUserMessage(null), 2000);
+  };
+
+  const handleRate = (review, rating) => {
+    setBookings(prev => prev.map(b =>
+      b.bookingId === trackBookingId
+        ? {...b, review, rating}
+        : b
+    ));
+    setUserMessage({ text: "Thank you for your feedback!", type: 'success' });
+    setTimeout(() => setUserMessage(null), 2000);
+  };
+
+  // Simulate status update for demo
+  useEffect(() => {
+    if (!trackBookingId) return;
+    const idx = bookings.findIndex(b => b.bookingId === trackBookingId);
+    if (idx === -1) return;
+    const booking = bookings[idx];
+    if (booking.status === "Booked") {
+      const t = setTimeout(() => setBookings(bs => {
+        const arr = [...bs];
+        arr[idx] = {...arr[idx], status: "In Progress"};
+        return arr;
+      }), 3500);
+      return () => clearTimeout(t);
+    }
+    if (booking.status === "In Progress") {
+      const t = setTimeout(() => setBookings(bs => {
+        const arr = [...bs];
+        arr[idx] = {...arr[idx], status: "Completed"};
+        return arr;
+      }), 3500);
+      return () => clearTimeout(t);
+    }
+  }, [bookings, trackBookingId, setBookings]);
+
+  // UI Routing
+  const renderContent = () => {
+    switch (currentPage) {
+      case 'home':
+        return <HomePage onNavigate={setCurrentPage}/>;
+      case 'services':
+        return <ServicesPage services={services} onNavigate={(pg, data) => { setSelectedService(data); setCurrentPage(pg); }}/>;
+      case 'serviceDetail':
+        return <ServiceDetailPage service={selectedService} onAddToCart={handleAddToCart} onNavigate={setCurrentPage}/>;
+      case 'cart':
+        return <CartPage cart={cart} customer={user} onNavigate={setCurrentPage} onCheckout={handleCheckout} onRemoveFromCart={handleRemoveFromCart}/>;
+      case 'track':
+        // Always track latest booking
+        const booking = bookings.find(b => b.bookingId === trackBookingId);
+        return <BookingTracker booking={booking} onRate={handleRate} showReview />;
+      default:
+        return <HomePage onNavigate={setCurrentPage}/>;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <main className="container mx-auto p-4">
+        {renderContent()}
+        <div className="mt-8">
+          {bookings.length > 0 && (
+            <div className="bg-white rounded-xl shadow p-4 max-w-xl mx-auto mt-8">
+              <h3 className="font-bold mb-2 text-blue-600">Your Recent Bookings</h3>
+              <ul className="divide-y">
+                {bookings.slice(-3).reverse().map(b => (
+                  <li key={b.bookingId} className="py-2 flex justify-between items-center">
+                    <span>
+                      <span className="font-semibold">{b.serviceType}</span> ({b.status})
+                    </span>
+                    <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300 px-3 py-1 text-xs" onClick={() => { setTrackBookingId(b.bookingId); setCurrentPage('track'); }}>Track</Button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// --- Professional Dashboard ---
+
+function ProfessionalDashboard({ bookings }) {
+  const [selected, setSelected] = useState(null);
+
+  return (
+    <div className="py-12">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-3xl mx-auto">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Professional Dashboard</h2>
+        <div className="mb-4 font-medium text-gray-700">Bookings Assigned:</div>
+        <table className="min-w-full divide-y divide-gray-200 mb-6">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-3 py-2 text-xs text-gray-400">OrderID</th>
+              <th className="px-3 py-2 text-xs text-gray-400">Customer</th>
+              <th className="px-3 py-2 text-xs text-gray-400">Service</th>
+              <th className="px-3 py-2 text-xs text-gray-400">Status</th>
+              <th className="px-3 py-2 text-xs text-gray-400"></th>
+            </tr>
+          </thead>
+          <tbody className="bg-white">
+            {bookings.map(b => (
+              <tr key={b.bookingId}>
+                <td className="px-3 py-2 text-sm">{b.bookingId}</td>
+                <td className="px-3 py-2 text-sm">{b.customer.name}<br/><span className="text-gray-400">{b.customer.phone}</span><br/><span className="text-gray-400">{b.customer.address}</span></td>
+                <td className="px-3 py-2 text-sm">{b.serviceType}</td>
+                <td className="px-3 py-2 text-sm">{b.status}</td>
+                <td className="px-3 py-2 text-sm">
+                  <Button className="bg-gray-200 text-gray-700 px-3 py-1 text-xs" onClick={() => setSelected(b)}>Details</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {selected && (
+          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-full max-w-lg shadow-xl relative">
+              <button className="absolute right-2 top-2 text-xl font-bold text-gray-400" onClick={() => setSelected(null)}>&times;</button>
+              <div className="mb-2 font-bold text-lg">{selected.serviceType}</div>
+              <div className="mb-2">Customer: <b>{selected.customer.name}</b></div>
+              <div className="mb-2">Phone: {selected.customer.phone}</div>
+              <div className="mb-2">Address: {selected.customer.address}</div>
+              <div className="mb-2">Status: {selected.status}</div>
+              <div className="mb-2">Payment: {selected.paymentOption === "advance" ? "10% Advance" : "After Service"}</div>
+              <div className="mb-2">Final Price: ₹{selected.finalPrice}</div>
+              {selected.review && (
+                <div className="mt-2">
+                  <b>Review:</b> {selected.review}<br/>
+                  <b>Rating:</b> {"★".repeat(selected.rating)}<span className="text-gray-400">{"★".repeat(5 - selected.rating)}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Admin Dashboard ---
+
+function AdminDashboard({ services, setServices, bookings }) {
+  const [activeTab, setActiveTab] = useState('services');
+  const [newService, setNewService] = useState({ id: null, name: "", service: "", rating: 0, description: "", image: "" });
+  const [editingService, setEditingService] = useState(null);
+
+  // Add & edit service
+  const handleAddOrUpdate = () => {
+    if (!newService.name || !newService.service) return;
+    if (editingService) {
+      setServices(s => s.map(serv => serv.id === newService.id ? newService : serv));
+      setEditingService(null);
+    } else {
+      setServices(s => [...s, { ...newService, id: Date.now(), rating: 5 }]);
+    }
+    setNewService({ id: null, name: "", service: "", rating: 0, description: "", image: "" });
+  };
+  const handleEdit = srv => {
+    setEditingService(srv.id);
+    setNewService(srv);
+  };
+  const handleDelete = id => setServices(s => s.filter(serv => serv.id !== id));
+
+  // Orders Tab
+  const statusColors = {
+    "Booked": "bg-blue-100 text-blue-800",
+    "In Progress": "bg-yellow-100 text-yellow-800",
+    "Completed": "bg-green-100 text-green-800",
+    "Canceled": "bg-red-100 text-red-800"
+  };
+
+  return (
+    <div className="py-12">
+      <div className="bg-white rounded-xl shadow-lg p-8 max-w-5xl mx-auto">
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h2>
+        <div className="flex mb-4 border-b border-gray-200">
+          <button className={`flex-1 py-2 px-4 text-center font-medium ${activeTab === 'services' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-600'}`} onClick={() => setActiveTab('services')}>Services</button>
+          <button className={`flex-1 py-2 px-4 text-center font-medium ${activeTab === 'orders' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:text-blue-600'}`} onClick={() => setActiveTab('orders')}>Orders</button>
+        </div>
+        {activeTab === 'services' && (
+          <div>
+            <h3 className="text-xl font-bold mb-4">{editingService ? "Edit Service" : "Add New Service"}</h3>
+            <div className="flex gap-4">
+              <input className="p-3 border rounded-lg flex-1" placeholder="Name" value={newService.name} onChange={e => setNewService(s => ({ ...s, name: e.target.value }))}/>
+              <input className="p-3 border rounded-lg flex-1" placeholder="Service Type" value={newService.service} onChange={e => setNewService(s => ({ ...s, service: e.target.value }))}/>
+              <input className="p-3 border rounded-lg flex-1" placeholder="Image URL" value={newService.image} onChange={e => setNewService(s => ({ ...s, image: e.target.value }))}/>
+            </div>
+            <textarea className="w-full border rounded-lg p-3 mt-2" placeholder="Description" value={newService.description} onChange={e => setNewService(s => ({ ...s, description: e.target.value }))}/>
+            <Button className="bg-blue-600 text-white mt-2" onClick={handleAddOrUpdate}>{editingService ? "Update" : "Add"} Service</Button>
+            <div className="mt-6">
+              <h4 className="font-bold mb-2">Available Services</h4>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {services.map(srv => (
+                  <div key={srv.id} className="bg-gray-50 p-3 rounded flex items-center justify-between">
+                    <div>
+                      <div className="font-semibold">{srv.name}</div>
+                      <div className="text-gray-600 text-xs">{srv.service}</div>
+                    </div>
+                    <div>
+                      <Button className="bg-yellow-400 text-white px-3 py-1 text-xs mr-2" onClick={() => handleEdit(srv)}>Edit</Button>
+                      <Button className="bg-red-500 text-white px-3 py-1 text-xs" onClick={() => handleDelete(srv.id)}>Delete</Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {activeTab === 'orders' && (
+          <div>
+            <h3 className="text-xl font-bold mb-4">All Orders</h3>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-3 py-2 text-xs text-gray-400">OrderID</th>
+                  <th className="px-3 py-2 text-xs text-gray-400">Customer</th>
+                  <th className="px-3 py-2 text-xs text-gray-400">Service</th>
+                  <th className="px-3 py-2 text-xs text-gray-400">Status</th>
+                  <th className="px-3 py-2 text-xs text-gray-400">Payment</th>
+                  <th className="px-3 py-2 text-xs text-gray-400">Rating/Review</th>
+                </tr>
+              </thead>
+              <tbody>
+                {bookings.map(b => (
+                  <tr key={b.bookingId}>
+                    <td className="px-3 py-2 text-xs">{b.bookingId}</td>
+                    <td className="px-3 py-2 text-xs">{b.customer.name}<br/>{b.customer.phone}<br/>{b.customer.address}</td>
+                    <td className="px-3 py-2 text-xs">{b.serviceType}</td>
+                    <td className="px-3 py-2 text-xs"><span className={`px-2 py-1 rounded-full text-xs ${statusColors[b.status]}`}>{b.status}</span></td>
+                    <td className="px-3 py-2 text-xs">{b.paymentOption === "advance" ? "10% Advance" : "After Service"}</td>
+                    <td className="px-3 py-2 text-xs">{b.review ? <span>★{b.rating} <br/>{b.review}</span> : "-"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// --- Main App Wrapper ---
+
+function App() {
+  // Main state: user, role, services, bookings
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userRole, setUserRole] = useState(null);
+  const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState('roleSelection');
+  const [services, setServices] = useState([...defaultServices]);
+  const [bookings, setBookings] = useState([]);
+  const [userMessage, setUserMessage] = useState(null);
+
+  // Handle login: customer
+  const handleLogin = (details) => {
+    setUser(details);
+    setIsLoggedIn(true);
+    setUserRole('customer');
+    setCurrentPage('home');
+  };
+
+  // Handle logout
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserRole(null);
+    setUser(null);
+    setCurrentPage('roleSelection');
+  };
+
+  // Route main content
+  const renderContent = () => {
+    if (!isLoggedIn && currentPage !== 'roleSelection') {
+      return (
+        <div className="text-center py-20">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Login Required</h2>
+          <p className="mb-6 text-gray-600">You need to be logged in to access this page.</p>
+          <Button onClick={() => setCurrentPage('roleSelection')} className="bg-blue-600 text-white hover:bg-blue-700">Login Now</Button>
+        </div>
+      );
+    }
+    if (currentPage === 'roleSelection') {
+      return (
+        <div className="text-center py-20">
+          <h2 className="text-3xl font-bold text-gray-900 mb-6">Select Your Role</h2>
+          <div className="flex justify-center space-x-6">
+            <Button onClick={() => setCurrentPage('customerLogin')} className="bg-blue-600 text-white hover:bg-blue-700">I'm a Customer</Button>
+            <Button onClick={() => { setIsLoggedIn(true); setUserRole('professional'); setCurrentPage('home'); }} className="bg-yellow-500 text-white hover:bg-yellow-600">I'm a Professional</Button>
+            <Button onClick={() => { setIsLoggedIn(true); setUserRole('admin'); setCurrentPage('home'); }} className="bg-purple-600 text-white hover:bg-purple-700">I'm an Admin</Button>
+          </div>
+        </div>
+      );
+    }
+    if (userRole === 'customer') {
+      if (!user) return <CustomerLogin onLogin={handleLogin}/>;
+      return <CustomerApp services={services} bookings={bookings.filter(b => b.customer?.phone === user.phone)} setBookings={bks => setBookings(all =>
+        all.filter(b => b.customer?.phone !== user.phone).concat(bks)
+      )} user={user} setUserMessage={setUserMessage} />;
+    }
+    if (userRole === 'professional') {
+      return <ProfessionalDashboard bookings={bookings}/>;
+    }
+    if (userRole === 'admin') {
+      return <AdminDashboard services={services} setServices={setServices} bookings={bookings}/>;
+    }
+    return null;
+  };
+
+  return (
+    <div className="bg-gray-100 min-h-screen">
+      {currentPage !== 'roleSelection' && (
+        <Nav onNavigate={setCurrentPage} isLoggedIn={isLoggedIn} onLogout={handleLogout} cartItemCount={0} userRole={userRole} user={user}/>
+      )}
+      <main className="container mx-auto p-4">
+        {userMessage && (
+          <div className={`fixed top-4 left-1/2 -translate-x-1/2 text-white p-4 rounded-xl shadow-lg z-[100] ${userMessage.type === 'success' ? 'bg-green-500' : 'bg-red-500'} transition-transform`}>
+            <div className="flex justify-between items-center">
+              <span>{userMessage.text}</span>
+              <button onClick={() => setUserMessage(null)} className="ml-4 font-bold">&times;</button>
+            </div>
+          </div>
+        )}
+        {renderContent()}
+      </main>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
