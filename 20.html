@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sachin Deep Cleaning</title>
+
+<style>
+body{
+    font-family: Arial;
+    margin:0;
+    background:#f4f4f4;
+}
+
+header{
+    background:#2c3e50;
+    color:white;
+    padding:20px;
+    text-align:center;
+}
+
+section{
+    padding:30px;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    margin:15px 0;
+    border-radius:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+button{
+    padding:10px 18px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    margin:5px;
+}
+
+.call{ background:#3498db; color:white;}
+.whatsapp{ background:#25D366; color:white;}
+
+.price-box{
+    display:flex;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.price-item{
+    flex:1 1 200px;
+    background:#fff;
+    padding:15px;
+    border-radius:10px;
+    box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+form input, form select{
+    width:100%;
+    padding:10px;
+    margin:10px 0;
+}
+
+footer{
+    text-align:center;
+    padding:15px;
+    background:#2c3e50;
+    color:white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Sachin Deep Cleaning</h1>
+<p>Professional Home Cleaning Services</p>
+
+<p>📞 +91 9267905943</p>
+
+<a href="tel:+919267905943"><button class="call">Call</button></a>
+<a href="https://wa.me/919267905943" target="_blank"><button class="whatsapp">WhatsApp</button></a>
+
+</header>
+
+<!-- Services -->
+<section>
+<div class="card">
+<h2>Our Services</h2>
+<ul>
+<li>Full Home Deep Cleaning</li>
+<li>Sofa Cleaning</li>
+<li>Bathroom Cleaning</li>
+<li>Kitchen Cleaning</li>
+<li>Water Tank Cleaning</li>
+</ul>
+</div>
+</section>
+
+<!-- Pricing -->
+<section>
+<div class="card">
+<h2>Gurugram Price List</h2>
+<p>👉 Furnished House = ₹500 Extra</p>
+
+<div class="price-box">
+
+<div class="price-item">1 RK – ₹1500</div>
+<div class="price-item">1 BHK – ₹2000</div>
+<div class="price-item">2 BHK – ₹3000</div>
+<div class="price-item">3 BHK – ₹4000</div>
+<div class="price-item">4 BHK – ₹5000</div>
+<div class="price-item">5 BHK – ₹6500</div>
+
+</div>
+</div>
+</section>
+
+<!-- Booking Form -->
+<section>
+<div class="card">
+<h2>Book Cleaning Service</h2>
+
+<form>
+
+<label>Name</label>
+<input type="text" placeholder="Your Name" required>
+
+<label>Phone</label>
+<input type="tel" placeholder="Phone Number" required>
+
+<label>House Type</label>
+<select id="houseType">
+<option value="1500">1 RK</option>
+<option value="2000">1 BHK</option>
+<option value="3000">2 BHK</option>
+<option value="4000">3 BHK</option>
+<option value="5000">4 BHK</option>
+<option value="6500">5 BHK</option>
+</select>
+
+<label>Furnishing</label>
+<select id="furnish">
+<option value="0">Unfurnished</option>
+<option value="500">Furnished (+₹500)</option>
+</select>
+
+<h3>Total Price: ₹ <span id="total">1500</span></h3>
+
+</form>
+</div>
+</section>
+
+<!-- Map -->
+<section>
+<div class="card">
+<h2>Service Location - Gurugram</h2>
+
+<iframe 
+src="https://maps.google.com/maps?q=gurugram&t=&z=13&ie=UTF8&iwloc=&output=embed"
+width="100%" height="300" style="border:0;">
+</iframe>
+
+</div>
+</section>
+
+<footer>
+© 2026 Sachin Deep Cleaning
+</footer>
+
+<script>
+const house = document.getElementById("houseType");
+const furnish = document.getElementById("furnish");
+const total = document.getElementById("total");
+
+function calculate(){
+    let price = Number(house.value) + Number(furnish.value);
+    total.textContent = price;
+}
+
+house.addEventListener("change", calculate);
+furnish.addEventListener("change", calculate);
+</script>
+
+</body>
+</html>
