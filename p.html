@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pancham | Portfolio</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    line-height:1.6;
+}
+
+header{
+    background:#1e293b;
+    padding:20px 50px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+header h1{
+    color:#38bdf8;
+}
+
+nav a{
+    color:white;
+    text-decoration:none;
+    margin-left:20px;
+    transition:0.3s;
+}
+
+nav a:hover{
+    color:#38bdf8;
+}
+
+section{
+    padding:60px 50px;
+}
+
+.hero{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+}
+
+.hero-text{
+    max-width:500px;
+}
+
+.hero-text h2{
+    font-size:40px;
+    margin-bottom:15px;
+}
+
+.hero-text span{
+    color:#38bdf8;
+}
+
+button{
+    padding:10px 20px;
+    border:none;
+    background:#38bdf8;
+    color:black;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:15px;
+    transition:0.3s;
+}
+
+button:hover{
+    background:white;
+}
+
+.card{
+    background:#1e293b;
+    padding:20px;
+    border-radius:10px;
+    margin-top:20px;
+    transition:0.3s;
+}
+
+.card:hover{
+    transform:translateY(-5px);
+    background:#334155;
+}
+
+footer{
+    background:#1e293b;
+    text-align:center;
+    padding:20px;
+    margin-top:40px;
+}
+
+.hidden{
+    display:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Pancham Portfolio</h1>
+    <nav>
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#ncc">NCC</a>
+        <a href="#contact">Contact</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <div class="hero-text">
+        <h2>Hello, I'm <span>Pancham</span></h2>
+        <p>Computer Science Student & Proud NCC Cadet 🇮🇳</p>
+        <p>A passionate learner, disciplined cadet, and tech enthusiast building the future with code and character.</p>
+        <button onclick="showMessage()">Know More</button>
+        <p id="extraText" class="hidden">Pancham believes in leadership, teamwork, and continuous growth. NCC has shaped his discipline and Computer Science fuels his innovation.</p>
+    </div>
+</section>
+
+<section id="about">
+    <h2>About Me</h2>
+    <div class="card">
+        <p>I am Pancham, a dedicated Computer Science student who loves programming, technology, and problem-solving. Along with academics, I am also an NCC cadet which builds my leadership, discipline, and confidence.</p>
+    </div>
+</section>
+
+<section id="skills">
+    <h2>Skills</h2>
+    <div class="card">
+        <ul>
+            <li>HTML, CSS, JavaScript</li>
+            <li>Python Programming</li>
+            <li>Web Development</li>
+            <li>Team Leadership</li>
+            <li>Discipline & Time Management</li>
+        </ul>
+    </div>
+</section>
+
+<section id="ncc">
+    <h2>NCC Journey</h2>
+    <div class="card">
+        <p>As an NCC Cadet, Pancham has developed strong discipline, patriotism, and leadership qualities. He participates in camps, drills, and social service activities that build character and national spirit.</p>
+    </div>
+</section>
+
+<section id="contact">
+    <h2>Contact Me</h2>
+    <div class="card">
+        <p>Email: pancham@email.com</p>
+        <p>Phone: +91 0000000000</p>
+    </div>
+</section>
+
+<footer>
+    <p>© 2026 Pancham Portfolio | Made with ❤️</p>
+</footer>
+
+<script>
+function showMessage(){
+    var text = document.getElementById("extraText");
+    if(text.classList.contains("hidden")){
+        text.classList.remove("hidden");
+    } else {
+        text.classList.add("hidden");
+    }
+}
+</script>
+
+</body>
+</html>
